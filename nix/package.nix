@@ -29,7 +29,32 @@
   };
 
   getPackage = set: name: set."${name}" or (throw "Emacs package ${name} not found.");
-  packages = set: map (getPackage set) packageList;
+  packages' = set: map (getPackage set) packageList;
+  packages = epkgs: [
+    (epkgs.trivialBuild {
+      pname = "default";
+      src = ../init.el;
+      version = "1.0";
+      packageRequires =
+        (packages' epkgs)
+        ++ [
+          (epkgs.trivialBuild {
+            pname = "meow-lisp";
+            src = ../lisp;
+            dontUnpack = true;
+
+            installPhase = ''
+              mkdir -p $out/share/emacs
+              cp -r $src $out/share/emacs/site-lisp
+            '';
+
+            version = "1.0";
+
+            packageRequires = packages' epkgs;
+          })
+        ];
+    })
+  ];
 
   emacsPackages = pkgs.emacsPackagesFor pkgs.emacs-igc-pgtk;
   emacsWithPackages = emacsPackages.emacsWithPackages;
