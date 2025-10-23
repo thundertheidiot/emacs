@@ -30,9 +30,26 @@
   };
 
   getPackage = set: name: set."${name}" or (throw "Emacs package ${name} not found.");
-  packages' = set: map (getPackage set) packageList;
+  packages = set: map (getPackage set) packageList;
 
-  packages = epkgs: [
+  meow-lisp = epkgs: [
+    (epkgs.trivialBuild {
+      pname = "meow-lisp";
+      src = ../lisp;
+      dontUnpack = true;
+
+      installPhase = ''
+        mkdir -p $out/share/emacs/site-lisp
+        cp -r $src $out/share/emacs/site-lisp/meow
+      '';
+
+      version = "1.0";
+
+      packageRequires = packages epkgs;
+    })
+  ];
+
+  defaultInit = epkgs: [
     (epkgs.trivialBuild {
       pname = "default";
       version = "1.0";
@@ -45,27 +62,12 @@
       '';
 
       packageRequires =
-        (packages' epkgs)
-        ++ [
-          (epkgs.trivialBuild {
-            pname = "meow-lisp";
-            src = ../lisp;
-            dontUnpack = true;
-
-            installPhase = ''
-              mkdir -p $out/share/emacs/site-lisp
-              cp -r $src $out/share/emacs/site-lisp/meow
-            '';
-
-            version = "1.0";
-
-            packageRequires = packages' epkgs;
-          })
-        ];
+        (packages epkgs)
+        ++ (meow-lisp epkgs);
     })
   ];
 
   emacsPackages = pkgs.emacsPackagesFor pkgs.emacs-igc-pgtk;
   emacsWithPackages = emacsPackages.emacsWithPackages;
 in
-  emacsWithPackages packages
+  emacsWithPackages defaultInit
