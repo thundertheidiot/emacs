@@ -1,0 +1,15 @@
+(setq split-width-threshold 180)
+(setq split-height-threshold 80)
+
+(defun meow/intelligent-split (&optional force)
+  (interactive)
+  (let* ((width (window-total-width))
+	 (height (window-total-height))
+	 (aspect (/ (float width) (float height)))
+	 (window (cond ((and (< width split-width-threshold) (< height split-height-threshold) (not force)) (current-buffer))
+		       ((> aspect 2.3) (split-window-right))
+		       (t (split-window-below)))))
+    (ignore-errors (balance-windows (window-parent)))
+    window))
+
+(provide 'meow/helpers)
