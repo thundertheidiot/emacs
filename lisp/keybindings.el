@@ -15,4 +15,8 @@
   :prefix "SPC l"
   :global-prefix "C-SPC l")
 
-(provide 'meow/general)
+(meow/leader
+ "." '("find file" . find-file))
+
+(provide 'meow/keybindings)
+;;; keybindings.el ends here

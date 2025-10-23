@@ -8,6 +8,7 @@
   inherit (lib) mapAttrsToList;
   inherit (lib.lists) flatten filter;
   inherit (lib.strings) concatStringsSep readFile hasSuffix;
+  inherit (pkgs) writeText;
 
   files = let
     match = {
@@ -30,11 +31,19 @@
 
   getPackage = set: name: set."${name}" or (throw "Emacs package ${name} not found.");
   packages' = set: map (getPackage set) packageList;
+
   packages = epkgs: [
     (epkgs.trivialBuild {
       pname = "default";
-      src = ../init.el;
       version = "1.0";
+      src = ../init.el;
+
+      # filename must be default.el
+      installPhase = ''
+        mkdir -p $out/share/emacs/site-lisp
+        cp $src $out/share/emacs/site-lisp/default.el
+      '';
+
       packageRequires =
         (packages' epkgs)
         ++ [
@@ -44,8 +53,8 @@
             dontUnpack = true;
 
             installPhase = ''
-              mkdir -p $out/share/emacs
-              cp -r $src $out/share/emacs/site-lisp
+              mkdir -p $out/share/emacs/site-lisp
+              cp -r $src $out/share/emacs/site-lisp/meow
             '';
 
             version = "1.0";

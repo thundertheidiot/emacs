@@ -2,4 +2,5 @@
   :config
   (evil-mode))
 
-;; (require 'meow/general)
+(require 'meow/keybindings)
+;;; init.el ends here
