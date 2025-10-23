@@ -3,6 +3,9 @@
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
   inputs.emacs-overlay.url = "github:nix-community/emacs-overlay";
 
+  inputs.home-manager.url = "github:nix-community/home-manager";
+  inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
   inputs = {
     eglot-booster = {
       url = "github:jdtsmith/eglot-booster";
@@ -23,6 +26,18 @@
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} {
       systems = ["x86_64-linux"];
+
+      imports = [
+        inputs.home-manager.flakeModules.home-manager
+      ];
+
+      flake.homeModules = {
+        default = {pkgs, ...}: {
+          programs.emacs.package = inputs.self.packages.${pkgs.system}.emacs;
+
+          imports = [./nix/home-manager.nix];
+        };
+      };
 
       perSystem = {
         config,
