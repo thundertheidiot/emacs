@@ -1,4 +1,13 @@
-(require 'meow/helpers)
+;; -*- lexical-binding: t; -*-
+(require 'meow/helpers "helpers")
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(global-display-line-numbers-mode)
+(global-visual-line-mode)
+
+(add-hook 'emacs-lisp-mode-hook #'prettify-symbols-mode)
 
 (use-package vertico
   :custom
@@ -18,9 +27,9 @@
 	    "C-j" #'vertico-next
 	    "C-k" #'vertico-previous
 	    "C-l" #'vertico-quick-jump)
-  (:keymaps 'vertico-map :states '(insert)
-	    "<backspace>" #'vertico-directory-delete-char
-	    "DEL" #'vertico-directory-delete-char)
+  ;; (:keymaps 'vertico-map :states '(insert)
+  ;; 	    "<backspace>" #'vertico-directory-delete-char
+  ;; 	    "DEL" #'vertico-directory-delete-char)
   (:keymaps 'override :states '(normal visual insert)
 	    "C-c c" #'vertico-buffer-mode))
 

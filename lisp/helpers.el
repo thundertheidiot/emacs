@@ -1,3 +1,17 @@
+;; -*- lexical-binding: t; -*-
+(defcustom meow/create-directories '()
+  "List of directories to create on init."
+  :type '(repeat string)
+  :group 'meow-emacs)
+
+(defun meow/setup-directories ()
+  (mapc (lambda (dir)
+	  (unless (file-directory-p dir)
+	    (make-directory dir)))
+	meow/create-directories))
+
+(add-hook 'after-init-hook #'meow/setup-directories)
+
 (setq split-width-threshold 180)
 (setq split-height-threshold 80)
 

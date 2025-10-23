@@ -1,7 +1,10 @@
+;; -*- lexical-binding: t; -*-
 (use-package evil
+  :init
+  (setq evil-want-keybinding nil)
   :custom
-  (evil-want-integration t)
   (evil-want-keybinding nil)
+  (evil-want-integration t)
   (evil-want-minibuffer t)
   (evil-vsplit-window-right t)
   (evil-split-window-below t)

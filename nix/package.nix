@@ -1,10 +1,11 @@
 {
   pkgs,
+  inputs,
   lib,
   parse,
   ...
 }: let
-  inherit (builtins) readDir;
+  inherit (builtins) readDir trace;
   inherit (lib) mapAttrsToList;
   inherit (lib.lists) flatten filter;
   inherit (lib.strings) concatStringsSep readFile hasSuffix;
@@ -36,7 +37,6 @@
     (epkgs.trivialBuild {
       pname = "meow-lisp";
       src = ../lisp;
-      dontUnpack = true;
 
       installPhase = ''
         mkdir -p $out/share/emacs/site-lisp
@@ -67,7 +67,8 @@
     })
   ];
 
-  emacsPackages = pkgs.emacsPackagesFor pkgs.emacs-igc-pgtk;
+  emacsPackages' = pkgs.emacsPackagesFor pkgs.emacs-igc-pgtk;
+  emacsPackages = emacsPackages'.overrideScope (import ./overrides.nix {inherit pkgs inputs;});
   emacsWithPackages = emacsPackages.emacsWithPackages;
 in
   emacsWithPackages defaultInit
