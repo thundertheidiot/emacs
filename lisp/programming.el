@@ -6,8 +6,8 @@
   (flycheck-mode . (lambda () (flycheck-set-indication-mode 'left-fringe)))
   :general-config
   (meow/leader
-   "cn" '("next error" . flycheck-next-error)
-   "cN" '("previous error" . flycheck-previous-error)))
+    "cn" '("next error" . flycheck-next-error)
+    "cN" '("previous error" . flycheck-previous-error)))
 
 (use-package flycheck-eglot
   :demand t

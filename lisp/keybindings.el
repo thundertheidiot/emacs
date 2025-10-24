@@ -64,13 +64,12 @@
 
 (general-create-definer meow/local
   :states '(normal insert visual emacs motion)
-  :keymaps 'override
   :prefix "SPC l"
   :global-prefix "C-SPC l")
 
 ;; basic keybindings
 (meow/leader
- "." '("find file" . find-file))
+  "." '("find file" . find-file))
 
 (provide 'meow/keybindings)
 ;;; keybindings.el ends here

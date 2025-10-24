@@ -1,10 +1,6 @@
 					; -*- lexical-binding: t; -*-
 
-;; wrong place lo 
 ;; (add-to-list 'default-frame-alist '(alpha-background . 0.88))
-
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
 
 (use-package diminish
   :demand t
@@ -447,77 +443,6 @@ Preserve window configuration when pressing ESC."
   :config
   (yas-global-mode 1))
 
-(use-package rustic
-  :diminish rustic-mode
-  :mode ("\\.rs\\'" . rustic-mode)
-  :hook (rustic-mode . eglot-ensure)
-  :init
-  (setq rustic-lsp-client 'eglot
-	rustic-use-rust-save-some-buffers t
-	compilation-ask-about-save nil))
-
-(use-package nix-mode
-  :mode "\\.nix\\'"
-  :hook (nix-mode . eglot-ensure))
-
-(use-package haskell-mode
-  :mode "\\.hs\\'"
-  :hook (haskell-mode . eglot-ensure))
-;; TODO: try haskell-ts-mode
-;; (use-package haskell-ts-mode
-;;   :mode "\\.hs\\'"
-;;   :config (haskell-ts-setup-eglot))
-
-(use-package typescript-mode
-  :mode "\\.tsx?\\'")
-
-;; (use-package tsi
-;;   :after tree-sitter
-;;   :hook
-;;   (typescript-mode . tsi-typescript-mode)
-;;   (css-mode . tsi-css-mode)
-;;   (scss-mode . tsi-scss-mode)
-;;   (json-mode . tsi-json-mode))
-
-(use-package lua-mode
-  :mode "\\.lua\\'"
-  :hook (lua-mode . eglot-ensure))
-
-(use-package gdscript-mode
-  :mode "\\.gdscript\\'"
-  :hook (gdscript-mode . eglot-ensure))
-
-(use-package glsl-mode)
-
-(defun tmc-test ()
-  (interactive)
-  (let* ((test-dir (expand-file-name "../.." default-directory))
-	 (default-directory test-dir))
-    (async-shell-command "tmc test")))
-
-(defun tmc-submit ()
-  (interactive)
-  (let* ((test-dir (expand-file-name "../.." default-directory))
-	 (default-directory test-dir))
-    (async-shell-command "tmc submit")))
-
-(defun dotnet-run ()
-  (interactive)
-  (async-shell-command "dotnet run"))
-
-(use-package csharp-mode
-  :ensure nil
-  :mode "\\.cs\\'"
-  :hook
-  (csharp-mode . eglot-ensure)
-  (csharp-mode . apheleia-mode)
-  :general-config
-  (:states '(normal visual) :prefix "SPC l" :keymaps 'csharp-mode-map
-	   "t" #'tmc-test
-	   "s" #'tmc-submit
-	   "r" #'dotnet-run))
-
-(add-hook 'emacs-lisp-mode-hook #'corfu-mode)
 
 (use-package puni
   :config
