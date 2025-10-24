@@ -14,6 +14,7 @@
   (vertico-resize t)
   (vertico-cycle nil)
   :config
+  (require 'vertico-directory)
   (vertico-mode)
   :general-config
   (:keymaps 'vertico-map :states '(normal visual)

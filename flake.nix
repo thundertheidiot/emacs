@@ -58,6 +58,13 @@
           inherit pkgs lib inputs;
           parse = import "${inputs.emacs-overlay}/parse.nix" {inherit pkgs lib;};
         };
+
+        packages.emacs-empty-init-test = pkgs.writeShellScriptBin "emacs-empty-init-test" ''
+          export EMACS_USER_DIR=$(mktemp -d)
+
+          ln -sf ${./early-init.el} $EMACS_USER_DIR/early-init.el
+          exec ${config.packages.emacs}/bin/emacs --init-directory=$EMACS_USER_DIR "$@"
+        '';
       };
     };
 }
