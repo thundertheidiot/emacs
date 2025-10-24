@@ -12,6 +12,7 @@
 (require 'meow/undo)
 (require 'meow/keybindings)
 (require 'meow/lsp)
+(require 'meow/git)
 (require 'meow/ui)
 (require 'meow/dump)
 ;;; init.el ends here
