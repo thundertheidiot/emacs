@@ -447,58 +447,6 @@ Preserve window configuration when pressing ESC."
   :config
   (yas-global-mode 1))
 
-(use-package flycheck
-  :hook
-  (prog-mode . flycheck-mode)
-  (eglot-managed-mode . flycheck-mode)
-  (flycheck-mode . (lambda () (flycheck-set-indication-mode 'left-fringe)))
-  :general-config
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "cn" '("next error" . flycheck-next-error)
-	   "cN" '("previous error" . flycheck-previous-error)))
-
-(use-package flycheck-eglot
-  :demand t
-  :after (flycheck eglot)
-  :config
-  (global-flycheck-eglot-mode 1))
-
-(use-package apheleia
-  :demand t
-  :diminish apheleia
-  :config
-  (setf (alist-get 'nixfmt apheleia-formatters)
-	'("alejandra"))
-  (apheleia-global-mode +1))
-
-(use-package corfu
-  :demand t
-  :custom
-  (corfu-auto t)
-  (corfu-auto-delay 0.18)
-  (corfu-cycle t)
-  :hook
-  (after-init . global-corfu-mode)
-  :general-config
-  (:states '(insert)
-	   "C-j" nil
-	   "C-k" nil)
-  (:states '(normal visual insert) :keymaps 'corfu-mode-map
-	   "C-j" nil
-	   "C-k" nil
-	   "C-i" nil)
-  (:keymaps 'corfu-map
-	    "RET" nil
-	    "<up>" nil
-	    "<down>" nil
-	    "M-i" (lambda () (interactive) 
-		    (let ((current-prefix-arg t))
-		      (call-interactively #'corfu-info-documentation)))
-	    "C-j" #'corfu-next
-	    "C-k" #'corfu-previous
-	    "S-RET" #'corfu-complete
-	    "S-<return>" #'corfu-complete))
-
 (use-package rustic
   :diminish rustic-mode
   :mode ("\\.rs\\'" . rustic-mode)

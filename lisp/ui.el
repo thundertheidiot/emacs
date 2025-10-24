@@ -50,4 +50,33 @@
 					   (select-window (meow/intelligent-split t))
 					   (consult-buffer)))))
 
+(use-package corfu
+  :demand t
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.18)
+  (corfu-cycle t)
+  :hook
+  (after-init . global-corfu-mode)
+  :general-config
+  (:states '(insert)
+	   "C-j" nil
+	   "C-k" nil)
+  (:states '(normal visual insert) :keymaps 'corfu-mode-map
+	   "C-j" nil
+	   "C-k" nil
+	   "C-i" nil)
+  (:keymaps 'corfu-map
+	    "RET" nil
+	    "<up>" nil
+	    "<down>" nil
+	    "M-i" (lambda () (interactive)
+		    (let ((current-prefix-arg t))
+		      (call-interactively #'corfu-info-documentation)))
+	    "C-j" #'corfu-next
+	    "C-k" #'corfu-previous
+	    "S-RET" #'corfu-complete
+	    "S-<return>" #'corfu-complete))
+
 (provide 'meow/ui)
+;;; ui.el ends here
