@@ -19,71 +19,10 @@
 		(unless (frame-focus-state)
 		  (garbage-collect))))
 
-(setq use-short-answers t
-      native-comp-async-report-warnings-errors 'silent
-      indent-tabs-mode t
-      c-basic-offset 'tab-width
-      tab-width 4
-      gc-cons-threshold (* 8 1024 1024)
-      read-process-output-max (* 1024 1024)
 
-      ring-bell-function 'ignore ;; i hate that stupid bell
+;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; (global-set-key (kbd "ESC") 'keyboard-escape-quit)
 
-      inhibit-startup-screen t
-      inhibit-splash-screen t
-
-      display-line-numbers-type 'relative
-
-      backward-delete-char-untabify-method nil)
-
-(electric-indent-mode)
-(electric-pair-mode)
-(savehist-mode 1)
-
-(defun advice!-keyboard-escape-quit-adv (fun)
-  "Around advice for `keyboard-escape-quit' FUN.
-Preserve window configuration when pressing ESC."
-  (let ((buffer-quit-function (or buffer-quit-function #'ignore)))
-    (funcall fun)))
-(advice-add #'keyboard-escape-quit :around #'advice!-keyboard-escape-quit-adv)
-
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-(global-set-key (kbd "ESC") 'keyboard-escape-quit)
-
-(recentf-mode)
-(setq recentf-max-menu-items 1000
-      recentf-max-saved-items 1000)
-(run-at-time "5 min" 300 'recentf-save-list)
-
-(global-set-key (kbd "s-`") #'(lambda () (interactive) (insert "`")))
-
-(set-face-attribute 'default nil
-		    :family "Monospace"
-		    :height 90
-		    :weight 'regular)
-
-(set-face-attribute 'variable-pitch nil
-		    :font "Sans-Serif"
-		    :height 120
-		    :weight 'medium)
-
-(set-face-attribute 'fixed-pitch nil
-		    :font "Monospace"
-		    :weight 'medium)
-
-(set-face-attribute 'font-lock-comment-face nil
-		    :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil
-		    :slant 'italic)
-
-(add-to-list 'default-frame-alist '(font . "Monospace"))
-
-(setq-default line-spacing 0.12)
-
-(setq scroll-conservatively 10)
-(setq scroll-margin 7)
-(setq pixel-scroll-precision-large-scroll-height 40.0)
-(setq pixel-scroll-precision-use-momentum t)
 
 (use-package subr-x :ensure nil)
 
@@ -182,16 +121,9 @@ Preserve window configuration when pressing ESC."
     (ignore-errors (balance-windows (window-parent)))
     window))
 
-(use-package evil-surround
-  :config
-  (global-evil-surround-mode 1))
-
-(use-package which-key
-  :demand t
-  :diminish which-key-mode
-  :config
-  (which-key-setup-side-window-bottom)
-  (which-key-mode))
+;; (use-package evil-surround
+;;   :config
+;;   (global-evil-surround-mode 1))
 
 
 ;; (general-create-definer th/leader
@@ -205,97 +137,6 @@ Preserve window configuration when pressing ESC."
 ;;   :keymaps 'override
 ;;   :prefix "SPC l"
 ;;   :global-prefix "C-SPC l")
-
-(general-def :keymaps 'override
-  "M-x" 'execute-extended-command)
-
-(general-def :states '(normal visual motion) :keymaps 'override :prefix "SPC"
-  "w" '(:ignore t :wk "window")
-  "wh" '("move left" . windmove-left)
-  "wj" '("move down" . windmove-down)
-  "wk" '("move up" . windmove-up)
-  "wl" '("move right" . windmove-right)
-  "<left>" '("move left" . windmove-left)
-  "<down>" '("move down" . windmove-down)
-  "<up>" '("move up" . windmove-up)
-  "<right>" '("move right" . windmove-right)
-  "wq" '("close" . evil-quit)
-  "ww" '("close" . evil-quit)
-  "ws" '("horizontal split" . (lambda () (interactive) (select-window (th/intelligent-split t))))
-
-  "wc" '(:ignore t :wk "window configurations")
-  "wcl" '("load" . load-window-configuration)
-  "wcs" '("save" . save-window-configuration)
-  "wcn" '("new" . new-window-configuration)
-  
-  "H" '("increase window width" . (lambda () (interactive) (evil-window-increase-width 2)))
-  "J" '("increase window height" . (lambda () (interactive) (evil-window-increase-height 2)))
-  
-  "l" '(:ignore t :wk "local (mode specific)")
-  "s" '(:ignore t :wk "search")
-
-  "d" '("dired" . (lambda () (interactive)
-                    (when default-directory
-                      (select-window (th/intelligent-split t))
-                      (dired default-directory))))
-
-  "D" '("dired in current window" . (lambda () (interactive)
-				      (when default-directory
-					(dired default-directory))))
-
-  "o" '(:ignore t :wk "open")
-
-  ":" '("M-x" . execute-extended-command)
-  ";" '("M-x" . execute-extended-command)
-  "." '("find file" . find-file)
-  ">" '("find file from ~/" . (lambda () (interactive) (find-file (getenv "HOME"))))
-  
-  "h" '(:ignore t :wk "help")
-  "hb" '("describe binding" . describe-bindings)
-  "hf" '("describe function" . describe-function)
-  "hv" '("describe variable" . describe-variable)
-  "hF" '("describe face" . describe-face)
-  "hk" '("describe key" . describe-key)
-  "ha" '("describe" . apropos)
-  
-  "b" '(:ignore t :wk "buffer")
-  "bi" '("ibuffer" . ibuffer)
-  "bK" '("kill buffer" . kill-buffer)
-  "bk" '("kill this buffer" . kill-current-buffer)
-
-  "e" '(:ignore t :wk "emacs")
-  "ec" '("async shell command" . async-shell-command)
-  "er" '("eval region or line" . eval-region-and-go-to-normal-mode)
-  "eb" '("eval buffer" . eval-buffer)
-  "ee" '("eval expression" . eval-expression))
-
-(general-define-key
- :states '(normal visual)
- "gc" 'comment-or-uncomment-region-or-line
- "<up>" 'enlarge-window
- "<left>" 'shrink-window-horizontally
- "<right>" 'enlarge-window-horizontally
- "<down>" 'shrink-window
- ";" 'evil-ex
- "M-k" 'enlarge-window
- "M-h" 'shrink-window-horizontally
- "M-l" 'enlarge-window-horizontally
- "M-j" 'shrink-window
-
- "C-j" #'backward-sexp
- "C-k" #'forward-sexp
- "C-d" #'kill-sexp)
-
-(general-define-key
- "C-=" 'text-scale-increase
- "C--" 'text-scale-decrease
- "C-j" nil
- "<escape>" #'keyboard-quit
- "<escape>" #'keyboard-escape-quit
- "ESC" #'keyboard-quit
- "ESC" #'keyboard-escape-quit
- "<C-wheel-up>" 'text-scale-increase
- "<C-wheel-down>" 'text-scale-decrease)
 
 (use-package org
   :demand t
@@ -885,13 +726,6 @@ MPV is called with MPV-ARGS and MPD is called with MPD-ARGS."
   "m" '("media menu" . media-menu))
 
 (use-package separedit)
-
-(use-package ultra-scroll
-  :init
-  (setq scroll-conservatively 101 ; important!
-        scroll-margin 0) 
-  :config
-  (ultra-scroll-mode 1))
 
 (use-package tramp-sh
   :ensure nil ;; part of emacs

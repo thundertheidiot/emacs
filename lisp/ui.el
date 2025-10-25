@@ -7,9 +7,37 @@
 (scroll-bar-mode -1)
 
 (global-display-line-numbers-mode)
+(setq display-line-numbers-type 'relative)
 (global-visual-line-mode)
 
 (add-hook 'emacs-lisp-mode-hook #'prettify-symbols-mode)
+
+;; fonts
+(set-face-attribute 'default nil
+		    :family "Monospace"
+		    :height 100
+		    :weight 'regular)
+
+(set-face-attribute 'variable-pitch nil
+		    :font "Sans-Serif"
+		    :height 120
+		    :weight 'medium)
+
+(set-face-attribute 'fixed-pitch nil
+		    :font "Monospace"
+		    :weight 'medium)
+
+(set-face-attribute 'font-lock-comment-face nil
+		    :slant 'italic)
+(set-face-attribute 'font-lock-keyword-face nil
+		    :slant 'italic)
+
+(add-to-list 'default-frame-alist '(font . "Monospace"))
+
+(setq-default line-spacing 0.12)
+
+(setq scroll-conservatively 10)
+(setq scroll-margin 7)
 
 (use-package vertico
   :custom
@@ -81,6 +109,14 @@
 	    "C-k" #'corfu-previous
 	    "S-RET" #'corfu-complete
 	    "S-<return>" #'corfu-complete))
+
+;; keybinding helper
+(use-package which-key
+  :demand t
+  :diminish which-key-mode
+  :config
+  (which-key-setup-side-window-bottom)
+  (which-key-mode))
 
 ;; icons for corfu
 (use-package kind-icon

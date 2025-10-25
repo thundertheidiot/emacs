@@ -16,6 +16,7 @@
 (require 'meow/undo)
 (require 'meow/keybindings)
 (require 'meow/lsp)
+(require 'meow/misc)
 (require 'meow/programming)
 (require 'meow/lang/rust)
 (require 'meow/lang/c\#)

@@ -69,7 +69,96 @@
 
 ;; basic keybindings
 (meow/leader
-  "." '("find file" . find-file))
+  "w" '(:ignore t :wk "window")
+  "wh" '("move left" . windmove-left)
+  "wj" '("move down" . windmove-down)
+  "wk" '("move up" . windmove-up)
+  "wl" '("move right" . windmove-right)
+  "<left>" '("move left" . windmove-left)
+  "<down>" '("move down" . windmove-down)
+  "<up>" '("move up" . windmove-up)
+  "<right>" '("move right" . windmove-right)
+  "wq" '("close" . evil-quit)
+  "ww" '("close" . evil-quit)
+  "ws" '("horizontal split" . (lambda () (interactive) (select-window (th/intelligent-split t))))
+
+  "wc" '(:ignore t :wk "window configurations")
+  "wcl" '("load" . load-window-configuration)
+  "wcs" '("save" . save-window-configuration)
+  "wcn" '("new" . new-window-configuration)
+  
+  "H" '("increase window width" . (lambda () (interactive) (evil-window-increase-width 2)))
+  "J" '("increase window height" . (lambda () (interactive) (evil-window-increase-height 2)))
+  
+  "l" '(:ignore t :wk "local (mode specific)")
+  "s" '(:ignore t :wk "search")
+
+  "d" '("dired" . (lambda () (interactive)
+                    (when default-directory
+                      (select-window (th/intelligent-split t))
+                      (dired default-directory))))
+
+  "D" '("dired in current window" . (lambda () (interactive)
+				      (when default-directory
+					(dired default-directory))))
+
+  "o" '(:ignore t :wk "open")
+
+  ":" '("M-x" . execute-extended-command)
+  ";" '("M-x" . execute-extended-command)
+  "." '("find file" . find-file)
+  ">" '("find file from ~/" . (lambda () (interactive) (find-file (getenv "HOME"))))
+  
+  "h" '(:ignore t :wk "help")
+  "hb" '("describe binding" . describe-bindings)
+  "hf" '("describe function" . describe-function)
+  "hv" '("describe variable" . describe-variable)
+  "hF" '("describe face" . describe-face)
+  "hk" '("describe key" . describe-key)
+  "ha" '("describe" . apropos)
+  
+  "b" '(:ignore t :wk "buffer")
+  "bi" '("ibuffer" . ibuffer)
+  "bK" '("kill buffer" . kill-buffer)
+  "bk" '("kill this buffer" . kill-current-buffer)
+
+  "e" '(:ignore t :wk "emacs")
+  "ec" '("async shell command" . async-shell-command)
+  "er" '("eval region or line" . eval-region-and-go-to-normal-mode)
+  "eb" '("eval buffer" . eval-buffer)
+  "ee" '("eval expression" . eval-expression))
+
+(general-define-key
+ :states '(normal visual)
+ "gc" 'comment-or-uncomment-region-or-line
+ "<up>" 'enlarge-window
+ "<left>" 'shrink-window-horizontally
+ "<right>" 'enlarge-window-horizontally
+ "<down>" 'shrink-window
+ ";" 'evil-ex
+ "M-k" 'enlarge-window
+ "M-h" 'shrink-window-horizontally
+ "M-l" 'enlarge-window-horizontally
+ "M-j" 'shrink-window
+
+ "C-j" #'backward-sexp
+ "C-k" #'forward-sexp
+ "C-d" #'kill-sexp)
+
+(general-define-key
+ "C-=" 'text-scale-increase
+ "C--" 'text-scale-decrease
+ "C-j" nil
+ "<escape>" #'keyboard-quit
+ "<escape>" #'keyboard-escape-quit
+ "ESC" #'keyboard-quit
+ "ESC" #'keyboard-escape-quit
+ "<C-wheel-up>" 'text-scale-increase
+ "<C-wheel-down>" 'text-scale-decrease)
+
+(general-def :keymaps 'override
+  "M-x" 'execute-extended-command)
+
 
 (provide 'meow/keybindings)
 ;;; keybindings.el ends here
