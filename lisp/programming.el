@@ -9,6 +9,12 @@
     "cn" '("next error" . flycheck-next-error)
     "cN" '("previous error" . flycheck-previous-error)))
 
+(use-package consult-flycheck
+  :general
+  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
+	   "sd" '("flycheck" . consult-flycheck)
+	   ))
+
 (use-package flycheck-eglot
   :demand t
   :after (flycheck eglot)
@@ -59,11 +65,15 @@
   :config
   (global-hl-todo-mode 1))
 
-(use-package yasnippet
-  :custom
-  (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
-  :config
-  (yas-global-mode 1))
+;; (use-package yasnippet
+;;   :custom
+;;   (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
+;;   :config
+;;   (yas-global-mode 1))
+
+(use-package envrc
+  :demand t
+  :hook (after-init . envrc-global-mode))
 
 (provide 'meow/programming)
 ;;; programming.el ends here

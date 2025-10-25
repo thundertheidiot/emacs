@@ -44,4 +44,41 @@ Preserve window configuration when pressing ESC."
   :config
   (ultra-scroll-mode 1))
 
+(defun add-to-load-path (package)
+  "Add `package' from your flake to load-path"
+  (let ((path "/home/thunder/nixdots")
+	(hostname (substring (shell-command-to-string "hostname") 0 -1))
+	(username (substring (shell-command-to-string "whoami") 0 -1)))
+    (with-temp-buffer
+      (let ((exit-code (call-process "nix" nil (list t nil) nil
+				     "build"
+				     "--print-out-paths"
+				     "--impure"
+				     "--expr"
+				     (format
+				      (concat
+				       "let "
+				       "flake = builtins.getFlake (builtins.toString \"%s\");"
+				       "epkgsFor = flake.nixosConfigurations.\"%s\".pkgs.emacsPackagesFor;"
+				       "emacs = flake.nixosConfigurations.\"%s\".config.home-manager.users.\"%s\".programs.emacs.package;"
+				       "in (epkgsFor emacs).\"%s\"")
+				      path
+				      hostname
+				      hostname
+				      username
+				      package))))
+	(if (eq exit-code 0)
+	    (let* ((store-path (substring (buffer-string) 0 -1))
+		   (path (concat store-path "/share/emacs/site-lisp"))
+		   (files (directory-files-recursively path "\\.elc?$"))
+		   (directories (mapcar
+				 (lambda (file) (file-name-directory file))
+				 files))
+		   (final-list (delete-dups directories)))
+	      (mapc (lambda (path)
+		      (add-to-list 'load-path path))
+		    final-list)
+	      (message (format "Added %s to load path" final-list)))
+	  (message "Nix process failed"))))))
+
 (provide 'meow/misc)

@@ -242,45 +242,6 @@
   :config
   (evil-collection-pdf-setup))
 
-
-;; (use-package puni
-;;   :config
-;;   (puni-global-mode)
-;;   :general-config
-;;   (:states '(normal visual) :keymaps 'override))
-
-;; (use-package smartparens
-;;   :demand t
-;;   :diminish smartparens-mode
-;;   :config
-;;   (smartparens-global-mode)
-;;   :general-config
-;;   (:states '(normal visual) :keymaps 'override
-;; 	   "C-h" #'sp-backward-sexp
-;; 	   "C-k" #'sp-up-sexp
-;; 	   "C-j" #'sp-down-sexp
-;; 	   "C-l" #'sp-next-sexp
-;; 	   "C-y" #'sp-copy-sexp
-;; 	   )
-;;   )
-
-;; (use-package evil-smartparens
-;;   :hook (smartparens-enabled . evil-smartparens-mode))
-
-(use-package rainbow-delimiters
-  :diminish rainbow-delimiters-mode
-  :hook
-  (prog-mode . rainbow-delimiters-mode)
-  (org-mode . rainbow-delimiters-mode))
-
-(use-package envrc
-  :demand t
-  :hook (after-init . envrc-global-mode))
-
-;; (use-package inheritenv
-;;   :config
-;;   (inheritenv-add-advice 'shell-command-to-string))
-
 (defun th/vterm (&optional projectile)
   (if projectile
       (projectile-run-vterm t)
@@ -473,87 +434,6 @@
   (throw 'eshell-terminal t))
 (defalias 'eshell/e 'eshell/exit)
 
-(use-package consult-flycheck
-  :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "sd" '("flycheck" . consult-flycheck)
-	   ))
-
-(defun advice!-consult-exwm-preview-fix (&rest _args)
-  "Kludge to stop EXWM buffers from stealing focus during Consult previews."
-  (when (derived-mode-p 'exwm-mode)
-    (when-let ((mini (active-minibuffer-window)))
-      (select-window (active-minibuffer-window)))))
-
-(advice-add
- #'consult--buffer-preview :after #'advice!-consult-exwm-preview-fix)
-
-(defun advice!-consult-grep-evil-search-history (ret)
-  "Add the selected item to the evil search history."
-  (when ret ;; return value is nil if you quit early
-    (let ((search (if (string= (substring (car consult--grep-history) 0 1) "#")
-		      (substring (car consult--grep-history) 1 nil)
-		    (car consult--grep-history))))
-      (add-to-history 'regexp-search-ring search)
-      (add-to-history 'evil-ex-search-history search)
-      (setq evil-ex-search-pattern (list search t t))
-      (setq evil-ex-search-direction 'forward))
-    ret))
-(advice-add 'consult--grep :filter-return #'advice!-consult-grep-evil-search-history)
-
-(defun advice!-consult-line-evil-search-history (ret)
-  "Add the selected item to the evil search history."
-  (when ret ;; return value is nil if you quit early
-    (let ((search (car consult--line-history)))
-      (add-to-history 'regexp-search-ring search)
-      (add-to-history 'evil-ex-search-history search)
-      (setq evil-ex-search-pattern (list search t t))
-      (setq evil-ex-search-direction 'forward))
-    ret))
-(advice-add 'consult-line :filter-return #'advice!-consult-line-evil-search-history)
-
-(use-package wgrep)
-
-(use-package embark
-  ;; :after wgrep
-  :demand t
-  :general-config
-  (
-   "C-;" #'embark-act
-   "C-a" #'embark-select))
-
-(use-package embark-consult
-  :after embark
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
-
-(use-package orderless
-  :demand t
-  :after (vertico consult)
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
-
-(use-package marginalia
-  :demand t
-  :config
-  (marginalia-mode))
-
-(defun advice!-crm-indicator (args)
-  (cons (format "[CRM%s] %s"
-		(replace-regexp-in-string
-		 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-		 crm-separator)
-		(car args))
-	(cdr args)))
-(advice-add #'completing-read-multiple :filter-args #'advice!-crm-indicator)
-
-(setq minibuffer-prompt-properties '(read-only t cursor-intangible-mode t face minibuffer-prompt)
-      enable-recursive-minibuffers t)
-
-(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
 (general-def :states '(normal visual motion) :keymaps 'override :prefix "SPC"
   "m" '(:ignore t :wk "media"))
 
@@ -582,11 +462,7 @@
 	    "RET" 'empv-youtube-results-play-current)
   :init 
   (setq empv-invidious-instance "https://yewtu.be/api/v1")
-  (setq empv-volume-step 3)
-  (setq empv-radio-channels '(("nowhere.moe Cyberia" . "https://radio.nowhere.moe/radio/cyberia.mp3")
-			      ("nowhere.moe Focus" . "https://radio.nowhere.moe/radio/focus.mp3")
-			      ("nowhere.moe Nihilism" . "https://radio.nowhere.moe/radio/nihilism.mp3")
-			      ("nowhere.moe Psychedelia" . "https://radio.nowhere.moe/radio/psychedelia.mp3"))))
+  (setq empv-volume-step 3))
 
 (defun eshell/yt (&rest args)
   (empv-youtube (mapconcat (lambda (s) (format "%s " s)) args)))

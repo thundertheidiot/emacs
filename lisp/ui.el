@@ -82,6 +82,71 @@
 					   (select-window (meow/intelligent-split t))
 					   (consult-buffer)))))
 
+(defun advice!-consult-grep-evil-search-history (ret)
+  "Add the selected item to the evil search history."
+  (when ret ;; return value is nil if you quit early
+    (let ((search (if (string= (substring (car consult--grep-history) 0 1) "#")
+		      (substring (car consult--grep-history) 1 nil)
+		    (car consult--grep-history))))
+      (add-to-history 'regexp-search-ring search)
+      (add-to-history 'evil-ex-search-history search)
+      (setq evil-ex-search-pattern (list search t t))
+      (setq evil-ex-search-direction 'forward))
+    ret))
+(advice-add 'consult--grep :filter-return #'advice!-consult-grep-evil-search-history)
+
+(defun advice!-consult-line-evil-search-history (ret)
+  "Add the selected item to the evil search history."
+  (when ret ;; return value is nil if you quit early
+    (let ((search (car consult--line-history)))
+      (add-to-history 'regexp-search-ring search)
+      (add-to-history 'evil-ex-search-history search)
+      (setq evil-ex-search-pattern (list search t t))
+      (setq evil-ex-search-direction 'forward))
+    ret))
+(advice-add 'consult-line :filter-return #'advice!-consult-line-evil-search-history)
+
+(use-package wgrep)
+(use-package embark
+  ;; :after wgrep
+  :demand t
+  :general-config
+  ("C-;" #'embark-act
+   "C-a" #'embark-select))
+
+(use-package embark-consult
+  :after embark
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package orderless
+  :demand t
+  :after (vertico consult)
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package marginalia
+  :demand t
+  :config
+  (marginalia-mode))
+
+(defun advice!-crm-indicator (args)
+  (cons (format "[CRM%s] %s"
+		(replace-regexp-in-string
+		 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+		 crm-separator)
+		(car args))
+	(cdr args)))
+(advice-add #'completing-read-multiple :filter-args #'advice!-crm-indicator)
+
+(setq minibuffer-prompt-properties '(read-only t cursor-intangible-mode t face minibuffer-prompt)
+      enable-recursive-minibuffers t)
+
+(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+
 (use-package corfu
   :demand t
   :custom
@@ -153,6 +218,13 @@
   (ligature-set-ligatures 'prog-mode
 			  '("==" "===" "!=" "!==" "&&" "||"))
   (global-ligature-mode t))
+
+(use-package rainbow-delimiters
+  :diminish rainbow-delimiters-mode
+  :hook
+  (prog-mode . rainbow-delimiters-mode)
+  (org-mode . rainbow-delimiters-mode))
+
 
 ;; icons
 (use-package all-the-icons)
