@@ -242,54 +242,12 @@
   :config
   (evil-collection-pdf-setup))
 
-(use-package projectile
-  :diminish projectile-mode
-  :commands (projectile-run-eshell projectile-run-vterm)
-  :custom
-  (projectile-switch-project-action #'projectile-dired)
-  :config
-  (projectile-mode)
-  :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "P" '(:keymap projectile-command-map :package projectile)
-	   "p" '(:ignore t :package projectile :wk "project")
-	   "pp" '("switch project" . projectile-switch-project)
-	   "ps" '("search project" . (lambda () (interactive) (consult-ripgrep (projectile-project-root))))
-	   "p." '("find project file" . projectile-find-file)
-	   "po" '(:ignore t :wk "open")
-	   "pog" '("project version control (git)" . projectile-vc)
-	   "pb" '("switch buffer in project" . projectile-switch-to-buffer)))
 
-(use-package ibuffer-projectile
-  :hook
-  (ibuffer-mode . (lambda () (ibuffer-projectile-set-filter-groups)
-		    (unless (eq ibuffer-sorting-mode 'alphabetic)
-		      (ibuffer-do-sort-by-alphabetic)))))
-
-(use-package hl-todo
-  :demand t
-  :diminish hl-todo-mode
-  :diminish global-hl-todo-mode
-  :custom
-  (hl-todo-keyword-faces '(("TODO" . ,(face-attribute 'error :foreground))
-			   ("HACK" . ,(face-attribute 'warning :foreground))
-			   ("NOTE" . ,(face-attribute 'match :foreground))
-			   ("FIXME" . ,(face-attribute 'error :foreground))))
-  :config
-  (global-hl-todo-mode 1))
-
-(use-package yasnippet
-  :custom
-  (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
-  :config
-  (yas-global-mode 1))
-
-
-(use-package puni
-  :config
-  (puni-global-mode)
-  :general-config
-  (:states '(normal visual) :keymaps 'override))
+;; (use-package puni
+;;   :config
+;;   (puni-global-mode)
+;;   :general-config
+;;   (:states '(normal visual) :keymaps 'override))
 
 ;; (use-package smartparens
 ;;   :demand t
