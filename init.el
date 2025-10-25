@@ -21,6 +21,8 @@
 (require 'meow/lang/c\#)
 (require 'meow/lang/misc)
 (require 'meow/git)
+(require 'meow/mode-line)
 (require 'meow/ui)
+(require 'meow/ai)
 (require 'meow/dump)
 ;;; init.el ends here

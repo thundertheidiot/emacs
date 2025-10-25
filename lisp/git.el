@@ -46,9 +46,10 @@
   (diff-hl-update-async t)
   (vc-git-diff-switches '("--histogram"))
   :config
+  (require 'diff-hl-autoloads)
   (require 'diff-hl-dired)
-  (require 'diff-hl-flydiff)
   (require 'diff-hl-margin)
+  (require 'diff-hl-flydiff)
   (advice-add 'diff-hl-next-hunk :around #'advice!diff-hl-next-hunk-loop-around)
   (global-diff-hl-mode +1)
   (mapc (lambda (f) 

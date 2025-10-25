@@ -482,34 +482,6 @@ Preserve window configuration when pressing ESC."
 ;;   :config
 ;;   (inheritenv-add-advice 'shell-command-to-string))
 
-(use-package gptel
-  :custom
-  (gptel-model 'gpt-4.1)
-  :config
-  (setq gptel-backend (gptel-make-gh-copilot "Copilot"))
-  (add-to-list 'gptel-tools
-	       (gptel-make-tool
-		:function (lambda (query)
-			    (with-temp-message (format "Searching for: `%s`" query)
-			      ;; provided by nixos
-			      (let ((url (format "http://127.0.0.1:8080/search?q=%s&format=json"
-						 (url-hexify-string query))))
-				(with-temp-buffer
-				  (url-insert-file-contents url)
-				  (let ((json-response (json-read)))
-				    (mapconcat (lambda (result)
-						 (format "%s - %s\n%s" (cdr (assoc 'title result)) (cdr (assoc 'url result)) (cdr (assoc 'content result))))
-					       (cdr (assoc 'results json-response))
-					       "\n\n"))))))
-		:name "search_web"
-		:description "Searches the web using SearXNG metasearch engine and returns formatted results including titles, URLs, and content excerpts."
-		:args (list
-		       '(:name "query"
-			       :type string
-			       :description "The search query to execute against the search engine."))
-		:category "web"
-		:include t)))
-
 (defun th/vterm (&optional projectile)
   (if projectile
       (projectile-run-vterm t)
@@ -968,139 +940,11 @@ MPV is called with MPV-ARGS and MPD is called with MPD-ARGS."
     (funcall func)
     (setq th/first-server-frame-created t)))
 
-(use-package solaire-mode
-  :hook
-  (after-init . (lambda ()
-		  (when (display-graphic-p) (solaire-global-mode +1))))
-  (server-after-make-frame . (lambda ()
-			       (when (display-graphic-p) (solaire-global-mode +1)))))
 
-(use-package nyan-mode
-  :custom
-  (nyan-animate-nyancat t)
-  (nyan-wavy-trail t))
-
-(defun th/mode-line ()
-  (dolist (face '(mode-line mode-line-active mode-line-inactive))
-    (setf (alist-get face solaire-mode-remap-alist) nil))
-
-  (set-face-attribute 'mode-line-active nil :inherit 'mode-line-inactive :foreground (face-attribute 'default :foreground))
-  
-  (mapc (lambda (face)
-	  (set-face-attribute face nil
-			      :box `(:line-width (1 . 10) :color ,(face-background face nil t) :style nil)
-			      :height 110))
-	'(mode-line-active mode-line-inactive))
-
-  (setq mode-line-format nil)
-  (kill-local-variable 'mode-line-format)
-  (force-mode-line-update)
-
-  (let* ((default-face `(:foreground ,(face-attribute 'default :foreground)))
-	 (okay-face `(:foreground ,(face-attribute 'match :foreground)))
-	 (error-face `(:foreground ,(face-attribute 'error :foreground)))
-	 (warning-face `(:foreground ,(face-attribute 'warning :foreground)))
-	 (emphasize-face `(:foreground ,(face-attribute 'font-lock-keyword-face :foreground)))
-
-	 (envrc-none (propertize "" 'face default-face))
-	 (envrc-on (propertize "" 'face okay-face))
-	 (envrc-error (propertize "" 'face error-face)))
-    (setq-default mode-line-format
-		  `(
-		    "   "
-		    (:eval
-		     (propertize "%b" 'face 'bold))
-		    "   L%l   " ;; line number
-
-		    (:eval
-		     (when (file-remote-p default-directory)
-		       (let* ((vec (tramp-dissect-file-name default-directory))
-			      (user (or (tramp-file-name-user vec) ""))
-			      (host (tramp-file-name-host vec)))
-			 (propertize (format "%s@%s   " user host) 'face ,emphasize-face))))
-
-		    (:eval
-		     (pcase envrc--status
-		       ('none ,envrc-none)
-		       ('on ,envrc-on)
-		       (_ ,envrc-error)))
-
-		    "   "
-		    
-		    (:eval
-		     (when (and (not (file-remote-p default-directory)) (magit-toplevel))
-		       (propertize (format "  %s   " (magit-get-current-branch)) 'face ',emphasize-face)))
-		    
-		    (eglot--managed-mode eglot--mode-line-format "")
-		    (eglot--managed-mode "   " "")
-		    
-		    (flycheck-mode
-		     (:eval
-		      (when (and (eq flycheck-last-status-change 'finished))
-			(let-alist (flycheck-count-errors flycheck-current-errors)
-			  (concat
-			   (when (and (not .error) (not .warning:?) (not .warning))
-			     (propertize "" 'face ',okay-face))
-			   (when .error
-			     (propertize (format " %s" .error) 'face ',error-face))
-			   (when (or .warning:? .warning)
-			     (propertize (format "%s %s" (if .error " " "") (+ (or .warning:? 0) (or .warning 0))) 'face ',warning-face))))))
-		     
-		     "")
-
-		    (flycheck-mode "   " "")
-
-		    ;; "%="
-		    (:eval (nyan-create))))))
-
-(add-hook 'enable-theme-functions
-	  (lambda (_theme) (th/mode-line)))
 
 ;; (add-hook 'window-setup-hook #'th/mode-line)
 ;; (add-hook 'server-after-make-frame-hook #'th/mode-line)
 
-(use-package doom-themes
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-  :config
-  (load-theme 'doom-vibrant t)
-  (doom-themes-org-config))
-
-(use-package ligature
-  :config
-  (ligature-set-ligatures 'prog-mode
-			  '("==" "===" "!=" "!==" "&&" "||"))
-  (global-ligature-mode t))
-
-(use-package all-the-icons)
-
-(use-package kind-icon
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-(defun th--ati-dired ()
-  (when (display-graphic-p)
-    (th--unless-first-server-frame-created
-     (lambda () (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))))
-(use-package all-the-icons-dired
-  :after all-the-icons
-  :diminish all-the-icons-dired-mode
-  :hook (dired-mode . (lambda ()
-			(when (display-graphic-p)
-			  (all-the-icons-dired-mode)))))
-
-(defun th--ati-ibuffer ()
-  (when (display-graphic-p)
-    (th--unless-first-server-frame-created
-     (lambda () (add-hook 'ibuffer-mode-hook #'all-the-icons-ibuffer-mode)))))
-(use-package all-the-icons-ibuffer
-  :after all-the-icons
-  :diminish all-the-icons-ibuffer-mode
-  :hook (ibuffer-mode . (lambda ()
-			  (when (display-graphic-p)
-			    (all-the-icons-ibuffer-mode)))))
 
 ;; TODO implement conditional system
 ;; (use-package dmenu

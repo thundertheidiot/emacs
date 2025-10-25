@@ -1,9 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow/helpers "helpers")
 
+;; disable some useless default features
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+
 (global-display-line-numbers-mode)
 (global-visual-line-mode)
 
@@ -14,7 +16,7 @@
   (vertico-resize t)
   (vertico-cycle nil)
   :config
-  (require 'vertico-directory)
+  (require 'vertico-autoloads)
   (vertico-mode)
   :general-config
   (:keymaps 'vertico-map :states '(normal visual)
@@ -37,6 +39,8 @@
 (use-package consult
   :custom
   (consult-line-start-from-top nil)
+  :config
+  (require 'consult-autoloads)
   :general-config
   (meow/leader
     "sg" '("grep" . (lambda () (interactive)
@@ -77,6 +81,59 @@
 	    "C-k" #'corfu-previous
 	    "S-RET" #'corfu-complete
 	    "S-<return>" #'corfu-complete))
+
+;; icons for corfu
+(use-package kind-icon
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; theme
+(use-package doom-themes
+  :custom
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
+  :hook
+  (after-init . (lambda ()
+		  (load-theme 'doom-Iosvkem t)))
+  (server-after-make-frame . (lambda ()
+			       (load-theme 'doom-Iosvkem t)))
+  :config
+  (require 'doom-themes-autoloads)
+  (doom-themes-org-config))
+
+;; color frames differently
+(use-package solaire-mode
+  :hook
+  (after-init . (lambda ()
+		  (when (display-graphic-p)
+		    (solaire-global-mode +1))))
+  (server-after-make-frame . (lambda ()
+			       (when (display-graphic-p)
+				 (solaire-global-mode +1)))))
+
+(use-package ligature
+  :config
+  (ligature-set-ligatures 'prog-mode
+			  '("==" "===" "!=" "!==" "&&" "||"))
+  (global-ligature-mode t))
+
+;; icons
+(use-package all-the-icons)
+
+;; icons for dired
+(use-package all-the-icons-dired
+  :after all-the-icons
+  :hook (dired-mode . (lambda ()
+			(when (display-graphic-p)
+			  (all-the-icons-dired-mode)))))
+
+;; icons for ibuffer
+(use-package all-the-icons-ibuffer
+  :after all-the-icons
+  :hook (ibuffer-mode . (lambda ()
+			  (when (display-graphic-p)
+			    (all-the-icons-ibuffer-mode)))))
 
 (provide 'meow/ui)
 ;;; ui.el ends here
