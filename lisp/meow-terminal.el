@@ -40,9 +40,41 @@
     (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
       (call-interactively 'evil-change))))
 
+;; (defun meow/vterm-process-finished (buffer _event)
+;;   (when (buffer-live-p buffer)
+;;     (let ((inhibit-read-only t)
+;; 	  (content (buffer-string)))
+;;       (goto-char (point-max))
+
+;;       (kill-local-variable 'change-major-mode-hook)
+;;       ;; (message content)
+;;       (fundamental-mode)
+;;       ;; (erase-buffer)
+;;       ;; (insert content)
+
+;;       ;; clean up white space
+;;       (skip-chars-backward "\n\r\t ")
+;;       (delete-region (point) (point-max))
+
+;;       (insert "\n\n")
+;;       (insert (propertize "Process finished." 'face
+;; 			  `(:foreground ,(face-attribute 'font-lock-keyword-face :foreground)
+;; 					:weight bold
+;; 					:height 1.2)))
+;;       (goto-char (point-max))
+
+;;       (when-let* ((window (get-buffer-window buffer)))
+;; 	(set-window-point window (point-max)))
+;;       )))
+
 (use-package vterm
   :hook (vterm-mode . meow/turn-off-line-numbers)
   :commands (vterm)
+  :custom
+  (vterm-kill-buffer-on-exit nil)
+  (vterm-max-scrollback 100000)
+  ;; :config
+  ;; (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
 	   "ov" '((lambda () (interactive)
@@ -120,7 +152,8 @@
   (add-to-list 'eshell-modules-list 'eshell-elecslash)
   (add-to-list 'eshell-modules-list 'eshell-tramp)
 
-  (setq eshell-visual-commands '("nix"
+  (setq eshell-visual-commands '(
+				 "nix"
 				 "nix-build"
 				 "nixos-rebuild"
 				 "nh"
