@@ -3,10 +3,6 @@
   :mode "\\.hs\\'"
   :hook (haskell-mode . eglot-ensure))
 
-(use-package nix-mode
-  :mode "\\.nix\\'"
-  :hook (nix-mode . eglot-ensure))
-
 (use-package lua-mode
   :mode "\\.lua\\'"
   :hook (lua-mode . eglot-ensure))
