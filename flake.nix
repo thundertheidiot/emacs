@@ -6,6 +6,10 @@
   inputs.home-manager.url = "github:nix-community/home-manager";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+  # not sure if aly's fork does much, but it was apparently important for her
+  # https://github.com/nialov/actions.nix/compare/master...alyraffauf:actions.nix:master
+  inputs.actions.url = "github:alyraffauf/actions.nix";
+
   inputs = {
     eglot-booster = {
       url = "github:jdtsmith/eglot-booster";
@@ -29,6 +33,8 @@
 
       imports = [
         inputs.home-manager.flakeModules.home-manager
+        inputs.actions.flakeModules.default
+        ./nix/actions.nix
       ];
 
       flake.homeModules = {
