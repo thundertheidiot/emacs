@@ -20,4 +20,4 @@
 (add-hook 'emacs-lisp-mode-hook #'corfu-mode)
 
 (provide 'lang/meow-misc)
-;;; misc.el ends here
+;;; meow-misc.el ends here

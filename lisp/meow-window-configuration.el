@@ -58,4 +58,4 @@ If NAME is provided, name it."
 	      meow/saved-window-configurations)))
 
 (provide 'meow-window-configuration)
-;;; window-configuration.el ends here
+;;; meow-window-configuration.el ends here

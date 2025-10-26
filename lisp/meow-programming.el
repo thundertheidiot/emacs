@@ -23,14 +23,12 @@
 
 (use-package apheleia
   :demand t
-  :diminish apheleia
   :config
   (setf (alist-get 'nixfmt apheleia-formatters)
 	'("alejandra"))
   (apheleia-global-mode +1))
 
 (use-package projectile
-  :diminish projectile-mode
   :commands (projectile-run-eshell projectile-run-vterm)
   :custom
   (projectile-switch-project-action #'projectile-dired)
@@ -55,8 +53,6 @@
 
 (use-package hl-todo
   :demand t
-  :diminish hl-todo-mode
-  :diminish global-hl-todo-mode
   :custom
   (hl-todo-keyword-faces '(("TODO" . ,(face-attribute 'error :foreground))
 			   ("HACK" . ,(face-attribute 'warning :foreground))
@@ -76,4 +72,4 @@
   :hook (after-init . envrc-global-mode))
 
 (provide 'meow-programming)
-;;; programming.el ends here
+;;; meow-programming.el ends here

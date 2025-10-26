@@ -1,6 +1,5 @@
 ;; -*- lexical-binding: t; -*-
 (use-package rustic
-  :diminish rustic-mode
   :mode ("\\.rs\\'" . rustic-mode)
   :hook (rustic-mode . eglot-ensure)
   :init
@@ -9,4 +8,4 @@
 	compilation-ask-about-save nil))
 
 (provide 'lang/meow-rust)
-;;; rust.el ends here
+;;; meow-rust.el ends here

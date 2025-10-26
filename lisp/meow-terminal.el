@@ -41,7 +41,7 @@
       (call-interactively 'evil-change))))
 
 (use-package vterm
-  :hook (vterm-mode . th/turn-off-line-numbers)
+  :hook (vterm-mode . meow/turn-off-line-numbers)
   :commands (vterm)
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
@@ -128,7 +128,7 @@
 				 "btop"
 				 "htop"))
   :hook
-  (eshell-mode . th/turn-off-line-numbers)
+  (eshell-mode . meow/turn-off-line-numbers)
   (eshell-mode . fish-completion-mode)
   :general-config
   (:states '(normal visual) :keymaps 'eshell-mode-map
@@ -184,6 +184,7 @@
 	  
 	  (setq-local eshell-nix-shell-active t))))))
 
+(use-package pcre2el)
 (defmacro re (&rest rx-sexp) ;; Stolen from https://youtube.com/watch?v=9xLeqwl_7n0
   "Convert rx expression RX-SEXP to pcre compatible regexp."
   `(rxt-elisp-to-pcre (rx ,@rx-sexp)))
@@ -198,4 +199,4 @@
 (defalias 'eshell/e 'eshell/exit)
 
 (provide 'meow-terminal)
-;;; termina.el ends here
+;;; meow-terminal.el ends here

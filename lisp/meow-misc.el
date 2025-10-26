@@ -84,4 +84,54 @@ Preserve window configuration when pressing ESC."
 	      (message (format "Added %s to load path" final-list)))
 	  (message "Nix process failed"))))))
 
+(use-package tramp-sh
+  :ensure nil ;; part of emacs
+  :config
+  (setq tramp-remote-path
+	(append tramp-remote-path
+ 		'(tramp-own-remote-path))))
+
+(use-package dired
+  :ensure nil
+  :demand t
+  :hook (dired-mode . hl-line-mode)
+  :hook (dired-mode . auto-revert-mode)
+  :custom
+  (dired-dwim-target t)
+  (dired-mouse-drag-files t)
+  (dired-listing-switches "-alh")
+  :general-config
+  (:keymaps 'dired-mode-map :states '(normal insert visual motion)
+	    "SPC" nil
+	    "q" 'evil-quit
+	    "<backspace>" 'dired-up-directory
+	    "C-<return>" (lambda () (interactive) (empv-play (dired-get-filename))))
+  (:keymaps 'dired-mode-map :states '(normal visual motion) :prefix "SPC"
+	    "oe" '("eshell in this window" . (lambda () (interactive) (meow/eshell))))
+  :config
+  (unless (display-graphic-p)
+    (general-def dired-mode-map "DEL" 'dired-up-directory)))
+
+(use-package dired-du)
+
+;; open media files in mpv
+(use-package openwith
+  :custom
+  (openwith-associations `((,(rx nonl (or ".mkv"
+					  ".mp4"
+					  ".mov"
+					  ".webm"))
+			    . ("mpv" (file)))))
+  :config
+  (openwith-mode))
+
+;; view pdfs
+(use-package pdf-tools
+  :after evil-collection
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :config
+  (evil-collection-pdf-setup))
+
 (provide 'meow-misc)
+;;; meow-misc.el ends here

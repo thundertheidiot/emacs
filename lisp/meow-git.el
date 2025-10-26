@@ -39,7 +39,6 @@
 
 (use-package diff-hl
   :demand t
-  :diminish diff-hl-mode
   :custom
   (diff-hl-show-staged-changes nil)
   (diff-hl-global-modes '(not image-mode pdf-view-mode))
@@ -99,4 +98,4 @@
   (global-emsg-blame-mode t))
 
 (provide 'meow-git)
-;;; git.el ends here
+;;; meow-git.el ends here

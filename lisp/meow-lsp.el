@@ -15,13 +15,13 @@
 	      eglot-server-programs nil nil #'equal) '("OmniSharp" "-lsp"))
   :general-config
   (meow/leader
-   "c" '(:ignore t :wk "code")
-   "ca" '("code actions" . (lambda () (interactive)
-			     (eglot-code-actions 1 (point-max) nil t)))))
+    "c" '(:ignore t :wk "code")
+    "ca" '("code actions" . (lambda () (interactive)
+			      (eglot-code-actions 1 (point-max) nil t)))))
 
 (use-package eglot-booster
   :after eglot
   :config (eglot-booster-mode))
 
 (provide 'meow-lsp)
-;;; lsp.el ends here
+;;; meow-lsp.el ends here

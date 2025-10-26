@@ -178,7 +178,6 @@
 ;; keybinding helper
 (use-package which-key
   :demand t
-  :diminish which-key-mode
   :config
   (which-key-setup-side-window-bottom)
   (which-key-mode))
@@ -220,7 +219,6 @@
   (global-ligature-mode t))
 
 (use-package rainbow-delimiters
-  :diminish rainbow-delimiters-mode
   :hook
   (prog-mode . rainbow-delimiters-mode)
   (org-mode . rainbow-delimiters-mode))
@@ -244,4 +242,4 @@
 			    (all-the-icons-ibuffer-mode)))))
 
 (provide 'meow-ui)
-;;; ui.el ends here
+;;; meow-ui.el ends here

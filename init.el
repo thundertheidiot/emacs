@@ -11,6 +11,10 @@
 (use-package emsg-blame)
 (use-package diff-hl)
 
+;; libraries that are useful for elisp programming
+(use-package dash)
+(use-package plz)
+
 (require 'meow-helpers)
 (require 'meow-cleanup)
 (require 'meow-undo)
@@ -27,5 +31,7 @@
 (require 'meow-terminal)
 (require 'meow-ui)
 (require 'meow-ai)
+(require 'meow-org)
+(require 'meow-media)
 (require 'meow-dump)
 ;;; init.el ends here

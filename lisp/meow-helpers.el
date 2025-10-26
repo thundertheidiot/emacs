@@ -42,4 +42,8 @@
     (eval-region beg end)
     (evil-normal-state)))
 
+(defun meow/turn-off-line-numbers ()
+  "Turn off line numbers 🤯."
+  (display-line-numbers-mode 0))
+
 (provide 'meow-helpers)
