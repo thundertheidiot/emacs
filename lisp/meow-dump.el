@@ -524,4 +524,4 @@ MPV is called with MPV-ARGS and MPD is called with MPD-ARGS."
 ;;       (exwm-randr-mode 1)
 ;;       (exwm-enable)
 ;;       (exwm-systemtray-mode 1))))
-(provide 'meow/dump)
+(provide 'meow-dump)

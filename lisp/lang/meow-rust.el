@@ -8,5 +8,5 @@
 	rustic-use-rust-save-some-buffers t
 	compilation-ask-about-save nil))
 
-(provide 'meow/lang/rust)
+(provide 'lang/meow-rust)
 ;;; rust.el ends here

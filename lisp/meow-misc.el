@@ -84,4 +84,4 @@ Preserve window configuration when pressing ESC."
 	      (message (format "Added %s to load path" final-list)))
 	  (message "Nix process failed"))))))
 
-(provide 'meow/misc)
+(provide 'meow-misc)

@@ -98,5 +98,5 @@
   :config
   (global-emsg-blame-mode t))
 
-(provide 'meow/git)
+(provide 'meow-git)
 ;;; git.el ends here

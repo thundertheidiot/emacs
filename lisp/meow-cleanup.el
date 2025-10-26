@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t; -*-
-(require 'meow/helpers "helpers")
+(require 'meow-helpers)
 
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "backup-files" user-emacs-directory))))
@@ -11,4 +11,4 @@
 
 (setq create-lockfiles nil)
 
-(provide 'meow/cleanup)
+(provide 'meow-cleanup)

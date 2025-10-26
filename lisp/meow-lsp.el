@@ -23,5 +23,5 @@
   :after eglot
   :config (eglot-booster-mode))
 
-(provide 'meow/lsp)
+(provide 'meow-lsp)
 ;;; lsp.el ends here

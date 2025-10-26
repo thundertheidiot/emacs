@@ -27,4 +27,4 @@
     "s" #'tmc-submit
     "r" #'dotnet-run))
 
-(provide 'meow/lang/c\#)
+(provide 'lang/meow-c\#)

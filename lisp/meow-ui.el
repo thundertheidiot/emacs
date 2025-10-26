@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t; -*-
-(require 'meow/helpers "helpers")
+(require 'meow-helpers)
 
 ;; disable some useless default features
 (menu-bar-mode -1)
@@ -243,5 +243,5 @@
 			  (when (display-graphic-p)
 			    (all-the-icons-ibuffer-mode)))))
 
-(provide 'meow/ui)
+(provide 'meow-ui)
 ;;; ui.el ends here

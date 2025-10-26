@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t; -*-
-(require 'meow/helpers "helpers")
-(require 'meow/window-configuration "window-configuration")
+(require 'meow-helpers)
+(require 'meow-window-configuration)
 
 (use-package evil
   :init
@@ -164,5 +164,5 @@
   "M-x" 'execute-extended-command)
 
 
-(provide 'meow/keybindings)
+(provide 'meow-keybindings)
 ;;; keybindings.el ends here

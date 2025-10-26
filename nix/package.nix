@@ -39,8 +39,8 @@
       src = ../lisp;
 
       installPhase = ''
-        mkdir -p $out/share/emacs/site-lisp
-        cp -r $src $out/share/emacs/site-lisp/meow
+        mkdir -p $out/share/emacs
+        cp -r $src $out/share/emacs/site-lisp
       '';
 
       version = "1.0";

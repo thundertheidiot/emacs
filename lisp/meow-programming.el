@@ -75,5 +75,5 @@
   :demand t
   :hook (after-init . envrc-global-mode))
 
-(provide 'meow/programming)
+(provide 'meow-programming)
 ;;; programming.el ends here

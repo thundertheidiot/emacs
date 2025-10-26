@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t; -*-
-(require 'meow/helpers "helpers.el")
+(require 'meow-helpers)
 
 (use-package undo-tree
   :custom
@@ -13,4 +13,4 @@
   (defun undo-tree-overridden-undo-bindings-p () nil)
   (global-undo-tree-mode))
 
-(provide 'meow/undo)
+(provide 'meow-undo)

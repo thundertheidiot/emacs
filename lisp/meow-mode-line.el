@@ -84,5 +84,5 @@
 (add-hook 'enable-theme-functions
 	  (lambda (_theme) (meow/mode-line)))
 
-(provide 'meow/mode-line)
+(provide 'meow-mode-line)
 ;;; mode-line.el ends here

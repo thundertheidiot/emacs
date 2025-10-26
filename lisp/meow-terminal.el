@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t; -*-
-(require 'meow/helpers "helpers")
+(require 'meow-helpers)
 
 (defun meow/vterm (&optional projectile)
   (if projectile
@@ -197,5 +197,5 @@
 
 (defalias 'eshell/e 'eshell/exit)
 
-(provide 'meow/terminal)
+(provide 'meow-terminal)
 ;;; termina.el ends here

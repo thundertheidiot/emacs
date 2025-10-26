@@ -42,4 +42,4 @@
     (eval-region beg end)
     (evil-normal-state)))
 
-(provide 'meow/helpers)
+(provide 'meow-helpers)

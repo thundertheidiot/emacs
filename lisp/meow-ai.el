@@ -28,4 +28,4 @@
 		:category "web"
 		:include t)))
 
-(provide 'meow/ai)
+(provide 'meow-ai)
