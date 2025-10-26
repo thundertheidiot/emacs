@@ -1,4 +1,7 @@
 ;; -*- lexical-binding: t; -*-
+(require 'meow/helpers "helpers")
+(require 'meow/window-configuration "window-configuration")
+
 (use-package evil
   :init
   (setq evil-want-keybinding nil)
@@ -80,12 +83,13 @@
   "<right>" '("move right" . windmove-right)
   "wq" '("close" . evil-quit)
   "ww" '("close" . evil-quit)
-  "ws" '("horizontal split" . (lambda () (interactive) (select-window (th/intelligent-split t))))
+  "ws" '("horizontal split" . (lambda () (interactive) (select-window (meow/intelligent-split t))))
 
   "wc" '(:ignore t :wk "window configurations")
-  "wcl" '("load" . load-window-configuration)
-  "wcs" '("save" . save-window-configuration)
-  "wcn" '("new" . new-window-configuration)
+  "wcl" '("load" . meow/load-window-configuration)
+  "wcs" '("save" . meow/save-window-configuration)
+  "wcd" '("delete" . meow/delete-window-configuration)
+  "wcn" '("new" . meow/new-window-configuration)
   
   "H" '("increase window width" . (lambda () (interactive) (evil-window-increase-width 2)))
   "J" '("increase window height" . (lambda () (interactive) (evil-window-increase-height 2)))
@@ -95,7 +99,7 @@
 
   "d" '("dired" . (lambda () (interactive)
                     (when default-directory
-                      (select-window (th/intelligent-split t))
+                      (select-window (meow/intelligent-split t))
                       (dired default-directory))))
 
   "D" '("dired in current window" . (lambda () (interactive)
@@ -124,13 +128,13 @@
 
   "e" '(:ignore t :wk "emacs")
   "ec" '("async shell command" . async-shell-command)
-  "er" '("eval region or line" . eval-region-and-go-to-normal-mode)
+  "er" '("eval region or line" . meow/eval-region-and-go-to-normal-mode)
   "eb" '("eval buffer" . eval-buffer)
   "ee" '("eval expression" . eval-expression))
 
 (general-define-key
  :states '(normal visual)
- "gc" 'comment-or-uncomment-region-or-line
+ "gc" 'meow/comment-or-uncomment-region-or-line
  "<up>" 'enlarge-window
  "<left>" 'shrink-window-horizontally
  "<right>" 'enlarge-window-horizontally

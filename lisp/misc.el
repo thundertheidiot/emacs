@@ -11,6 +11,9 @@
       inhibit-startup-screen t
       inhibit-splash-screen t
 
+      split-width-threshold 180
+      split-height-threshold 80
+
       backward-delete-char-untabify-method nil)
 
 (electric-indent-mode)

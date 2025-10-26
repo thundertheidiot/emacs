@@ -12,9 +12,6 @@
 
 (add-hook 'after-init-hook #'meow/setup-directories)
 
-(setq split-width-threshold 180)
-(setq split-height-threshold 80)
-
 (defun meow/intelligent-split (&optional force)
   (interactive)
   (let* ((width (window-total-width))
@@ -25,5 +22,24 @@
 		       (t (split-window-below)))))
     (ignore-errors (balance-windows (window-parent)))
     window))
+
+(defun meow/comment-or-uncomment-region-or-line ()
+  "If a region is selected, either uncomment or comment it, if not, uncomment or comment the current line."
+  (interactive)
+  (let (beg end)
+    (if (region-active-p)
+	(setq beg (region-beginning) end (region-end))
+      (setq beg (line-beginning-position) end (line-end-position)))
+    (comment-or-uncomment-region beg end)))
+
+(defun meow/eval-region-and-go-to-normal-mode ()
+  "Evaluate elisp in the selected region and go back to normal mode."
+  (interactive)
+  (let (beg end)
+    (if (region-active-p)
+	(setq beg (region-beginning) end (region-end))
+      (setq beg (line-beginning-position) end (line-end-position)))
+    (eval-region beg end)
+    (evil-normal-state)))
 
 (provide 'meow/helpers)

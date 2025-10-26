@@ -14,6 +14,7 @@
 (require 'meow/helpers)
 (require 'meow/cleanup)
 (require 'meow/undo)
+(require 'meow/window-configuration)
 (require 'meow/keybindings)
 (require 'meow/lsp)
 (require 'meow/misc)

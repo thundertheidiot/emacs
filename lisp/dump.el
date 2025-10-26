@@ -26,100 +26,11 @@
 
 (use-package subr-x :ensure nil)
 
-(defvar saved-window-configurations '())
-
-(defun wcs--format-window-list ()
-  (let ((window-list-string-formatted) (value))
-    (dolist (window (window-list) value)
-      (setq window-list-string-formatted (concat
-					  window-list-string-formatted
-					  (format "%s, " (buffer-name (window-buffer window))))))
-    (setq window-list-string-formatted (string-remove-suffix ", " window-list-string-formatted))
-    window-list-string-formatted))
-
-(defun save-window-configuration (&optional name)
-  "Add the current window configuration to saved window configurations, if NAME is provided, give it a name."
-  (interactive "P")
-  (when (and name (not (stringp name)))
-    (setq name (completing-read "Name wcfg: " '())))
-  (add-to-list 'saved-window-configurations `(,(or name
-						   (if (string= (projectile-project-name) "-")
-						       (format "%s (%s)"
-							       (shell-command-to-string "date \"+%a %R\"")
-							       (wcs--format-window-list))
-						     (format "%s: %s (%s)"
-							     (projectile-project-name)
-							     (shell-command-to-string "date \"+%a %R\"")
-							     (wcs--format-window-list))))
-					      . ,(window-state-get (frame-root-window) t))))
-
-(defun new-window-configuration ()
-  "Save the current window configuration close other buffers."
-  (interactive)
-  (save-window-configuration)
-  (select-window (split-window))
-  (delete-other-windows))
-
-(defun load-window-configuration ()
-  "Select a window configuration from the list and load it."
-  (interactive)
-  (let ((config (cdr
-		 (assoc
-		  (completing-read "Select window config: " saved-window-configurations)
-		  saved-window-configurations))))
-    (when config
-      (window-state-put config (frame-root-window) t))))
-
-(defun delete-window-configuration ()
-  "Select a window configuration to delete."
-  (interactive)
-  (setq saved-window-configurations
-	(delq (assoc
-	       (completing-read "Delete a window configuration: "
-				saved-window-configurations)
-	       saved-window-configurations)
-	      saved-window-configurations)))
 
 (defun th/turn-off-line-numbers ()
   "Turn off line numbers 🤯"
   (display-line-numbers-mode 0))
 
-(defun make-mode-keymap (map outer)
-  (mapc (lambda (inner)
-	  (define-key map (kbd (car inner)) (cdr inner)))
-	outer))
-
-(defun comment-or-uncomment-region-or-line ()
-  "If a region is selected, either uncomment or comment it, if not, uncomment or comment the current line."
-  (interactive)
-  (let (beg end)
-    (if (region-active-p)
-	(setq beg (region-beginning) end (region-end))
-      (setq beg (line-beginning-position) end (line-end-position)))
-    (comment-or-uncomment-region beg end)))
-
-(defun eval-region-and-go-to-normal-mode ()
-  "Evaluate elisp in the selected region and go back to normal mode."
-  (interactive)
-  (let (beg end)
-    (if (region-active-p)
-	(setq beg (region-beginning) end (region-end))
-      (setq beg (line-beginning-position) end (line-end-position)))
-    (eval-region beg end)
-    (evil-normal-state)))
-
-(setq split-width-threshold 180)
-(setq split-height-threshold 80)
-(defun th/intelligent-split (&optional force)
-  (interactive)
-  (let* ((width (window-total-width))
-	 (height (window-total-height))
-	 (aspect (/ (float width) (float height)))
-	 (window (cond ((and (< width split-width-threshold) (< height split-height-threshold) (not force)) (current-buffer))
-		       ((> aspect 2.3) (split-window-right))
-		       (t (split-window-below)))))
-    (ignore-errors (balance-windows (window-parent)))
-    window))
 
 ;; (use-package evil-surround
 ;;   :config
