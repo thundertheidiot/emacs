@@ -13,26 +13,30 @@
 (add-hook 'emacs-lisp-mode-hook #'prettify-symbols-mode)
 
 ;; fonts
-(set-face-attribute 'default nil
-		    :family "Monospace"
-		    :height 110
-		    :weight 'regular)
+(defun meow/set-fonts ()
+  (set-face-attribute 'default nil
+		      :family "Monospace"
+		      :height 110
+		      :weight 'regular)
 
-(set-face-attribute 'variable-pitch nil
-		    :font "Sans-Serif"
-		    :height 120
-		    :weight 'medium)
+  (set-face-attribute 'variable-pitch nil
+		      :font "Sans-Serif"
+		      :height 120
+		      :weight 'medium)
 
-(set-face-attribute 'fixed-pitch nil
-		    :font "Monospace"
-		    :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil
+		      :font "Monospace"
+		      :weight 'medium)
 
-(set-face-attribute 'font-lock-comment-face nil
-		    :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil
-		    :slant 'italic)
+  (set-face-attribute 'font-lock-comment-face nil
+		      :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+		      :slant 'italic)
 
-(add-to-list 'default-frame-alist '(font . "Monospace"))
+  (add-to-list 'default-frame-alist '(font . "Monospace")))
+
+(add-hook 'after-init-hook #'meow/set-fonts)
+(add-hook 'server-after-make-frame-hook #'meow/set-fonts)
 
 (setq-default line-spacing 0.12)
 
