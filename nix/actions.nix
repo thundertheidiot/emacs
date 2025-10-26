@@ -26,7 +26,7 @@
                 GH_TOKEN = "\${{ secrets.PAT_TOKEN }}";
               };
               run = ''
-                gh workflow run build-package.yml \
+                gh workflow run build-package.yaml \
                   --repo thundertheidiot/nixdots \
                   --ref main \
                   -f package=nixosConfigurations.desktop.config.home-manager.users.thunder.programs.emacs.package \
