@@ -15,7 +15,7 @@
 ;; fonts
 (set-face-attribute 'default nil
 		    :family "Monospace"
-		    :height 100
+		    :height 110
 		    :weight 'regular)
 
 (set-face-attribute 'variable-pitch nil
