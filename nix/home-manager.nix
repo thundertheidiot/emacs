@@ -34,6 +34,7 @@ in {
       startWithUserSession = "graphical";
     };
 
+    # package in flake.nix
     programs.emacs.enable = true;
     programs.man.generateCaches = true;
   };
