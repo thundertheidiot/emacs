@@ -24,6 +24,7 @@
 (require 'meow/lang/misc)
 (require 'meow/git)
 (require 'meow/mode-line)
+(require 'meow/terminal)
 (require 'meow/ui)
 (require 'meow/ai)
 (require 'meow/dump)

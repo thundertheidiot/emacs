@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t; -*-
+(require 'subr-x) ;; shipped with emacs
 
-(defvar meow/saved-window-configurations '())
+(defvar meow/saved-window-configurations '()
+  "Saved window configurations.")
 
 (defun wcs--format-window-list ()
   (let ((window-list-string-formatted) (value))
@@ -12,7 +14,8 @@
     window-list-string-formatted))
 
 (defun meow/save-window-configuration (&optional name)
-  "Add the current window configuration to saved window configurations, if NAME is provided, give it a name."
+  "Add the current window configuration to saved window configurations.
+If NAME is provided, name it."
   (interactive "P")
   (when (and name (not (stringp name)))
     (setq name (completing-read "Name wcfg: " '())))
@@ -30,7 +33,7 @@
 (defun meow/new-window-configuration ()
   "Save the current window configuration close other buffers."
   (interactive)
-  (save-window-configuration)
+  (meow/save-window-configuration)
   (select-window (split-window))
   (delete-other-windows))
 
@@ -55,3 +58,4 @@
 	      meow/saved-window-configurations)))
 
 (provide 'meow/window-configuration)
+;;; window-configuration.el ends here
