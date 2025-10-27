@@ -72,4 +72,6 @@
   emacsPackages = emacsPackages'.overrideScope (import ./overrides.nix {inherit pkgs inputs;});
   emacsWithPackages = emacsPackages.emacsWithPackages;
 in
-  emacsWithPackages defaultInit
+  (emacsWithPackages defaultInit).overrideAttrs {
+    passthru.epkgs = emacsPackages;
+  }
