@@ -48,10 +48,8 @@ Preserve window configuration when pressing ESC."
   (ultra-scroll-mode 1))
 
 (defun add-to-load-path (package)
-  "Add `package' from your flake to load-path"
-  (let ((path "/home/thunder/nixdots")
-	(hostname (substring (shell-command-to-string "hostname") 0 -1))
-	(username (substring (shell-command-to-string "whoami") 0 -1)))
+  "Add `package' from your flake to load-path."
+  (let ((path "github:thundertheidiot/emacs"))
     (with-temp-buffer
       (let ((exit-code (call-process "nix" nil (list t nil) nil
 				     "build"
@@ -61,14 +59,10 @@ Preserve window configuration when pressing ESC."
 				     (format
 				      (concat
 				       "let "
-				       "flake = builtins.getFlake (builtins.toString \"%s\");"
-				       "epkgsFor = flake.nixosConfigurations.\"%s\".pkgs.emacsPackagesFor;"
-				       "emacs = flake.nixosConfigurations.\"%s\".config.home-manager.users.\"%s\".programs.emacs.package;"
-				       "in (epkgsFor emacs).\"%s\"")
+				       "flake = builtins.getFlake \"%s\";"
+				       "epkgs = flake.packages.\"${builtins.currentSystem}\".emacs.epkgs;"
+				       "in epkgs.\"%s\"")
 				      path
-				      hostname
-				      hostname
-				      username
 				      package))))
 	(if (eq exit-code 0)
 	    (let* ((store-path (substring (buffer-string) 0 -1))
