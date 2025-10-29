@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (setq use-short-answers t
       native-comp-async-report-warnings-errors 'silent
       indent-tabs-mode t
@@ -46,37 +47,6 @@ Preserve window configuration when pressing ESC."
         scroll-margin 0) 
   :config
   (ultra-scroll-mode 1))
-
-(defun add-to-load-path (package)
-  "Add `package' from your flake to load-path."
-  (let ((path "github:thundertheidiot/emacs"))
-    (with-temp-buffer
-      (let ((exit-code (call-process "nix" nil (list t nil) nil
-				     "build"
-				     "--print-out-paths"
-				     "--impure"
-				     "--expr"
-				     (format
-				      (concat
-				       "let "
-				       "flake = builtins.getFlake \"%s\";"
-				       "epkgs = flake.packages.\"${builtins.currentSystem}\".emacs.epkgs;"
-				       "in epkgs.\"%s\"")
-				      path
-				      package))))
-	(if (eq exit-code 0)
-	    (let* ((store-path (substring (buffer-string) 0 -1))
-		   (path (concat store-path "/share/emacs/site-lisp"))
-		   (files (directory-files-recursively path "\\.elc?$"))
-		   (directories (mapcar
-				 (lambda (file) (file-name-directory file))
-				 files))
-		   (final-list (delete-dups directories)))
-	      (mapc (lambda (path)
-		      (add-to-list 'load-path path))
-		    final-list)
-	      (message (format "Added %s to load path" final-list)))
-	  (message "Nix process failed"))))))
 
 (use-package tramp-sh
   :ensure nil ;; part of emacs

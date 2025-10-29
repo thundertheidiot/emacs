@@ -25,10 +25,14 @@
   :general
   (meow/leader
     "on" '("nix repl" . meow/nix-repl)
+    "oN" '("nix repl" . (lambda () (interactive)
+			  (meow/nix-repl t)))
     "pon" '("nix repl" . (lambda () (interactive)
 			   (let ((default-directory (projectile-project-root)))
 			     (meow/nix-repl))))
-    )
+    "poN" '("nix repl" . (lambda () (interactive)
+			   (let ((default-directory (projectile-project-root)))
+			     (meow/nix-repl t)))))
   :config
   (require 'nix-repl))
 
