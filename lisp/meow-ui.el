@@ -171,13 +171,17 @@
 	    "RET" nil
 	    "<up>" nil
 	    "<down>" nil
+	    "<tab>" nil
+	    "TAB" nil
 	    "M-i" (lambda () (interactive)
 		    (let ((current-prefix-arg t))
 		      (call-interactively #'corfu-info-documentation)))
 	    "C-j" #'corfu-next
 	    "C-k" #'corfu-previous
 	    "S-RET" #'corfu-complete
-	    "S-<return>" #'corfu-complete))
+	    "S-<return>" #'corfu-complete
+	    "C-RET" #'corfu-complete
+	    "C-<return>" #'corfu-complete))
 
 ;; keybinding helper
 (use-package which-key

@@ -61,18 +61,18 @@
 		    
 		    (eglot--managed-mode eglot--mode-line-format "")
 		    (eglot--managed-mode "   " "")
-		    
+
 		    (flycheck-mode
 		     (:eval
 		      (when (and (eq flycheck-last-status-change 'finished))
 			(let-alist (flycheck-count-errors flycheck-current-errors)
 			  (concat
-			   (when (and (not .error) (not .warning:?) (not .warning))
+			   (when (and (not .error)  (not .warning))
 			     (propertize "" 'face ',okay-face))
 			   (when .error
 			     (propertize (format " %s" .error) 'face ',error-face))
-			   (when (or .warning:? .warning)
-			     (propertize (format "%s %s" (if .error " " "") (+ (or .warning:? 0) (or .warning 0))) 'face ',warning-face))))))
+			   (when .warning
+			     (propertize (format "%s %s" (if .error " " "") .warning) 'face ',warning-face))))))
 		     
 		     "")
 
