@@ -1,0 +1,17 @@
+* GNU/Emacs
+
+My personal GNU/Emacs configuration finally extracted from my NixOS flake. This is packaged with Nix using [[https://github.com/nix-community/emacs-overlay][nix-community/emacs-overlay]]. You can find the package derivation in [[file:nix/package.nix][package.nix]].
+
+I am using evil for vim keybindings, my custom binds are space focused, somewhat inspired by doom emacs.
+
+There is also a home-manager module that sets up the emacs daemon, adds some required packages and links the early init file to =~/.config/emacs=.
+
+You can try the configuration out using nix:
+#+begin_src shell
+nix run github:thundertheidiot/emacs
+#+end_src
+
+* TODOs
+
+- TODO include fonts
+- TODO include lsps
