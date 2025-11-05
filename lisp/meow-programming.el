@@ -9,18 +9,58 @@
     "cn" '("next error" . flycheck-next-error)
     "cN" '("previous error" . flycheck-previous-error)))
 
+;; consult menu for flycheck errors
 (use-package consult-flycheck
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "sd" '("flycheck" . consult-flycheck)
-	   ))
+	   "sd" '("flycheck" . consult-flycheck)))
 
+;; integrate flycheck with lsp
 (use-package flycheck-eglot
   :demand t
   :after (flycheck eglot)
   :config
   (global-flycheck-eglot-mode 1))
 
+;; autocompletion
+(use-package corfu
+  :demand t
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.18)
+  (corfu-cycle t)
+  :hook
+  (after-init . global-corfu-mode)
+  :config
+  (require 'corfu-autoloads)
+  :general-config
+  (:states '(insert)
+	   "C-j" nil
+	   "C-k" nil)
+  (:states '(normal visual insert) :keymaps 'corfu-mode-map
+	   "C-j" nil
+	   "C-k" nil
+	   "C-i" nil)
+  (:keymaps 'corfu-map
+	    "RET" nil
+	    "<up>" nil
+	    "<down>" nil
+	    "<tab>" nil
+	    "TAB" nil
+	    "M-i" (lambda () (interactive)
+		    (let ((current-prefix-arg t))
+		      (call-interactively #'corfu-info-documentation)))
+	    "C-j" #'corfu-next
+	    "C-k" #'corfu-previous
+	    "S-RET" #'corfu-complete
+	    "S-<return>" #'corfu-complete
+	    "C-RET" #'corfu-complete
+	    "C-<return>" #'corfu-complete))
+
+(general-def :states '(normal visual insert)
+  "M-i" #'eldoc)
+
+;; automatic formatting
 (use-package apheleia
   :demand t
   :config
@@ -28,6 +68,7 @@
 	'("alejandra"))
   (apheleia-global-mode +1))
 
+;; project management
 (use-package projectile
   :commands (projectile-run-eshell projectile-run-vterm)
   :custom
