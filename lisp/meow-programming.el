@@ -57,8 +57,15 @@
 	    "C-RET" #'corfu-complete
 	    "C-<return>" #'corfu-complete))
 
+(defun meow/complete-with-consult ()
+  "Start `completion-at-point' with `consult-completion-in-region'."
+  (interactive)
+  (let ((completion-in-region-function #'consult-completion-in-region))
+    (completion-at-point)))
+
 (general-def :states '(normal visual insert)
-  "M-i" #'eldoc)
+  "M-i" #'eldoc
+  "M-c" #'meow/complete-with-consult)
 
 ;; automatic formatting
 (use-package apheleia
