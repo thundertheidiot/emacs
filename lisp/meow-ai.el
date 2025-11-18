@@ -26,7 +26,17 @@
 			       :type string
 			       :description "The search query to execute against the search engine."))
 		:category "web"
-		:include t)))
+		:include t))
+  :general-config
+  (meow/leader
+    "a" '(:ignore t :wk "ai")
+    "ao" '("gptel" . gptel)
+    "aa" '("add context" . gptel-context-add)
+    "am" '("gptel menu" . gptel-menu)
+    "ar" '("remove context" . (lambda () (interactive) (gptel-context-remove)))
+    "aR" '("remove all context" . gptel-context-remove-all))
+  (:keymaps 'gptel-mode-map :states '(normal)
+	    "RET" #'gptel-send))
 
 (provide 'meow-ai)
 ;;; meow-ai.el ends here
