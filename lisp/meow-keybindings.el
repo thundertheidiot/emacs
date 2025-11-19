@@ -14,6 +14,8 @@
   (evil-undo-system 'undo-tree)
   :config
   (evil-set-undo-system evil-undo-system)
+  (evil-set-initial-state 'minibuffer-mode 'insert)
+  (evil-set-initial-state 'minibuffer-inactive-mode 'insert)
   (evil-mode))
 
 (use-package evil-collection
