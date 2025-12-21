@@ -64,9 +64,27 @@
       packageRequires =
         (packages epkgs)
         ++ (meow-lisp epkgs)
-        ++ [
-          # epkgs.treesit-grammars.with-all-grammars
-        ];
+        # ++ ([
+        #   epkgs.treesit-grammars.with-all-grammars
+        # ])
+        ++ (map (p: pkgs.tree-sitter-grammars."tree-sitter-${p}") [
+          "c"
+          "cpp"
+          "bash"
+          "nix"
+          "lua"
+          "css"
+          "kdl"
+          "yaml"
+          "toml"
+          "json"
+          "json5"
+          "c-sharp"
+          "cmake"
+          "gdscript"
+          "godot-resource"
+          "haskell"
+        ]);
     })
   ];
 
