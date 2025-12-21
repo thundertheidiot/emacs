@@ -177,6 +177,14 @@
   (require 'doom-themes-autoloads)
   (doom-themes-org-config))
 
+;; (use-package catppuccin-theme
+;;   :custom
+;;   (catppuccin-flavor 'mocha)
+;;   :hook
+;;   (server-after-make-frame . catppuccin-reload)
+;;   :config
+;;   (load-theme 'catppuccin :no-confirm))
+
 ;; color frames differently
 (use-package solaire-mode
   :hook

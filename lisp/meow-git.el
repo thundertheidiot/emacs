@@ -67,7 +67,7 @@
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh)
 
-  (dired-mode . diff-hl-dired-mode)
+  ;; (dired-mode . diff-hl-dired-mode)
   (diff-hl-mode . diff-hl-flydiff-mode)
   (diff-hl-mode . diff-hl-margin-mode) ;; to simultaniously support flycheck symbols in fringe
   :general

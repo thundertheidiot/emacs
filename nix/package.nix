@@ -64,7 +64,9 @@
       packageRequires =
         (packages epkgs)
         ++ (meow-lisp epkgs)
-        ++ [epkgs.treesit-grammars.with-all-grammars];
+        ++ [
+          # epkgs.treesit-grammars.with-all-grammars
+        ];
     })
   ];
 

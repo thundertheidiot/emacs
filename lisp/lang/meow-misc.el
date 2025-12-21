@@ -15,5 +15,8 @@
 
 (add-hook 'emacs-lisp-mode-hook #'corfu-mode)
 
+(use-package qml-mode
+  :mode "\\.qml\\'")
+
 (provide 'lang/meow-misc)
 ;;; meow-misc.el ends here

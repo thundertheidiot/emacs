@@ -15,6 +15,8 @@
       split-width-threshold 180
       split-height-threshold 80
 
+      confirm-kill-processes nil
+
       backward-delete-char-untabify-method nil)
 
 (electric-indent-mode)
