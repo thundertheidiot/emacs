@@ -117,7 +117,9 @@
 
 (use-package envrc
   :demand t
-  :hook (after-init . envrc-global-mode))
+  :hook (after-init . envrc-global-mode)
+  :config
+  (require 'info))
 
 (provide 'meow-programming)
 ;;; meow-programming.el ends here
