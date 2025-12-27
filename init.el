@@ -34,4 +34,5 @@
 (require 'meow-ai)
 (require 'meow-org)
 (require 'meow-media)
+(require 'meow-mommy)
 ;;; init.el ends here

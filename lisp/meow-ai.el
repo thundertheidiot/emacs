@@ -4,6 +4,7 @@
   (gptel-model 'gpt-5-mini)
   :config
   (require 'gptel-autoloads)
+  (require 'gptel-context)
   (setq gptel-backend (gptel-make-gh-copilot "Copilot"))
   (add-to-list 'gptel-tools
 	       (gptel-make-tool
