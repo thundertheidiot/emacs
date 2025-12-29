@@ -48,18 +48,18 @@
   (require 'diff-hl-autoloads)
   (require 'diff-hl-dired)
   (require 'diff-hl-margin)
-  (require 'diff-hl-flydiff)
+  ;; (require 'diff-hl-flydiff) ;; breaks on igc
   (advice-add 'diff-hl-next-hunk :around #'advice!diff-hl-next-hunk-loop-around)
   (global-diff-hl-mode +1)
-  (mapc (lambda (f) 
+  (mapc (lambda (f)
 	  (set-face-background f "green")
 	  (set-face-foreground f "green"))
 	'(diff-hl-insert diff-hl-dired-insert diff-hl-margin-insert))
-  (mapc (lambda (f) 
+  (mapc (lambda (f)
 	  (set-face-background f "purple")
 	  (set-face-foreground f "purple"))
 	'(diff-hl-change diff-hl-dired-change diff-hl-margin-change))
-  (mapc (lambda (f) 
+  (mapc (lambda (f)
 	  (set-face-background f "red")
 	  (set-face-foreground f "red"))
 	'(diff-hl-delete diff-hl-dired-delete diff-hl-margin-delete))
@@ -68,7 +68,7 @@
   (magit-post-refresh . diff-hl-magit-post-refresh)
 
   ;; (dired-mode . diff-hl-dired-mode)
-  (diff-hl-mode . diff-hl-flydiff-mode)
+  ;; (diff-hl-mode . diff-hl-flydiff-mode) ;; breaks on igc right now
   (diff-hl-mode . diff-hl-margin-mode) ;; to simultaniously support flycheck symbols in fringe
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
