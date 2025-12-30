@@ -99,5 +99,9 @@ Preserve window configuration when pressing ESC."
   :config
   (evil-collection-pdf-setup))
 
+;; editor as new buffer
+(setenv "EDITOR" "emacsclient")
+(setq server-window (selected-window))
+
 (provide 'meow-misc)
 ;;; meow-misc.el ends here
