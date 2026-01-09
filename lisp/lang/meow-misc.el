@@ -15,6 +15,10 @@
 
 (use-package just-mode)
 
+(use-package sly
+  :custom
+  (inferior-lisp-program "sbcl"))
+
 (add-hook 'emacs-lisp-mode-hook #'corfu-mode)
 
 (use-package qml-mode

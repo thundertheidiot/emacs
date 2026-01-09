@@ -45,7 +45,7 @@
 		       (let* ((vec (tramp-dissect-file-name default-directory))
 			      (user (or (tramp-file-name-user vec) ""))
 			      (host (tramp-file-name-host vec)))
-			 (propertize (format "%s@%s   " user host) 'face ,emphasize-face))))
+			 (propertize (format "%s@%s   " user host) 'face ',emphasize-face))))
 
 		    (:eval
 		     (pcase envrc--status
