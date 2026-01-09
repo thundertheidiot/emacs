@@ -13,6 +13,8 @@
 
 (use-package glsl-mode)
 
+(use-package just-mode)
+
 (add-hook 'emacs-lisp-mode-hook #'corfu-mode)
 
 (use-package qml-mode
