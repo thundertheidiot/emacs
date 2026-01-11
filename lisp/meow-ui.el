@@ -175,7 +175,10 @@
 			       (load-theme 'doom-Iosvkem t)))
   :config
   (require 'doom-themes-autoloads)
-  (doom-themes-org-config))
+  (doom-themes-org-config)
+
+  (setcdr (assoc 'gnus-group-news-low-empty doom-themes-base-faces)
+          '(:inherit 'gnus-group-mail-1-empty :weight 'normal)))
 
 ;; (use-package catppuccin-theme
 ;;   :custom
