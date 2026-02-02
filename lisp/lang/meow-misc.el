@@ -19,6 +19,9 @@
   :custom
   (inferior-lisp-program "sbcl"))
 
+(use-package janet-mode
+  :mode "\\.janet\\'")
+
 (add-hook 'emacs-lisp-mode-hook #'corfu-mode)
 
 (use-package qml-mode

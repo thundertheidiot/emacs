@@ -1,4 +1,38 @@
 ;; -*- lexical-binding: t; -*-
+
+(defvar meow/gptel-directory "~/Documents/gptel/")
+
+(defun meow/gptel-generate-filename ()
+  "Generate filename for a gptel buffer."
+  (expand-file-name  (format "%s_%s.md"
+			     (format-time-string "%Y-%m-%d-%H-%M-%S")
+			     (buffer-name))
+		     meow/gptel-directory))
+
+(defun meow/gptel-save ()
+  "Save gptel buffer."
+  (interactive)
+  (write-file (meow/generate-gptel-filename)))
+
+(defun meow/gptel-screenshot ()
+  "On niri, add screenshot to buffer."
+  (interactive)
+  (let* ((media-dir (expand-file-name "media" meow/gptel-directory))
+	 (filename (expand-file-name (format-time-string "%Y-%m-%d-%H-%M-%S.png") media-dir)))
+    (unless (file-directory-p media-dir)
+      (make-directory media-dir t))
+    (when (= 0 (shell-command "niri msg action screenshot"))
+      (with-timeout
+	  (30 (error "Timeout waiting for clipboard"))
+	(while (not (or
+		     (seq-contains (gui-get-selection 'CLIPBOARD 'TARGETS) 'image/png)
+		     (seq-contains (gui-get-selection 'PRIMARY 'TARGETS) 'image/png)))
+	  (sit-for 0.05)))
+      (with-temp-buffer
+	(insert (gui-get-selection 'CLIPBOARD 'image/png))
+	(write-file filename))
+      (insert (format "![screenshot](%s)" filename)))))
+
 (use-package gptel
   :custom
   (gptel-model 'gpt-5-mini)
@@ -34,6 +68,8 @@
     "ao" '("gptel" . gptel)
     "aa" '("add context" . gptel-context-add)
     "am" '("gptel menu" . gptel-menu)
+    "as" '("save chat" . meow/gptel-save)
+    "aS" '("screenshot" . meow/gptel-screenshot)
     "ar" '("remove context" . (lambda () (interactive) (gptel-context-remove)))
     "aR" '("remove all context" . gptel-context-remove-all))
   (:keymaps 'gptel-mode-map :states '(normal)
