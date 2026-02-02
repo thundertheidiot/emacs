@@ -12,7 +12,7 @@
 (defun meow/gptel-save ()
   "Save gptel buffer."
   (interactive)
-  (write-file (meow/generate-gptel-filename)))
+  (write-file (meow/gptel-generate-filename)))
 
 (defun meow/gptel-screenshot ()
   "On niri, add screenshot to buffer."
@@ -25,8 +25,8 @@
       (with-timeout
 	  (30 (error "Timeout waiting for clipboard"))
 	(while (not (or
-		     (seq-contains (gui-get-selection 'CLIPBOARD 'TARGETS) 'image/png)
-		     (seq-contains (gui-get-selection 'PRIMARY 'TARGETS) 'image/png)))
+		     (seq-contains-p (gui-get-selection 'CLIPBOARD 'TARGETS) 'image/png)
+		     (seq-contains-p (gui-get-selection 'PRIMARY 'TARGETS) 'image/png)))
 	  (sit-for 0.05)))
       (with-temp-buffer
 	(insert (gui-get-selection 'CLIPBOARD 'image/png))
