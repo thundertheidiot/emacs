@@ -35,7 +35,8 @@
 
 (use-package gptel
   :custom
-  (gptel-model 'gpt-5-mini)
+  (gptel-model 'gemini-3-flash-preview)
+  (gptel-track-media t)
   :config
   (require 'gptel-autoloads)
   (require 'gptel-context)
