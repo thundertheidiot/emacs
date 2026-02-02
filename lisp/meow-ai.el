@@ -4,9 +4,12 @@
 
 (defun meow/gptel-generate-filename ()
   "Generate filename for a gptel buffer."
-  (expand-file-name  (format "%s_%s.md"
+  (expand-file-name  (format "%s_%s%s"
 			     (format-time-string "%Y-%m-%d-%H-%M-%S")
-			     (buffer-name))
+			     (buffer-name)
+			     (if (eq major-mode 'org-mode)
+				 ".org"
+			       ".md"))
 		     meow/gptel-directory))
 
 (defun meow/gptel-save ()
@@ -31,11 +34,15 @@
       (with-temp-buffer
 	(insert (gui-get-selection 'CLIPBOARD 'image/png))
 	(write-file filename))
-      (insert (format "![screenshot](%s)" filename)))))
+      (insert (format (cond
+		       ((eq major-mode 'org-mode) "[[%s]]")
+		       (t "![screenshot](%s)"))
+		      filename)))))
 
 (use-package gptel
   :custom
   (gptel-model 'gemini-3-flash-preview)
+  (gptel-default-mode #'org-mode)
   (gptel-track-media t)
   :config
   (require 'gptel-autoloads)
@@ -69,10 +76,11 @@
     "ao" '("gptel" . gptel)
     "aa" '("add context" . gptel-context-add)
     "am" '("gptel menu" . gptel-menu)
-    "as" '("save chat" . meow/gptel-save)
-    "aS" '("screenshot" . meow/gptel-screenshot)
     "ar" '("remove context" . (lambda () (interactive) (gptel-context-remove)))
     "aR" '("remove all context" . gptel-context-remove-all))
+  (meow/leader :keymaps 'gptel-mode-map
+    "as" '("save chat" . meow/gptel-save)
+    "aS" '("screenshot" . meow/gptel-screenshot))
   (:keymaps 'gptel-mode-map :states '(normal)
 	    "RET" #'gptel-send))
 
