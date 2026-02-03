@@ -163,31 +163,6 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-;; theme
-(use-package doom-themes
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-  :hook
-  (after-init . (lambda ()
-		  (load-theme 'doom-Iosvkem t)))
-  (server-after-make-frame . (lambda ()
-			       (load-theme 'doom-Iosvkem t)))
-  :config
-  (require 'doom-themes-autoloads)
-  (doom-themes-org-config)
-
-  (setcdr (assoc 'gnus-group-news-low-empty doom-themes-base-faces)
-          '(:inherit 'gnus-group-mail-1-empty :weight 'normal)))
-
-;; (use-package catppuccin-theme
-;;   :custom
-;;   (catppuccin-flavor 'mocha)
-;;   :hook
-;;   (server-after-make-frame . catppuccin-reload)
-;;   :config
-;;   (load-theme 'catppuccin :no-confirm))
-
 ;; color frames differently
 (use-package solaire-mode
   :hook
@@ -197,6 +172,20 @@
   (server-after-make-frame . (lambda ()
 			       (when (display-graphic-p)
 				 (solaire-global-mode +1)))))
+
+;; theme
+(use-package catppuccin-theme
+  :custom
+  (catppuccin-flavor 'mocha)
+  :hook
+  ;; https://github.com/catppuccin/emacs/issues/121
+  (server-after-make-frame . (lambda ()
+			       (when (daemonp)
+				 (catppuccin-reload))))
+  :config
+  (load-theme 'catppuccin :no-confirm)
+  (meow/mode-line))
+
 
 (use-package ligature
   :config
