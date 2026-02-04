@@ -24,6 +24,10 @@
 		      :height 120
 		      :weight 'medium)
 
+  (dolist (face '(minibuffer-prompt minibuffer-nonselected))
+    (set-face-attribute face nil
+			:height 1.1))
+
   (set-face-attribute 'fixed-pitch nil
 		      :font "Monospace"
 		      :weight 'medium)
@@ -34,6 +38,17 @@
 		      :slant 'italic)
 
   (add-to-list 'default-frame-alist '(font . "Monospace")))
+
+(defun meow/minibuffer-size ()
+  "Scale font size."
+  (text-scale-set 1.1))
+
+(add-hook 'minibuffer-setup-hook #'meow/minibuffer-size)
+(dolist (buf '(" *Echo Area 0*" " *Echo Area 1*"))
+  (with-current-buffer (get-buffer-create buf)
+    (text-scale-set 1.1)))
+(setq resize-mini-windows 'grow-only)
+(setq max-mini-window-height 2)
 
 (add-hook 'after-init-hook #'meow/set-fonts)
 (add-hook 'server-after-make-frame-hook #'meow/set-fonts)
