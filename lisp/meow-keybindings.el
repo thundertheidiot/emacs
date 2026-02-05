@@ -140,7 +140,10 @@
   "ec" '("async shell command" . async-shell-command)
   "er" '("eval region or line" . meow/eval-region-and-go-to-normal-mode)
   "eb" '("eval buffer" . eval-buffer)
-  "ee" '("eval expression" . eval-expression))
+  "ee" '("eval expression" . eval-expression)
+  "ei" '("eval & insert" . (lambda () (interactive)
+			     (insert (format "%s"
+					     (eval (read--expression "E&I: ")))))))
 
 (general-define-key
  :states '(normal visual)

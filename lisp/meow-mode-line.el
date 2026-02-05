@@ -6,6 +6,11 @@
   (nyan-animate-nyancat t)
   (nyan-wavy-trail t))
 
+(defvar-local meow/cached-git-info nil)
+(defun meow/invalidate-git-cache (&rest _)
+  "Invalidate git cache."
+  (setq meow/cached-git-info nil))
+
 (defun meow/mode-line ()
   "Set up custom mode line, this is called on `enable-theme-functions'."
   ;; disable solair mode recoloring for the mode line
@@ -54,11 +59,13 @@
 		       (_ ,envrc-error)))
 
 		    "   "
-		    
+
 		    (:eval
-		     (when (and (not (file-remote-p default-directory)) (magit-toplevel))
-		       (propertize (format "  %s   " (magit-get-current-branch)) 'face ',emphasize-face)))
-		    
+		     (unless (file-remote-p default-directory)
+		       (propertize (format "  %s   " (or meow/cached-git-info
+							  (setq meow/cached-git-info (magit-get-current-branch))))
+				   'face ',emphasize-face)))
+
 		    (eglot--managed-mode eglot--mode-line-format "")
 		    (eglot--managed-mode "   " "")
 
@@ -83,6 +90,14 @@
 
 (add-hook 'enable-theme-functions
 	  (lambda (_theme) (meow/mode-line)))
+
+(advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
+(add-hook 'find-file-hook #'meow/invalidate-git-cache)
+
+(run-with-idle-timer 2 t
+		     (lambda ()
+		       (when (and buffer-file-name (not (file-remote-p default-directory)))
+			 (meow/invalidate-git-cache))))
 
 (provide 'meow-mode-line)
 ;;; meow-mode-line.el ends here
