@@ -63,7 +63,8 @@
 		    (:eval
 		     (unless (file-remote-p default-directory)
 		       (propertize (format "  %s   " (or meow/cached-git-info
-							  (setq meow/cached-git-info (magit-get-current-branch))))
+							  (when-let* ((branch (magit-get-current-branch)))
+							    (setq meow/cached-git-info branch))))
 				   'face ',emphasize-face)))
 
 		    (eglot--managed-mode eglot--mode-line-format "")
@@ -77,15 +78,13 @@
 			   (when (and (not .error)  (not .warning))
 			     (propertize "" 'face ',okay-face))
 			   (when .error
-			     (propertize (format " %s" .error) 'face ',error-face))
+			     (propertize (format " %s   " .error) 'face ',error-face))
 			   (when .warning
-			     (propertize (format "%s %s" (if .error " " "") .warning) 'face ',warning-face))))))
+			     (propertize (format "%s %s   " (if .error " " "") .warning) 'face ',warning-face))))))
 		     
 		     "")
 
-		    (flycheck-mode "   " "")
-
-		    ;; "%="
+		    "%="
 		    (:eval (nyan-create))))))
 
 (add-hook 'enable-theme-functions
