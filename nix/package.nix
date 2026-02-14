@@ -70,7 +70,14 @@
     })
   ];
 
-  emacsPackages' = pkgs.emacsPackagesFor pkgs.emacs-igc-pgtk;
+  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-igc-pgtk.overrideAttrs (old: {
+    configureFlags =
+      old.configureFlags
+      ++ [
+        "--with-native-compilation"
+        "--with-json"
+      ];
+  }));
   emacsPackages = emacsPackages'.overrideScope (import ./overrides.nix {inherit pkgs inputs;});
   emacsWithPackages = emacsPackages.emacsWithPackages;
 in
