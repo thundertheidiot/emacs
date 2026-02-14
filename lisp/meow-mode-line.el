@@ -87,16 +87,16 @@
 		    "%="
 		    (:eval (nyan-create))))))
 
-(add-hook 'enable-theme-functions
-	  (lambda (_theme) (meow/mode-line)))
+;; (add-hook 'enable-theme-functions
+;; 	  (lambda (_theme) (meow/mode-line)))
 
-(advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
-(add-hook 'find-file-hook #'meow/invalidate-git-cache)
+;; (advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
+;; (add-hook 'find-file-hook #'meow/invalidate-git-cache)
 
-(run-with-idle-timer 2 t
-		     (lambda ()
-		       (when (and buffer-file-name (not (file-remote-p default-directory)))
-			 (meow/invalidate-git-cache))))
+;; (run-with-idle-timer 2 t
+;; 		     (lambda ()
+;; 		       (when (and buffer-file-name (not (file-remote-p default-directory)))
+;; 			 (meow/invalidate-git-cache))))
 
 (provide 'meow-mode-line)
 ;;; meow-mode-line.el ends here

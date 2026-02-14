@@ -199,7 +199,18 @@
 				 (catppuccin-reload))))
   :config
   (load-theme 'catppuccin :no-confirm)
-  (meow/mode-line))
+  ;; (meow/mode-line)
+  )
+
+(use-package doom-modeline
+  :custom
+  (doom-modeline-height 35)
+  (doom-modeline-project-detection 'projectile)
+  (doom-modeline-buffer-filename-style 'truncate-upto-project)
+  (doom-modeline-time nil)
+  (doom-modeline-battery nil)
+  :config
+  (doom-modeline-mode 1))
 
 
 (use-package ligature

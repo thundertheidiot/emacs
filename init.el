@@ -28,7 +28,7 @@
 (require 'lang/meow-nix)
 (require 'lang/meow-misc)
 (require 'meow-git)
-(require 'meow-mode-line)
+;; (require 'meow-mode-line)
 (require 'meow-terminal)
 (require 'meow-ui)
 (require 'meow-ai)

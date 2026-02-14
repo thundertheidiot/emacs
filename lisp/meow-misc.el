@@ -4,8 +4,10 @@
       indent-tabs-mode t
       c-basic-offset 'tab-width
       tab-width 4
+
       ;; gc-cons-threshold (* 8 1024 1024)
       read-process-output-max (* 1024 1024)
+      inhibit-compacting-font-caches t
 
       ring-bell-function 'ignore
 
