@@ -6,10 +6,53 @@
   (nyan-animate-nyancat t)
   (nyan-wavy-trail t))
 
+(defface meow/mode-line-okay-face '((t (:inherit mode-line-active)))
+  "Modeline okay face.")
+(defface meow/mode-line-error-face '((t (:inherit mode-line-active)))
+  "Modeline error face.")
+(defface meow/mode-line-warning-face '((t (:inherit mode-line-active)))
+  "Modeline warning face.")
+(defface meow/mode-line-emphasize-face '((t (:inherit mode-line-active)))
+  "Modeline emphasize face.")
+
+(defun meow/mode-line-update-faces ()
+  "Update mode line faces (run on theme change)."
+  (face-spec-set 'meow/mode-line-okay-face `((t
+					      :foreground ,(face-attribute 'magit-process-ok :foreground)
+					      :inherit mode-line-active)))
+  (face-spec-set 'meow/mode-line-error-face `((t
+					       :foreground ,(face-attribute 'error :foreground)
+					       :inherit mode-line-active)))
+  (face-spec-set 'meow/mode-line-warning-face `((t
+						 :foreground ,(face-attribute 'warning :foreground)
+						 :inherit mode-line-active)))
+  (face-spec-set 'meow/mode-line-emphasize-face `((t
+						   :foreground ,(face-attribute 'font-lock-keyword-face :foreground)
+						   :inherit mode-line-active))))
+
 (defvar-local meow/cached-git-info nil)
 (defun meow/invalidate-git-cache (&rest _)
   "Invalidate git cache."
   (setq meow/cached-git-info nil))
+
+(defvar-local meow/mode-line-flycheck nil)
+(defun meow/mode-line-flycheck-update (&optional status)
+  "Update flycheck text with STATUS."
+  (when-let* ((text
+	       (pcase status
+		 ('finished
+		  (if flycheck-current-errors
+		      (let* ((errors (flycheck-count-errors flycheck-current-errors))
+			     (c-error (alist-get 'error errors))
+			     (c-warning (alist-get 'warning errors)))
+			(concat
+			 (when c-error
+			   (propertize (format " %s   " c-error) 'face 'meow/mode-line-error-face))
+			 (when c-warning
+			   (propertize (format " %s   " c-warning) 'face 'meow/mode-line-warning-face))))
+		    (propertize "   " 'face 'meow/mode-line-okay-face)))
+		 (_ nil))))
+    (setq meow/mode-line-flycheck text)))
 
 (defun meow/mode-line ()
   "Set up custom mode line, this is called on `enable-theme-functions'."
@@ -26,19 +69,16 @@
 			      :height 110))
 	'(mode-line-active mode-line-inactive))
 
+  ;; update faces
+  (meow/mode-line-update-faces)
+
   (setq mode-line-format nil)
   (kill-local-variable 'mode-line-format)
   (force-mode-line-update)
 
-  (let* ((default-face `(:foreground ,(face-attribute 'default :foreground)))
-	 (okay-face `(:foreground ,(face-attribute 'match :foreground)))
-	 (error-face `(:foreground ,(face-attribute 'error :foreground)))
-	 (warning-face `(:foreground ,(face-attribute 'warning :foreground)))
-	 (emphasize-face `(:foreground ,(face-attribute 'font-lock-keyword-face :foreground)))
-
-	 (envrc-none (propertize "" 'face default-face))
-	 (envrc-on (propertize "" 'face okay-face))
-	 (envrc-error (propertize "" 'face error-face)))
+  (let ((envrc-none (propertize "" 'face 'mode-line-active))
+	(envrc-on (propertize "" 'face 'meow/mode-line-okay-face))
+	(envrc-error (propertize "" 'face 'meow/mode-line-error-face)))
     (setq-default mode-line-format
 		  `("   "
 		    (:eval
@@ -50,7 +90,7 @@
 		       (let* ((vec (tramp-dissect-file-name default-directory))
 			      (user (or (tramp-file-name-user vec) ""))
 			      (host (tramp-file-name-host vec)))
-			 (propertize (format "%s@%s   " user host) 'face ',emphasize-face))))
+			 (propertize (format "%s@%s   " user host) 'face 'meow/mode-line-emphasize-face))))
 
 		    (:eval
 		     (pcase envrc--status
@@ -60,38 +100,29 @@
 
 		    "   "
 
-		    (:eval
-		     (unless (file-remote-p default-directory)
-		       (propertize (format "  %s   " (or meow/cached-git-info
-							  (when-let* ((branch (magit-get-current-branch)))
-							    (setq meow/cached-git-info branch))))
-				   'face ',emphasize-face)))
+		    ;; (:eval
+		    ;;  (unless (file-remote-p default-directory)
+		    ;;    (propertize (format "  %s   " (or meow/cached-git-info
+		    ;; 					  (when-let* ((branch (magit-get-current-branch)))
+		    ;; 					    (setq meow/cached-git-info branch))))
+		    ;; 		   'face ',emphasize-face)))
 
 		    (eglot--managed-mode eglot--mode-line-format "")
 		    (eglot--managed-mode "   " "")
 
-		    (flycheck-mode
-		     (:eval
-		      (when (and (eq flycheck-last-status-change 'finished))
-			(let-alist (flycheck-count-errors flycheck-current-errors)
-			  (concat
-			   (when (and (not .error)  (not .warning))
-			     (propertize "" 'face ',okay-face))
-			   (when .error
-			     (propertize (format " %s   " .error) 'face ',error-face))
-			   (when .warning
-			     (propertize (format "%s %s   " (if .error " " "") .warning) 'face ',warning-face))))))
-		     
-		     "")
+		    (meow/mode-line-flycheck (:eval meow/mode-line-flycheck))
 
 		    "%="
 		    (:eval (nyan-create))))))
 
-;; (add-hook 'enable-theme-functions
-;; 	  (lambda (_theme) (meow/mode-line)))
+(add-hook 'enable-theme-functions
+	  (lambda (_theme) (meow/mode-line)))
 
 ;; (advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
 ;; (add-hook 'find-file-hook #'meow/invalidate-git-cache)
+
+(add-hook 'flycheck-status-changed-functions #'meow/mode-line-flycheck-update)
+(add-hook 'flycheck-mode-hook #'meow/mode-line-flycheck-update)
 
 ;; (run-with-idle-timer 2 t
 ;; 		     (lambda ()
