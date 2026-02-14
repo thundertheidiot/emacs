@@ -54,6 +54,14 @@
 		 (_ nil))))
     (setq meow/mode-line-flycheck text)))
 
+(defun meow/mode-line-tramp-format ()
+  "Tramp string for mode line."
+  (when (file-remote-p default-directory)
+    (let* ((vec (tramp-dissect-file-name default-directory))
+	   (user (or (tramp-file-name-user vec) ""))
+	   (host (tramp-file-name-host vec)))
+      (propertize (format "%s@%s   " user host) 'face 'meow/mode-line-emphasize-face))))
+
 (defun meow/mode-line ()
   "Set up custom mode line, this is called on `enable-theme-functions'."
   ;; disable solair mode recoloring for the mode line
@@ -86,11 +94,7 @@
 		    "   L%l   " ;; line number
 
 		    (:eval
-		     (when (file-remote-p default-directory)
-		       (let* ((vec (tramp-dissect-file-name default-directory))
-			      (user (or (tramp-file-name-user vec) ""))
-			      (host (tramp-file-name-host vec)))
-			 (propertize (format "%s@%s   " user host) 'face 'meow/mode-line-emphasize-face))))
+		     (meow/mode-line-tramp-format))
 
 		    (:eval
 		     (pcase envrc--status
