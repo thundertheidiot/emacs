@@ -56,6 +56,12 @@
     '';
   };
 
+  # weird problem
+  # https://github.com/NixOS/nixpkgs/issues/388829
+  alert = prev.alert.overrideAttrs {
+    __structuredAttrs = false;
+  };
+
   empv = prev.empv.overrideAttrs {
     packageRequires = with final; [
       hydra

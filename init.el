@@ -35,4 +35,6 @@
 (require 'meow-org)
 (require 'meow-media)
 (require 'meow-mommy)
+
+(setq debug-on-error t)
 ;;; init.el ends here

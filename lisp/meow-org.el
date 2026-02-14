@@ -64,6 +64,16 @@
 	   "s" '("screenshot" . org-download-screenshot)
 	   "c" '("image from clipboard" . org-download-clipboard)))
 
+(use-package alert
+  :custom
+  (alert-default-style 'notifications))
+
+(use-package org-wild-notifier
+  :custom
+  (org-wild-notifier-keyword-blacklist '("DONE"))
+  :config
+  (org-wild-notifier-mode))
+
 (defun meow/org-tempo-electric-pair-fix ()
   (setq-local electric-pair-inhibit-predicate
 	      `(lambda (c)
