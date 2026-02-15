@@ -106,5 +106,45 @@
   (olivetti-mode-on . (lambda () (olivetti-set-width olivetti-body-width)))
   (org-mode . olivetti-mode))
 
+(defun meow/--org-create-todo (buffer &optional arg)
+  "Create TODO entry in BUFFER."
+  (with-current-buffer buffer
+    (save-excursion
+      (let ((top-headings '()))
+
+	(org-map-entries
+	 (lambda ()
+	   (when (not (or (org-entry-is-todo-p)
+			  (org-entry-is-done-p)))
+	     (push (org-get-heading) top-headings))))
+
+	(let* ((heading (completing-read "Heading: " (cons "-- Top Level --" (nreverse top-headings))))
+	       (name (completing-read "Todo: " nil)))
+	  (if (string= heading "-- Top Level --")
+	      (progn
+		(goto-char (point-max))
+		(org-insert-heading '(16) t 1))
+	    (progn
+	      (goto-char (point-min))
+	      (re-search-forward (concat "^\\* " (regexp-quote heading) "$"))
+	      (org-insert-heading '(16) t (+ (org-current-level) 1))))
+	  (insert (format "TODO %s" name))
+	  (if arg
+	      (org-schedule nil)
+	    (org-deadline nil)))))))
+
+(defun meow/org-add-todo (&optional arg)
+  "Add a TODO to an org roam document."
+  (interactive "P")
+  (if (derived-mode-p 'org-mode)
+      (meow/--org-create-todo (current-buffer) arg)
+    (if-let* ((node (org-roam-node-read))
+	      (file (org-roam-node-file node)))
+	(meow/--org-create-todo (find-file-noselect file) arg)
+      (user-error "Create an org roam node first"))))
+
+(meow/leader
+  "ot" '("create todo" . meow/org-add-todo))
+
 (provide 'meow-org)
 ;;; meow-org.el ends here
