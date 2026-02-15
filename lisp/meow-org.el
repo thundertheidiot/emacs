@@ -33,6 +33,7 @@
 		      (evil-ret)))))
 
 (use-package evil-org
+  :demand t
   :after org
   :hook (org-mode . evil-org-mode)
   :config
@@ -40,6 +41,7 @@
   (evil-org-agenda-set-keys))
 
 (use-package org-roam
+  :demand t ;; load immediately because org agenda depends on org roam
   :custom
   (org-roam-directory (file-truename "~/Documents/org/roam"))
   :config
