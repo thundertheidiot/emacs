@@ -7,6 +7,7 @@
   (org-src-tab-acts-natively t)
   (org-startup-with-inline-images t)
   (org-log-done 'time)
+  (org-tags-exclude-from-inheritance '("agenda"))
   (calendar-week-start-day 1)
   (org-babel-load-languages '((emacs-lisp . t)
 			      (shell . t)
@@ -47,7 +48,6 @@
   :config
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
-  (setq org-agenda-files (org-roam-list-files))
   (org-roam-db-autosync-mode)
   (org-roam-setup)
   :general
@@ -57,6 +57,54 @@
 	   "rf" '("find node" . org-roam-node-find)
 	   "rI" '("create id" . org-id-get-create)
 	   "ri" '("insert node" . org-roam-node-insert)))
+
+;; https://www.d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5
+(defun meow/org-set-agenda-tag ()
+  "Set the agenda tag for the current org document, if TODOs exist."
+  (if (org-element-map
+	  (org-element-parse-buffer 'headline)
+	  'headline
+	(lambda (h)
+	  (eq (org-element-property :todo-type h)
+	      'todo))
+	nil 'first-match)
+      (org-roam-tag-add '("agenda"))
+    (ignore-errors
+      (org-roam-tag-remove '("agenda")))))
+
+(defun meow/org-roam-update-all-agenda-tags ()
+  (dolist (file (org-roam-list-files))
+    (with-current-buffer (find-file-noselect file)
+      (meow/org-update-agenda-tag))))
+
+(defun meow/org-update-agenda-tag ()
+  "Check if conditions are met and set the agenda tag."
+  (when (and (not (active-minibuffer-window))
+	     (derived-mode-p 'org-mode)
+	     buffer-file-name
+	     (string-prefix-p
+	      (expand-file-name (file-name-as-directory org-roam-directory))
+	      (file-name-directory buffer-file-name)))
+    (meow/org-set-agenda-tag)))
+
+(add-hook 'org-mode-hook #'meow/org-update-agenda-tag)
+(add-hook 'before-save-hook #'meow/org-update-agenda-tag)
+
+(defun meow/org-roam-get-agenda-files ()
+  "Get list of org roam nodes with the `agenda' tag."
+  (org-roam-db-query
+   [:select [nodes:file]
+	    :from tags
+	    :left-join nodes
+	    :on (= tags:node-id nodes:id)
+	    :where (like tag (quote "%\"agenda\"%"))]))
+
+(defun meow/org-update-agenda-files (&rest _)
+  "Update agenda files list."
+  (setq org-agenda-files (mapcar #'car (meow/org-roam-get-agenda-files))))
+
+(advice-add 'org-agenda :before #'meow/org-update-agenda-files)
+(advice-add 'org-todo-list :before #'meow/org-update-agenda-files)
 
 (use-package org-download
   :hook (dired-mode . org-download-enable)
@@ -129,9 +177,11 @@
 	      (re-search-forward (concat "^\\* " (regexp-quote heading) "$"))
 	      (org-insert-heading '(16) t (+ (org-current-level) 1))))
 	  (insert (format "TODO %s" name))
-	  (if arg
-	      (org-schedule nil)
-	    (org-deadline nil)))))))
+	  (pcase arg
+	    (`(4) (org-schedule nil))
+	    (`(16))
+	    (_ (org-deadline nil)))))
+      (save-buffer))))
 
 (defun meow/org-add-todo (&optional arg)
   "Add a TODO to an org roam document."
