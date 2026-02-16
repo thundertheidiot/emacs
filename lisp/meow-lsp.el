@@ -17,7 +17,7 @@
   (meow/leader
     "c" '(:ignore t :wk "code")
     "ca" '("code actions" . (lambda () (interactive)
-			      (eglot-code-actions 1 (point-max) nil t))))
+			      (eglot-code-actions (point-min) (point-max) nil t))))
   (:states '(normal visual insert)
 	   "M-r" #'eglot-rename))
 

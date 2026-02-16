@@ -102,7 +102,6 @@ MPV is called with MPV-ARGS and MPD is called with MPD-ARGS."
     ("m" "Open MPD menu" mpd-menu)]
    ["Playback"
     ("p" "toggle playback" media-menu--toggle :transient t)
-    ("p" "toggle playback" media-menu--toggle :transient t)
     ]
    ["Settings"
     ("-" "Volume down" media-menu--volume-decrease :transient t)

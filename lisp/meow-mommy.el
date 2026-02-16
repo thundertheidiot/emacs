@@ -29,7 +29,8 @@ ARGS is the list of arguments passed to the function."
 
 (advice-add 'async-shell-command :around #'async-shell-command-cargo-mommy)
 
-(setq rustic-cargo-bin (or (executable-find "cargo-mommy") "cargo"))
+(with-eval-after-load 'rustic
+  (setq rustic-cargo-bin (or (executable-find "cargo-mommy") "cargo")))
 
 (provide 'meow-mommy)
 ;;; meow-mommy.el ends here

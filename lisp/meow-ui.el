@@ -6,8 +6,8 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-(global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode)
 (global-visual-line-mode)
 
 (add-hook 'emacs-lisp-mode-hook #'prettify-symbols-mode)
@@ -56,7 +56,6 @@
 (setq-default line-spacing 0.12)
 
 (setq scroll-conservatively 10)
-(setq scroll-margin 7)
 
 (use-package vertico
   :custom

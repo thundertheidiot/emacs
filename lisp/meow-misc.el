@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 (setq use-short-answers t
       native-comp-async-report-warnings-errors 'silent
-      indent-tabs-mode t
       c-basic-offset 'tab-width
       tab-width 4
 
@@ -103,7 +102,6 @@ Preserve window configuration when pressing ESC."
 
 ;; editor as new buffer
 (setenv "EDITOR" "emacsclient")
-(setq server-window (selected-window))
 
 (provide 'meow-misc)
 ;;; meow-misc.el ends here

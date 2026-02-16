@@ -121,11 +121,11 @@
        (propertize "<nix-shell> " 'face '(:foreground "green"))
      "")
    (abbreviate-file-name (eshell/pwd))
-   
-   (if (magit-toplevel)
+
+   (if (and (not (file-remote-p default-directory)) (magit-toplevel))
        (propertize (format "  %s" (magit-get-current-branch)) 'face '(:foreground "#cba6f7"))
      "")
-
+   
    (propertize " λ" 'face
 	       (if (string-match (rx
 				  "/sudo:root"
@@ -197,6 +197,7 @@
   (eshell/cd
    (read-file-name "Change directory: ")))
 
+(require 's)
 (defun eshell/nix-shell (&rest args)
   (if (member "--run" args)
       (eshell-command-result

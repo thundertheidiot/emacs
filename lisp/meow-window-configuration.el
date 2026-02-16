@@ -22,11 +22,11 @@ If NAME is provided, name it."
   (add-to-list 'meow/saved-window-configurations `(,(or name
 							(if (string= (projectile-project-name) "-")
 							    (format "%s (%s)"
-								    (shell-command-to-string "date \"+%a %R\"")
+								    (string-trim (shell-command-to-string "date \"+%a %R\""))
 								    (wcs--format-window-list))
 							  (format "%s: %s (%s)"
 								  (projectile-project-name)
-								  (shell-command-to-string "date \"+%a %R\"")
+								  (string-trim (shell-command-to-string "date \"+%a %R\""))
 								  (wcs--format-window-list))))
 						   . ,(window-state-get (frame-root-window) t))))
 

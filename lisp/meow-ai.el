@@ -97,8 +97,8 @@
       (error
        (let ((obj (if callable
 		      (symbol-function symbol)
-		    (symbol-value symbol))
-		  (pp-to-string obj))))))))
+		    (symbol-value symbol))))
+	 (pp-to-string obj))))))
 
 
 (setq gptel-tools (list
@@ -157,7 +157,7 @@
 					     default-directory)))
 				  (mapcar #'file-truename
 					  (seq-filter #'file-regular-p
-						      (directory-files path)))))
+						      (directory-files dir)))))
 		    :name "list_directory"
 		    :description "List the contents of a directory, or the default-directory if no path is given."
 		    :args (list
@@ -210,8 +210,7 @@
 				   :type string
 				   :description "Name of the symbol."))
 		    :category "emacs"
-		    :include t)
-		   ))
+		    :include t)))
 
 (provide 'meow-ai)
 ;;; meow-ai.el ends here

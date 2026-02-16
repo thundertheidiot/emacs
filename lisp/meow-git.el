@@ -85,7 +85,7 @@
 	   ">" 'git-timemachine-show-next-revision
 	   "K" 'git-timemachine-show-next-revision
 	   "i" nil ;; no point in going to insert mode, the buffer is read only
-	   "C-f" (lambda () (git-timemachine-show-nth-revision 1))
+	   "C-f" (lambda () (interactive) (git-timemachine-show-nth-revision 1))
 	   "C-g" 'git-timemachine-show-nth-revision
 	   "C-c" 'git-timemachine-show-current-revision)
   :general
