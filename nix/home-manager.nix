@@ -17,6 +17,7 @@ in {
     home.packages = with pkgs; [
       emacs-lsp-booster
       emacs-all-the-icons-fonts
+      python314Packages.trafilatura
       # screenshot
       grim
       slurp

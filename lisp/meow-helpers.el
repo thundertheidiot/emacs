@@ -26,21 +26,17 @@
 (defun meow/comment-or-uncomment-region-or-line ()
   "If a region is selected, either uncomment or comment it, if not, uncomment or comment the current line."
   (interactive)
-  (let (beg end)
-    (if (region-active-p)
-	(setq beg (region-beginning) end (region-end))
-      (setq beg (line-beginning-position) end (line-end-position)))
-    (comment-or-uncomment-region beg end)))
+  (if (region-active-p)
+      (comment-or-uncomment-region (region-beginning) (region-end))
+    (comment-or-uncomment-region (line-beginning-position) (line-end-position))))
 
 (defun meow/eval-region-and-go-to-normal-mode ()
   "Evaluate elisp in the selected region and go back to normal mode."
   (interactive)
-  (let (beg end)
-    (if (region-active-p)
-	(setq beg (region-beginning) end (region-end))
-      (setq beg (line-beginning-position) end (line-end-position)))
-    (eval-region beg end)
-    (evil-normal-state)))
+  (if (region-active-p)
+      (eval-region (region-beginning) (region-end))
+    (eval-region (line-beginning-position) (line-end-position)))
+  (evil-normal-state))
 
 (defun meow/turn-off-line-numbers ()
   "Turn off line numbers 🤯."
