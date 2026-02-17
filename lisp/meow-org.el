@@ -148,8 +148,10 @@
   :custom
   (org-structure-template-alist '(("el" . "src emacs-lisp"))))
 
-(use-package org-bullets
-  :hook (org-mode . org-bullets-mode))
+(use-package org-superstar
+  :custom
+  (org-superstar-special-todo-items t)
+  :hook (org-mode . org-superstar-mode))
 
 (use-package olivetti
   :custom 
