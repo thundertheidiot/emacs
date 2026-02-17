@@ -13,6 +13,15 @@
 			      (shell . t)
 			      (eshell . t)
 			      (lisp . t)))
+
+  (org-agenda-span 7)
+  (org-agenda-start-day "+0d")
+  (org-agenda-category-icon-alist `(("school" ,(list (all-the-icons-faicon "graduation-cap" :height 0.8)) nil nil :ascent center)))
+  (org-agenda-prefix-format
+   `((agenda . " %i %?-12t% s")
+     (todo . " %i %-12:c")
+     (tags . " %i %-12:c")
+     (search . " %i %-12:c")))
   :init
   (add-hook 'org-mode-hook #'org-indent-mode)
   (add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))

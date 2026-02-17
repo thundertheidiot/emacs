@@ -44,6 +44,14 @@ Preserve window configuration when pressing ESC."
 ;; (setq pixel-scroll-precision-large-scroll-height 40.0)
 ;; (setq pixel-scroll-precision-use-momentum t)
 
+(use-package with-editor
+  :hook
+  (shell-mode . with-editor-export-editor)
+  (eshell-mode . with-editor-export-editor)
+  (vterm-mode . with-editor-export-editor)
+  :config
+  (shell-command-with-editor-mode))
+
 (use-package ultra-scroll
   :init
   (setq scroll-conservatively 101 ; important!

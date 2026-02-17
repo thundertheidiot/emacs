@@ -152,12 +152,16 @@
 		    :include t)
 		   (gptel-make-tool
 		    :function (lambda (&optional path)
-				(let ((dir (if path
-					       (expand-file-name path)
-					     default-directory)))
-				  (mapcar #'file-truename
-					  (seq-filter #'file-regular-p
-						      (directory-files dir)))))
+				(let* ((dir (if path
+						(expand-file-name path)
+					      default-directory))
+				       (default-directory dir))
+				  (mapconcat #'identity
+					     (mapcar (lambda (p) (expand-file-name p dir))
+						     (seq-filter (lambda (p) (not (or (string= "." p)
+										      (string= ".." p))))
+								 (directory-files dir)))
+					     "\n")))
 		    :name "list_directory"
 		    :description "List the contents of a directory, or the default-directory if no path is given."
 		    :args (list
@@ -180,6 +184,26 @@
 				   :description "Path to read."))
 		    :category "files"
 		    :confirm (lambda (path) (not (meow/is-github-repo-p path)))
+		    :include t)
+		   (gptel-make-tool
+		    :function (lambda (callback repo)
+				(let ((tmp-dir (make-temp-file "gptel-git" t))
+				      (default-directory temporary-file-directory))
+				  (magit-run-git-async "clone" repo (magit-convert-filename-for-git tmp-dir))
+				  (set-process-sentinel
+				   magit-this-process
+				   (lambda (proc event)
+				     (when (eq (process-status proc) 'exit)
+				       (funcall callback tmp-dir))))))
+		    :async t
+		    :name "git_clone"
+		    :description "Clone a git repository to a temporary path, returns the path to the repository."
+		    :args (list
+			   '(:name "repo"
+				   :type string
+				   :description "Repository url."))
+		    :category "files"
+		    :confirm t
 		    :include t)
 		   (gptel-make-tool
 		    :function #'meow/gptel-variable-documentation
