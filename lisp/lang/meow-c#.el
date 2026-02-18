@@ -1,16 +1,4 @@
 ;; -*- lexical-binding: t; -*-
-(defun tmc-test ()
-  (interactive)
-  (let* ((test-dir (expand-file-name "../.." default-directory))
-	 (default-directory test-dir))
-    (async-shell-command "tmc test")))
-
-(defun tmc-submit ()
-  (interactive)
-  (let* ((test-dir (expand-file-name "../.." default-directory))
-	 (default-directory test-dir))
-    (async-shell-command "tmc submit")))
-
 (defun dotnet-run ()
   (interactive)
   (async-shell-command "dotnet run"))
@@ -23,8 +11,8 @@
   (csharp-mode . apheleia-mode)
   :general-config
   (meow/local :keymaps 'csharp-mode-map
-    "t" #'tmc-test
-    "s" #'tmc-submit
+    "t" (lambda () (interactive) (meow/tmc "test"))
+    "s" (lambda () (interactive) (meow/tmc "submit"))
     "r" #'dotnet-run))
 
 (provide 'lang/meow-c\#)

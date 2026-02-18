@@ -121,5 +121,13 @@
   :config
   (require 'info))
 
+(defvar meow/tmc-dir (expand-file-name "~/.local/share/tmc/tmc_cli_rust"))
+
+(defun meow/tmc (args)
+  (let ((default-directory (or
+			    (when (file-in-directory-p default-directory meow/tmc-dir)
+			      (locate-dominating-file default-directory ".tmcproject.yml")))))
+    (async-shell-command (format "tmc %s" args))))
+
 (provide 'meow-programming)
 ;;; meow-programming.el ends here
