@@ -16,7 +16,10 @@
 
   (org-agenda-span 7)
   (org-agenda-start-day "+0d")
-  (org-agenda-category-icon-alist `(("school" ,(list (all-the-icons-faicon "graduation-cap" :height 0.8)) nil nil :ascent center)))
+  (org-agenda-category-icon-alist `(("school" ,(list (all-the-icons-faicon "graduation-cap" :height 0.8)) nil nil :ascent center)
+				    ("project" ,(list (all-the-icons-faicon "certificate" :height 0.8)) nil nil :ascent center)
+				    ("game" ,(list (all-the-icons-faicon "gamepad" :height 1.0)) nil nil :ascent center)
+				    ))
   (org-agenda-prefix-format
    `((agenda . " %i %?-12t% s")
      (todo . " %i %-12:c")
@@ -194,10 +197,10 @@
 	    (_ (org-deadline nil)))))
       (save-buffer))))
 
-(defun meow/org-add-todo (&optional arg)
+(defun meow/org-add-todo (&optional arg force-roam-find)
   "Add a TODO to an org roam document."
   (interactive "P")
-  (if (derived-mode-p 'org-mode)
+  (if (and (not force-roam-find) (derived-mode-p 'org-mode))
       (meow/--org-create-todo (current-buffer) arg)
     (if-let* ((node (org-roam-node-read))
 	      (file (org-roam-node-file node)))
@@ -205,7 +208,8 @@
       (user-error "Create an org roam node first"))))
 
 (meow/leader
-  "ot" '("create todo" . meow/org-add-todo))
+  "ot" '("create todo" . meow/org-add-todo)
+  "oT" '("create todo for node" . (lambda () (interactive) (meow/org-add-todo current-prefix-arg t))))
 
 (provide 'meow-org)
 ;;; meow-org.el ends here
