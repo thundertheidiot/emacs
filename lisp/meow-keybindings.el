@@ -117,6 +117,7 @@
 					(dired default-directory))))
 
   "o" '(:ignore t :wk "open")
+  "oc" '("world clock" . world-clock)
 
   ":" '("M-x" . execute-extended-command)
   ";" '("M-x" . execute-extended-command)
