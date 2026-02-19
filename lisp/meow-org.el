@@ -64,6 +64,7 @@
 (use-package toc-org
   :hook (org-mode . toc-org-mode))
 
+(use-package auctex)
 (use-package cdlatex
   :hook (org-mode . turn-on-org-cdlatex))
 
