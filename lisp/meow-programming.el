@@ -124,10 +124,58 @@
 (defvar meow/tmc-dir (expand-file-name "~/.local/share/tmc/tmc_cli_rust"))
 
 (defun meow/tmc (args)
+  "Call tmc as a shell command with ARGS."
   (let ((default-directory (or
 			    (when (file-in-directory-p default-directory meow/tmc-dir)
 			      (locate-dominating-file default-directory ".tmcproject.yml")))))
     (async-shell-command (format "tmc %s" args))))
+
+(defun meow/--tmc-pick-exercise (course callback)
+  "Pick exercise from COURSE, call CALLBACK with the string."
+  (meow/async-shell-command-string
+   (format "tmc exercises %s" course)
+   (lambda (proc buf)
+     (let* ((string (with-current-buffer buf
+		      (goto-char (point-min))
+		      (search-forward "Soft deadline:")
+		      (search-forward "\n")
+		      (buffer-substring (point) (point-max))))
+	    (exercise (completing-read "Pick exercise: "
+				       (seq-filter (lambda (s) (not (string-empty-p s)))
+						   (mapcar #'s-trim
+							   (split-string string "\n")))
+				       )))
+       (when exercise
+	 (funcall callback (cadr (split-string exercise ": ")))))
+     )))
+
+(defun meow/--tmc-open-exercise (course)
+  "Open exercise from COURSE with `find-file'."
+  (meow/--tmc-pick-exercise
+   course
+   (lambda (exercise)
+     (find-file
+      (expand-file-name exercise (expand-file-name course meow/tmc-dir))))))
+
+(defun meow/tmc-pick-exercise (&optional arg)
+  "Open a tmc exercise, if you are in an exercise directory pick from the current course, unless ARG is set."
+  (interactive "P")
+  (if (and (not arg) (file-in-directory-p default-directory meow/tmc-dir))
+      (let ((course (car (split-string
+			  (file-relative-name default-directory meow/tmc-dir)
+			  "/" t))))
+	(meow/--tmc-open-exercise course))
+    (meow/async-shell-command-string
+     "tmc courses"
+     (lambda (_proc buf)
+       (let* ((string (with-current-buffer buf
+			(buffer-string)))
+	      (course (completing-read "Pick course: "
+				       (seq-filter
+					(lambda (s) (and (not (string-empty-p s))
+							 (not (s-contains-p "Updates" s))))
+					(split-string string "\n")))))
+	 (meow/--tmc-open-exercise course))))))
 
 (provide 'meow-programming)
 ;;; meow-programming.el ends here

@@ -18,8 +18,7 @@
   (org-agenda-start-day "+0d")
   (org-agenda-category-icon-alist `(("school" ,(list (all-the-icons-faicon "graduation-cap" :height 0.8)) nil nil :ascent center)
 				    ("project" ,(list (all-the-icons-faicon "certificate" :height 0.8)) nil nil :ascent center)
-				    ("game" ,(list (all-the-icons-faicon "gamepad" :height 1.0)) nil nil :ascent center)
-				    ))
+				    ("game" ,(list (all-the-icons-faicon "gamepad" :height 1.0)) nil nil :ascent center)))
   (org-agenda-prefix-format
    `((agenda . " %i %?-12t% s")
      (todo . " %i %-12:c")
