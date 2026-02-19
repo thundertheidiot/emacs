@@ -64,6 +64,9 @@
 (use-package toc-org
   :hook (org-mode . toc-org-mode))
 
+(use-package cdlatex
+  :hook (org-mode . turn-on-org-cdlatex))
+
 (use-package evil-org
   :demand t
   :after org

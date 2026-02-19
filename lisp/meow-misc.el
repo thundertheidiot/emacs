@@ -29,7 +29,7 @@
 (savehist-mode 1)
 
 ;; needed to insert ` with my keyboard
-(global-set-key (kbd "s-`") #'(lambda () (interactive) (insert "`")))
+(global-set-key (kbd "s-`") (kbd "`"))
 
 ;; save recently opened files
 (recentf-mode)
