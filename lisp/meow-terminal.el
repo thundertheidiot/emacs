@@ -1,44 +1,44 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-helpers)
 
-(defun meow/vterm (&optional projectile)
-  (if projectile
-      (projectile-run-vterm t)
-    (vterm t))
-  (end-of-buffer)
-  (evil-append-line 1))
+;; (defun meow/vterm (&optional projectile)
+;;   (if projectile
+;;       (projectile-run-vterm t)
+;;     (vterm t))
+;;   (end-of-buffer)
+;;   (evil-append-line 1))
 
-(defun vterm-evil-insert ()
-  "Mimic evil i in vterm."
-  (interactive)
-  (vterm-goto-char (point))
-  (call-interactively #'evil-insert))
+;; (defun vterm-evil-insert ()
+;;   "Mimic evil i in vterm."
+;;   (interactive)
+;;   (vterm-goto-char (point))
+;;   (call-interactively #'evil-insert))
 
-(defun vterm-evil-append ()
-  "Mimic evil a in vterm."
-  (interactive)
-  (vterm-goto-char (1+ (point)))
-  (call-interactively #'evil-append))
+;; (defun vterm-evil-append ()
+;;   "Mimic evil a in vterm."
+;;   (interactive)
+;;   (vterm-goto-char (1+ (point)))
+;;   (call-interactively #'evil-append))
 
-(defun vterm-evil-append-line ()
-  "Mimic A in vterm."
-  (interactive)
-  (vterm-goto-char (point-max))
-  (call-interactively #'evil-insert))
+;; (defun vterm-evil-append-line ()
+;;   "Mimic A in vterm."
+;;   (interactive)
+;;   (vterm-goto-char (point-max))
+;;   (call-interactively #'evil-insert))
 
-(defun vterm-evil-delete ()
-  "Provide similar behavior as `evil-delete'."
-  (interactive)
-  (let ((inhibit-read-only t))
-    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
-      (call-interactively 'evil-delete))))
+;; (defun vterm-evil-delete ()
+;;   "Provide similar behavior as `evil-delete'."
+;;   (interactive)
+;;   (let ((inhibit-read-only t))
+;;     (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
+;;       (call-interactively 'evil-delete))))
 
-(defun vterm-evil-change ()
-  "Provide similar behavior as `evil-change'."
-  (interactive)
-  (let ((inhibit-read-only t))
-    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
-      (call-interactively 'evil-change))))
+;; (defun vterm-evil-change ()
+;;   "Provide similar behavior as `evil-change'."
+;;   (interactive)
+;;   (let ((inhibit-read-only t))
+;;     (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
+;;       (call-interactively 'evil-change))))
 
 ;; (defun meow/vterm-process-finished (buffer _event)
 ;;   (when (buffer-live-p buffer)
@@ -67,39 +67,39 @@
 ;; 	(set-window-point window (point-max)))
 ;;       )))
 
-(use-package vterm
-  :hook (vterm-mode . meow/turn-off-line-numbers)
-  :commands (vterm)
-  :custom
-  (vterm-kill-buffer-on-exit nil)
-  (vterm-max-scrollback 100000)
-  ;; :config
-  ;; (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
-  :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "ov" '((lambda () (interactive)
-		    (select-window (meow/intelligent-split t))
-		    (meow/vterm)) :wk "vterm")
-	   "oV" '((lambda () (interactive)
-		    (meow/vterm)) :wk "vterm in this window")
-	   "pov" '((lambda () (interactive)
-		     (select-window (meow/intelligent-split t))
-		     (meow/vterm t)) :wk "vterm")
-	   "poV" '((lambda () (interactive)
-		     (meow/vterm t)) :wk "vterm in this window"))
-  :general-config
-  (:states '(normal visual) :keymaps 'vterm-mode-map
-	   "a" 'vterm-evil-append
-	   "A" 'vterm-evil-append-line
-	   "d" 'vterm-evil-delete
-	   "i" 'vterm-evil-insert
-	   "c" 'vterm-evil-change))
+;; (use-package vterm
+;;   :hook (vterm-mode . meow/turn-off-line-numbers)
+;;   :commands (vterm)
+;;   :custom
+;;   (vterm-kill-buffer-on-exit nil)
+;;   (vterm-max-scrollback 100000)
+;;   ;; :config
+;;   ;; (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
+;;   :general
+;;   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
+;; 	   "ov" '((lambda () (interactive)
+;; 		    (select-window (meow/intelligent-split t))
+;; 		    (meow/vterm)) :wk "vterm")
+;; 	   "oV" '((lambda () (interactive)
+;; 		    (meow/vterm)) :wk "vterm in this window")
+;; 	   "pov" '((lambda () (interactive)
+;; 		     (select-window (meow/intelligent-split t))
+;; 		     (meow/vterm t)) :wk "vterm")
+;; 	   "poV" '((lambda () (interactive)
+;; 		     (meow/vterm t)) :wk "vterm in this window"))
+;;   :general-config
+;;   (:states '(normal visual) :keymaps 'vterm-mode-map
+;; 	   "a" 'vterm-evil-append
+;; 	   "A" 'vterm-evil-append-line
+;; 	   "d" 'vterm-evil-delete
+;; 	   "i" 'vterm-evil-insert
+;; 	   "c" 'vterm-evil-change))
 
-(use-package eshell-vterm
-  :demand t
-  :after eshell
-  :config 
-  (eshell-vterm-mode))
+;; (use-package eshell-vterm
+;;   :demand t
+;;   :after eshell
+;;   :config 
+;;   (eshell-vterm-mode))
 
 (use-package fish-completion)
 
@@ -136,6 +136,12 @@
    (propertize " " 'face
 	       'default)))
 
+(use-package eat
+  :hook
+  (eat-mode . meow/turn-off-line-numbers)
+  :config
+  (eat-eshell-mode))
+
 (use-package eshell
   :ensure nil
   :after (magit fish-completion)
@@ -152,14 +158,15 @@
   (add-to-list 'eshell-modules-list 'eshell-elecslash)
   (add-to-list 'eshell-modules-list 'eshell-tramp)
 
-  (setq eshell-visual-commands '(
-				 "nix"
-				 "nix-build"
-				 "nixos-rebuild"
-				 "nh"
-				 "deploy"
-				 "btop"
-				 "htop"))
+  ;; (setq eshell-visual-commands '(
+  ;; 				 "nix"
+  ;; 				 "nix-build"
+  ;; 				 "nixos-rebuild"
+  ;; 				 "nh"
+  ;; 				 "deploy"
+  ;; 				 "btop"
+  ;; 				 "htop")
+  ;; )
   :hook
   (eshell-mode . meow/turn-off-line-numbers)
   (eshell-mode . fish-completion-mode)

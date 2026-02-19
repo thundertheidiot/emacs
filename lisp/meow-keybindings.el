@@ -50,7 +50,8 @@
 			  wgrep
 			  yaml-mode
 			  diff-hl
-			  vterm)))
+			  vterm
+			  eat)))
 
 (use-package evil-better-visual-line
   :demand t
