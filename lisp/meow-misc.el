@@ -107,6 +107,7 @@ Preserve window configuration when pressing ESC."
   :after evil-collection
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :hook (pdf-view-mode . auto-revert-mode)
   :config
   (evil-collection-pdf-setup))
 
