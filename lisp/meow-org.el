@@ -24,6 +24,14 @@
      (todo . " %i %-12:c")
      (tags . " %i %-12:c")
      (search . " %i %-12:c")))
+  (org-format-latex-options
+   '(:foreground default
+		 :background default
+		 :scale 2.0
+		 :html-foreground "Black"
+		 :html-background "Transparent"
+		 :html-scale 2.0
+		 :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
   :init
   (add-hook 'org-mode-hook #'org-indent-mode)
   (add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
@@ -43,6 +51,18 @@
 	    "RET" (lambda () (interactive)
 		    (unless (ignore-errors (org-open-at-point))
 		      (evil-ret)))))
+
+(use-package org-appear
+  :custom
+  (org-appear-autolinks t)
+  (org-appear-inside-latex t)
+  :hook (org-mode . org-appear-mode))
+
+(use-package org-fragtog
+  :hook (org-mode . org-fragtog-mode))
+
+(use-package toc-org
+  :hook (org-mode . toc-org-mode))
 
 (use-package evil-org
   :demand t
@@ -140,7 +160,9 @@
 	      `(lambda (c)
 		 (if (char-equal c ?<)
 		     t
-		   (,electric-pair-inhibit-predicate c)))))
+		   (,electric-pair-inhibit-predicate c))))
+  (setq-local electric-pair-pairs
+	      (append electric-pair-pairs '((?$ . ?$)))))
 
 (use-package org-tempo
   :demand t
