@@ -137,6 +137,7 @@
 	       'default)))
 
 (use-package eat
+  :demand t
   :hook
   (eat-mode . meow/turn-off-line-numbers)
   :config
