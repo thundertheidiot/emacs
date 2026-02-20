@@ -138,8 +138,6 @@
 
 (use-package eat
   :demand t
-  :custom
-  (eat-terminal-name "xterm-256color")
   :hook
   (eat-mode . meow/turn-off-line-numbers)
   :config
