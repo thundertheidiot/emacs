@@ -177,6 +177,7 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
+(defvar meow/server-solaire-on nil)
 ;; color frames differently
 (use-package solaire-mode
   :hook
@@ -184,9 +185,11 @@
 		  (when (display-graphic-p)
 		    (solaire-global-mode +1))))
   (server-after-make-frame . (lambda ()
-			       (when (display-graphic-p)
-				 (solaire-global-mode +1)))))
+			       (when (and (not meow/server-solaire-on) (display-graphic-p))
+				 (solaire-global-mode +1)
+				 (setq meow/server-solaire-on t)))))
 
+(defvar meow/server-catppuccin-reloaded nil)
 ;; theme
 (use-package catppuccin-theme
   :custom
@@ -194,8 +197,9 @@
   :hook
   ;; https://github.com/catppuccin/emacs/issues/121
   (server-after-make-frame . (lambda ()
-			       (when (daemonp)
-				 (catppuccin-reload))))
+			       (when (and (not meow/server-catppuccin-reloaded) (daemonp))
+				 (catppuccin-reload)
+				 (setq meow/server-catppuccin-reloaded t))))
   :config
   (load-theme 'catppuccin :no-confirm)
   (meow/mode-line))

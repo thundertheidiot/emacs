@@ -122,9 +122,9 @@
      "")
    (abbreviate-file-name (eshell/pwd))
 
-   (if (and (not (file-remote-p default-directory)) (magit-toplevel))
-       (propertize (format "  %s" (magit-get-current-branch)) 'face '(:foreground "#cba6f7"))
-     "")
+   ;; (if (and (not (file-remote-p default-directory)) (magit-toplevel))
+   ;;     (propertize (format "  %s" (magit-get-current-branch)) 'face '(:foreground "#cba6f7"))
+   ;;   "")
    
    (propertize " λ" 'face
 	       (if (string-match (rx
@@ -138,6 +138,8 @@
 
 (use-package eat
   :demand t
+  :custom
+  (eat-terminal-name "xterm-256color")
   :hook
   (eat-mode . meow/turn-off-line-numbers)
   :config
@@ -155,19 +157,10 @@
        (*?
 	nonl)
        "λ "))
+  (eshell-visual-commands '())
   :config
   (add-to-list 'eshell-modules-list 'eshell-elecslash)
   (add-to-list 'eshell-modules-list 'eshell-tramp)
-
-  ;; (setq eshell-visual-commands '(
-  ;; 				 "nix"
-  ;; 				 "nix-build"
-  ;; 				 "nixos-rebuild"
-  ;; 				 "nh"
-  ;; 				 "deploy"
-  ;; 				 "btop"
-  ;; 				 "htop")
-  ;; )
   :hook
   (eshell-mode . meow/turn-off-line-numbers)
   (eshell-mode . fish-completion-mode)
