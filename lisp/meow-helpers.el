@@ -51,6 +51,7 @@
       (let ((exit-code (call-process "nix" nil (list t nil) nil
 				     "build"
 				     "--print-out-paths"
+				     "--no-link"
 				     "--impure"
 				     "--expr"
 				     (format

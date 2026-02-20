@@ -63,6 +63,15 @@
   :config
   (add-hook 'ultra-scroll-hide-functions #'org-fragtog-mode))
 
+(defun meow/silence-fragtog (orig-fun &rest args)
+  "Override message for fragtog to silence the constant preview complete messages.
+This is used as a :around advice for `org-fragtog--enable-frag'.
+ORIG-FUN is called with ARGS."
+  (cl-letf (((symbol-function 'message) #'ignore))
+    (apply orig-fun args)))
+
+(advice-add 'org-fragtog--enable-frag :around #'meow/silence-fragtog)
+
 (use-package toc-org
   :hook (org-mode . toc-org-mode))
 

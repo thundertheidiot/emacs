@@ -8,7 +8,7 @@ There is also a home-manager module that sets up the emacs daemon, adds some req
 
 You can try the configuration out using nix:
 #+begin_src shell
-nix run github:thundertheidiot/emacs
+nix run github:thundertheidiot/emacs#emacs
 #+end_src
 
 * TODOs

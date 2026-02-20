@@ -1,4 +1,6 @@
 ;; -*- lexical-binding: t; -*-
+(setq gc-cons-threshold most-positive-fixnum)
+
 (setq package-enable-at-startup nil)
 (setq package-archives nil)
 
@@ -37,4 +39,15 @@
 (require 'meow-mommy)
 
 (setq debug-on-error t)
+
+;; gc setup
+(setq gc-cons-threshold (* 1024 1024 64))
+
+(add-hook 'minibuffer-setup-hook (lambda ()
+				   (setq gc-cons-threshold most-positive-fixnum)))
+(add-hook 'minibuffer-exit-hook (lambda ()
+				  (setq gc-cons-threshold (* 1024 1024 64))))
+
+(run-with-idle-timer 1.2 t #'garbage-collect)
+
 ;;; init.el ends here

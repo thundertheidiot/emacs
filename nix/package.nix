@@ -3,13 +3,13 @@
   inputs,
   lib,
   parse,
+  extraCFlags ? "",
   ...
 }: let
-  inherit (builtins) readDir trace;
+  inherit (builtins) readDir;
   inherit (lib) mapAttrsToList;
   inherit (lib.lists) flatten filter;
   inherit (lib.strings) concatStringsSep readFile hasSuffix;
-  inherit (pkgs) writeText;
 
   files = let
     match = {
@@ -70,13 +70,15 @@
     })
   ];
 
-  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-igc-pgtk.overrideAttrs (old: {
-    preConfigure = ''
-      export NIX_CFLAGS_COMPILE="-O3 $NIX_CFLAGS_COMPILE"
-    '';
+  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-pgtk.overrideAttrs (prev: {
+    env =
+      prev.env
+      // {
+        NIX_CFLAGS_COMPILE = "-O2 ${extraCFlags}";
+      };
 
     configureFlags =
-      old.configureFlags
+      prev.configureFlags
       ++ [
         "--with-native-compilation=aot"
         "--disable-gc-mark-trace"
@@ -87,6 +89,6 @@
   emacsPackages = emacsPackages'.overrideScope (import ./overrides.nix {inherit pkgs inputs;});
   emacsWithPackages = emacsPackages.emacsWithPackages;
 in
-  (emacsWithPackages defaultInit).overrideAttrs {
+  (emacsWithPackages defaultInit).overrideAttrs (prev: {
     passthru.epkgs = emacsPackages;
-  }
+  })

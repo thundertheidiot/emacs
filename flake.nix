@@ -39,7 +39,7 @@
 
       flake.homeModules = {
         default = {pkgs, ...}: {
-          programs.emacs.package = inputs.self.packages.${pkgs.system}.emacs;
+          programs.emacs.package = inputs.self.packages.${pkgs.system}.default;
 
           imports = [./nix/home-manager.nix];
         };
@@ -51,7 +51,12 @@
         lib,
         system,
         ...
-      }: {
+      }: let
+        emacsArgs = {
+          inherit pkgs lib inputs;
+          parse = import "${inputs.emacs-overlay}/parse.nix" {inherit pkgs lib;};
+        };
+      in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           overlays = [
@@ -60,10 +65,12 @@
         };
 
         packages.default = config.packages.emacs;
-        packages.emacs = import ./nix/package.nix {
-          inherit pkgs lib inputs;
-          parse = import "${inputs.emacs-overlay}/parse.nix" {inherit pkgs lib;};
-        };
+        packages.emacs = import ./nix/package.nix emacsArgs;
+
+        packages.emacsZen4 = import ./nix/package.nix (emacsArgs
+          // {
+            extraCFlags = "-march=znver4 -mtune=znver4";
+          });
 
         packages.emacs-empty-init-test = pkgs.writeShellScriptBin "emacs-empty-init-test" ''
           export EMACS_USER_DIR=$(mktemp -d)
