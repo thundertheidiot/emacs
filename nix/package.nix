@@ -71,11 +71,17 @@
   ];
 
   emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-igc-pgtk.overrideAttrs (old: {
+    preConfigure = ''
+      export NIX_CFLAGS_COMPILE="-O3 $NIX_CFLAGS_COMPILE"
+    '';
+
     configureFlags =
       old.configureFlags
       ++ [
-        "--with-native-compilation"
-        "--with-json"
+        "--with-native-compilation=aot"
+        "--disable-gc-mark-trace"
+        "--enable-link-time-optimization"
+        "--with-tree-sitter"
       ];
   }));
   emacsPackages = emacsPackages'.overrideScope (import ./overrides.nix {inherit pkgs inputs;});

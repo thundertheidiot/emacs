@@ -54,6 +54,13 @@
 		 (_ nil))))
     (setq meow/mode-line-flycheck text)))
 
+(defvar-local meow/mode-line-nyan-cat t)
+;; ultra scroll hide functions
+(defun meow/mode-line-nyan-cat-scroll (num)
+  (if (eq num -1)
+      (setq-local meow/mode-line-nyan-cat nil)
+    (setq-local meow/mode-line-nyan-cat t)))
+
 (defun meow/mode-line-tramp-format ()
   "Tramp string for mode line."
   (when (file-remote-p default-directory)
@@ -117,7 +124,7 @@
 		    (meow/mode-line-flycheck (:eval meow/mode-line-flycheck))
 
 		    "%="
-		    (:eval (nyan-create))))))
+		    (meow/mode-line-nyan-cat (:eval (nyan-create)))))))
 
 (add-hook 'enable-theme-functions
 	  (lambda (_theme) (meow/mode-line)))
@@ -127,6 +134,7 @@
 
 (add-hook 'flycheck-status-changed-functions #'meow/mode-line-flycheck-update)
 (add-hook 'flycheck-mode-hook #'meow/mode-line-flycheck-update)
+(add-hook 'ultra-scroll-hide-functions #'meow/mode-line-nyan-cat-scroll)
 
 ;; (run-with-idle-timer 2 t
 ;; 		     (lambda ()

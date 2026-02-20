@@ -63,6 +63,17 @@
 	  (insert (gui-get-selection 'CLIPBOARD 'text/plain))
 	  (gptel-add))))))
 
+(defun meow/gptel-quick-ask (prompt)
+  "Ask PROMPT from gptel."
+  (interactive "MAsk: ")
+  (select-window (meow/intelligent-split t))
+  (switch-to-buffer
+   (gptel (format-time-string "gptel-%Y%m%d-%H:%M:%S.org")
+	  t
+	  (format "*** %s" prompt)))
+  (goto-char (point-max))
+  (gptel-send))
+
 (use-package gptel
   :custom
   (gptel-model 'gemini-3-flash-preview)
@@ -76,6 +87,7 @@
   (meow/leader
     "a" '(:ignore t :wk "ai")
     "ao" '("gptel" . gptel)
+    "ac" '("quick ask" . meow/gptel-quick-ask)
     "aa" '("add context" . gptel-context-add)
     "am" '("gptel menu" . gptel-menu)
     "ap" '("insert from clipboard" . meow/gptel-clipboard)

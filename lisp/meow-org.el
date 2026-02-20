@@ -59,7 +59,9 @@
   :hook (org-mode . org-appear-mode))
 
 (use-package org-fragtog
-  :hook (org-mode . org-fragtog-mode))
+  :hook (org-mode . org-fragtog-mode)
+  :config
+  (add-hook 'ultra-scroll-hide-functions #'org-fragtog-mode))
 
 (use-package toc-org
   :hook (org-mode . toc-org-mode))
