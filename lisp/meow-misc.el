@@ -57,7 +57,8 @@ Preserve window configuration when pressing ESC."
 (use-package ultra-scroll
   :init
   (setq scroll-conservatively 101 ; important!
-        scroll-margin 0) 
+        scroll-margin 0
+	jit-lock-defer-time 0.05)  ; defer fontification
   :config
   (ultra-scroll-mode 1))
 
