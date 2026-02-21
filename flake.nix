@@ -10,6 +10,15 @@
   # https://github.com/nialov/actions.nix/compare/master...alyraffauf:actions.nix:master
   inputs.actions.url = "github:alyraffauf/actions.nix";
 
+  nixConfig = {
+    substituters = [
+      "https://meowos.cachix.org"
+    ];
+    trusted-public-keys = [
+      "meowos.cachix.org-1:QOXuuFPMN5TszgX8+nqd8X+BZG84toh5wK8j1IBBDH4="
+    ];
+  };
+
   inputs = {
     eglot-booster = {
       url = "github:jdtsmith/eglot-booster";
