@@ -12,9 +12,11 @@
 
   nixConfig = {
     substituters = [
+      "https://cache.nixos.org"
       "https://meowos.cachix.org"
     ];
     trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "meowos.cachix.org-1:QOXuuFPMN5TszgX8+nqd8X+BZG84toh5wK8j1IBBDH4="
     ];
   };

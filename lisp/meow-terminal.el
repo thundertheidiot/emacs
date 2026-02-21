@@ -8,14 +8,13 @@
   (if projectile
       (projectile-run-eshell t)
     (eshell t))
-  (end-of-buffer)
+  (goto-char (point-max))
   (evil-append-line 1))
 
 (defvar-local meow/eshell-nix-shell-environment nil
   "Store environment for nix shell.")
 (defvar-local meow/eshell-nix-shell-path nil
   "Store path for nix shell.")
-
 
 (defun meow/eshell-prompt ()
   "Custom eshell prompt."
@@ -48,6 +47,7 @@
 
 (use-package eshell
   :ensure nil
+  :demand t ;; force instant load
   :after (magit fish-completion)
   :commands (eshell projectile-run-eshell)
   :custom
@@ -177,6 +177,84 @@ Otherwise exit eshell and close the window with `evil-quit'."
       (throw 'eshell-terminal t))))
 
 (defalias 'eshell/e 'eshell/exit)
+
+;; vterm
+(defun meow/vterm (&optional projectile)
+  (if projectile
+      (projectile-run-vterm t)
+    (vterm t))
+  (end-of-buffer)
+  (evil-append-line 1))
+
+(defun vterm-evil-insert ()
+  "Mimic evil i in vterm."
+  (interactive)
+  (vterm-goto-char (point))
+  (call-interactively #'evil-insert))
+
+(defun vterm-evil-append ()
+  "Mimic evil a in vterm."
+  (interactive)
+  (vterm-goto-char (1+ (point)))
+  (call-interactively #'evil-append))
+
+(defun vterm-evil-append-line ()
+  "Mimic A in vterm."
+  (interactive)
+  (vterm-goto-char (point-max))
+  (call-interactively #'evil-insert))
+
+(defun vterm-evil-delete ()
+  "Provide similar behavior as `evil-delete'."
+  (interactive)
+  (let ((inhibit-read-only t))
+    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
+      (call-interactively 'evil-delete))))
+
+(defun vterm-evil-change ()
+  "Provide similar behavior as `evil-change'."
+  (interactive)
+  (let ((inhibit-read-only t))
+    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
+      (call-interactively 'evil-change))))
+
+(use-package vterm
+  :hook (vterm-mode . meow/turn-off-line-numbers)
+  :commands (vterm)
+  :custom
+  (vterm-kill-buffer-on-exit t)
+  (vterm-max-scrollback 100000)
+  ;; :config
+  ;; (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
+  :general
+  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
+	   "ov" '((lambda () (interactive)
+		    (select-window (meow/intelligent-split t))
+		    (meow/vterm)) :wk "vterm")
+	   "oV" '((lambda () (interactive)
+		    (meow/vterm)) :wk "vterm in this window")
+	   "pov" '((lambda () (interactive)
+		     (select-window (meow/intelligent-split t))
+		     (meow/vterm t)) :wk "vterm")
+	   "poV" '((lambda () (interactive)
+		     (meow/vterm t)) :wk "vterm in this window"))
+  :general-config
+  (:states '(normal visual) :keymaps 'vterm-mode-map
+	   "a" 'vterm-evil-append
+	   "A" 'vterm-evil-append-line
+	   "d" 'vterm-evil-delete
+	   "i" 'vterm-evil-insert
+	   "c" 'vterm-evil-change))
+
+;; https://github.com/akermu/emacs-libvterm/issues/313#issuecomment-1183650463
+(advice-add #'vterm--redraw :around (lambda (fun &rest args) (let ((cursor-type cursor-type)) (apply fun args))))
+
+;; eshell visual exec in vterm
+(use-package eshell-vterm
+  :demand t
+  :after eshell
+  :config 
+  (eshell-vterm-mode))
 
 (provide 'meow-terminal)
 ;;; meow-terminal.el ends here

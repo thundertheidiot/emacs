@@ -11,6 +11,10 @@ You can try the configuration out using nix:
 nix run github:thundertheidiot/emacs#emacs
 #+end_src
 
+** Notes
+
+I mostly use emacs as a server, so it's benefitial to not defer loading, since startup time is mostly unimportant. Most of the ~use-package~ definitions are optimized for deferring because I didn't know what I was doing, they will slowly change over time.
+
 * TODOs
 
 - TODO include fonts
