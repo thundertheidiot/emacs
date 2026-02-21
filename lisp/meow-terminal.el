@@ -38,6 +38,10 @@
    (propertize " " 'face
 	       'default)))
 
+;; eat is a "full terminal emulator" implemented in native emacs lisp
+;; this allows for better extensibility and integration than vterm
+;; `eat-eshell-mode' is the main purpose, it lets you run most commands inside the eshell buffer with no extra annoyances
+;; some commands like pulsemixer break down and spam weird errors, vterm is set up below for "emergency" cases
 (use-package eat
   :demand t
   :hook
@@ -218,14 +222,29 @@ Otherwise exit eshell and close the window with `evil-quit'."
     (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
       (call-interactively 'evil-change))))
 
+(defun meow/vterm-process-finished (buf event)
+  "Added to `vterm-exit-functions'.
+When running under eshell, just kill the buffer, otherwise also kill the window
+with `evil-quit'.
+EVENT has to be finished for anything to happen.  BUF is killed."
+  (if (and (boundp 'eshell-parent-buffer) eshell-parent-buffer)
+      (when (and (string= event "finished\n") buf)
+	(kill-buffer buf))
+    (when (string= event "finished\n")
+      (evil-quit)
+      (when buf
+	(kill-buffer buf)))))
+
 (use-package vterm
   :hook (vterm-mode . meow/turn-off-line-numbers)
+  :hook (vterm-mode . (lambda ()
+			(setq-local confirm-kill-processes nil
+				    hscroll-margin 0)))
   :commands (vterm)
   :custom
-  (vterm-kill-buffer-on-exit t)
   (vterm-max-scrollback 100000)
-  ;; :config
-  ;; (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
+  :config
+  (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
 	   "ov" '((lambda () (interactive)
