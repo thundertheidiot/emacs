@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-helpers)
+(require 's)
 
 (use-package fish-completion)
 
@@ -10,16 +11,18 @@
   (end-of-buffer)
   (evil-append-line 1))
 
-;; eshell prompt
-(defvar-local eshell-nix-shell-active nil
-  "Show <nix-shell> in the eshell prompt.")
+(defvar-local meow/eshell-nix-shell-environment nil
+  "Store environment for nix shell.")
+(defvar-local meow/eshell-nix-shell-path nil
+  "Store path for nix shell.")
+
 
 (defun meow/eshell-prompt ()
   "Custom eshell prompt."
   (concat
-   (if eshell-nix-shell-active
-       (propertize "<nix-shell> " 'face '(:foreground "green"))
-     "")
+   (when (and meow/eshell-nix-shell-path meow/eshell-nix-shell-environment)
+     (propertize "<nix-shell> " 'face '(:foreground "green")))
+
    (abbreviate-file-name (eshell/pwd))
 
    ;; (if (and (not (file-remote-p default-directory)) (magit-toplevel))
@@ -96,26 +99,60 @@
   (eshell/cd
    (read-file-name "Change directory: ")))
 
-(require 's)
-(defun eshell/nix-shell (&rest args)
-  (if (member "--run" args)
-      (eshell-command-result
-       (concat "*nix-shell " (mapconcat 'identity args " ")))
+(defun meow/eshell-apply-nix-shell ()
+  "Apply the set nix shell environment for eshell."
+  (when (and meow/eshell-nix-shell-path meow/eshell-nix-shell-environment)
+    (let ((path (eshell-get-path t)))
+      ;; other things (e.g. envrc.el) may alter the pathas well
+      (eshell-set-path (append path meow/eshell-nix-shell-path)))
+    (mapcar (lambda (e) (ignore-errors (eshell-set-variable (car e) (cadr e))))
+	    meow/eshell-nix-shell-environment))
+  nil)
+
+(add-hook 'eshell-directory-change-hook #'meow/eshell-apply-nix-shell)
+
+;; (defun meow/eshell-nix-command-not-found (orig-fun &rest args)
+;;   (if (executable-find "command-not-found")
+;;       (condition-case err
+;; 	  (apply orig-fun args)
+;; 	(error (if (s-contains-p "command not found" (error-message-string err))
+;; 		   (eshell-connection-local-command
+;; 		    "command-not-found"
+;; 		    (car args)
+;; 		    ;; (eshell-command-result (format "command-not-found %s"
+;; 		    ;; 				   (car args)))
+;; 		    )
+;; 		 (eval err))))
+;;     (apply orig-fun args)))
+
+;; (advice-add 'eshell-find-interpreter :around #'meow/eshell-nix-command-not-found)
+
+(defun eshell/ns (&rest args)
+  "Nix shell helper for eshell, ARGS are given to nix shell."
+  (let ((path (eshell-get-path))
+	(env process-environment)
+	(packages (mapcar
+		   (lambda (p) (if (s-contains-p "#" p)
+				   p
+				 (format "nixpkgs#%s" p)))
+		   args)))
+
     (let* ((output (shell-command-to-string
-		    (format "nix-shell %s --run \"env\""
-			    (mapconcat 'identity args " "))))
+		    (format "nix shell %s --command env"
+			    (mapconcat #'identity packages " "))))
 	   (lines (split-string output "\n" t))
 	   (environment (mapcar (lambda (line)
 				  (s-split-up-to "=" line 1))
 				lines)))
-      (dolist (env environment)
-	(when (= 2 (length env))
-	  (if (string= (car env) "PATH")
-	      (eshell-set-path (cadr env))
-	    (ignore-errors
-	      (eshell-set-variable (car env) (cadr env))))
-	  
-	  (setq-local eshell-nix-shell-active t))))))
+      (let ((list '()))
+	(dolist (env environment)
+	  (when (= 2 (length env))
+	    (if (string= (car env) "PATH")
+		(setq meow/eshell-nix-shell-path (split-string (cadr env) ":" t))
+	      (push env list))))
+	(setq meow/eshell-nix-shell-environment list))
+
+      (meow/eshell-apply-nix-shell))))
 
 (use-package pcre2el)
 (defmacro re (&rest rx-sexp) ;; Stolen from https://youtube.com/watch?v=9xLeqwl_7n0
@@ -126,8 +163,18 @@
 
 ;; exit closes window
 (defun eshell/exit ()
-  (evil-quit)
-  (throw 'eshell-terminal t))
+  "Exit the nix shell environment if we are in one.
+Otherwise exit eshell and close the window with `evil-quit'."
+  (if (and meow/eshell-nix-shell-path meow/eshell-nix-shell-environment)
+      (progn
+	(setq meow/eshell-nix-shell-path nil
+	      meow/eshell-nix-shell-environment nil)
+	;; weird reset hack TODO get a better way
+	(cl-letf (((symbol-function 'eshell-add-to-dir-ring) #'ignore))
+	  (eshell/cd ".")))
+    (progn
+      (evil-quit)
+      (throw 'eshell-terminal t))))
 
 (defalias 'eshell/e 'eshell/exit)
 

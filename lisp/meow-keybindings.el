@@ -131,6 +131,7 @@
   "hv" '("describe variable" . describe-variable)
   "hF" '("describe face" . describe-face)
   "hk" '("describe key" . describe-key)
+  "hs" '("find function" . find-function)
   "ha" '("describe" . apropos)
   
   "b" '(:ignore t :wk "buffer")
