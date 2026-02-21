@@ -146,7 +146,12 @@
   "ee" '("eval expression" . eval-expression)
   "ei" '("eval & insert" . (lambda () (interactive)
 			     (insert (format "%s"
-					     (eval (read--expression "E&I: ")))))))
+					     (eval (read--expression "E&I: "))))))
+  "eI" '("e&i expr+value" . (lambda () (interactive)
+			      (insert (let ((expr (read--expression "E&I (expr): ")))
+					(format "%s = %s"
+						expr
+						(eval expr)))))))
 
 (general-define-key
  :states '(normal visual)
