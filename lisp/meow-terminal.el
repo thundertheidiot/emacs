@@ -92,6 +92,13 @@
 				(meow/eshell t)))
 	   "poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t)))))
 
+;; save eshell history on close maybe
+(add-hook 'kill-emacs-hook (lambda ()
+			     (dolist (buf (buffer-list))
+			       (with-current-buffer buf
+				 (when (eq major-mode 'eshell-mode)
+				   (eshell-write-history))))))
+
 (defun eshell/v (&rest args)
   "Exec visual command ARGS in a new window."
   (select-window (meow/intelligent-split t))

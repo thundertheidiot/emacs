@@ -24,7 +24,7 @@
 		      :height 120
 		      :weight 'medium)
 
-  (dolist (face '(minibuffer-prompt minibuffer-nonselected))
+  (dolist (face '(minibuffer-prompt))
     (set-face-attribute face nil
 			:height 1.1))
 

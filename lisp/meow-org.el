@@ -52,6 +52,15 @@
 		    (unless (ignore-errors (org-open-at-point))
 		      (evil-ret)))))
 
+(defun meow/org-dpi-advice (orig-fun &rest args)
+  "Advice for `org--get-display-dpi', call ORIG-FUN with ARGS.
+Return 100.0 if it errors which happens on pgtk."
+  (condition-case nil
+      (apply orig-fun args)
+    (error 100.0)))
+
+(advice-add 'org--get-display-dpi :around #'meow/org-dpi-advice)
+
 (use-package org-appear
   :custom
   (org-appear-autolinks t)
