@@ -100,6 +100,18 @@ ORIG-FUN is called with ARGS."
   :demand t ;; load immediately because org agenda depends on org roam
   :custom
   (org-roam-directory (file-truename "~/Documents/org/roam"))
+  (org-roam-capture-templates '(("d" "default"
+				 plain "%?"
+				 :target (file+head
+					  "%<%Y%m%d%H%M%S>-${slug}.org"
+					  "#+title: ${title}
+#+OPTIONS: \\n:t toc:nil date:nil
+#+LATEX_HEADER: \\pagestyle{empty}
+#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}
+#+LATEX_HEADER: \\newtcolorbox{lbox}{colback=white, colframe=black, boxrule=1pt, breakable, sharp corners, after upper=\\vspace{-\\baselineskip}}
+")
+				 :unnarrowed t)
+				))
   :config
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
@@ -194,7 +206,8 @@ ORIG-FUN is called with ARGS."
   :after org
   :hook (org-mode . meow/org-tempo-electric-pair-fix)
   :custom
-  (org-structure-template-alist '(("el" . "src emacs-lisp"))))
+  (org-structure-template-alist '(("el" . "src emacs-lisp")
+				  ("box" . "lbox"))))
 
 (use-package org-superstar
   :custom
