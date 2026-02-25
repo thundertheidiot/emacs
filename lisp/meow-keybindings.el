@@ -120,6 +120,11 @@
   "o" '(:ignore t :wk "open")
   "oc" '("world clock" . world-clock)
 
+  "tp" '("profiler toggle" . (lambda () (interactive)
+			       (if (profiler-running-p)
+				   (profiler-stop)
+				 (profiler-start 'cpu+mem))))
+
   ":" '("M-x" . execute-extended-command)
   ";" '("M-x" . execute-extended-command)
   "." '("find file" . find-file)

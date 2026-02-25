@@ -89,6 +89,7 @@
   (require 'consult-autoloads)
   :general-config
   (meow/leader
+    "/" '("line search" . consult-line)
     "sg" '("grep" . (lambda () (interactive)
 		      (consult-ripgrep (expand-file-name ""))))
     "f" '("recent file" . consult-recent-file)
@@ -129,8 +130,14 @@
   ;; :after wgrep
   :demand t
   :general-config
-  ("C-;" #'embark-act
-   "C-a" #'embark-select))
+  (:keymaps 'vertico-map :states '(normal visual insert)
+	    "C-;" (lambda () (interactive)
+		    (if embark--selection
+			(embark-act-all)
+		      (embark-act)))
+	    "M-a" (lambda () (interactive)
+		    (embark-select)
+		    (vertico-next))))
 
 (use-package embark-consult
   :after embark
