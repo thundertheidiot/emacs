@@ -186,11 +186,12 @@ TYPE is a `libmpdel-search-criteria' type."
    'current-playlist
    (lambda (songs)
      (let ((candidate
-	    (consult--read (let ((id (libmpdel--song-id (libmpdel-current-song))))
-			     (message id)
-			     (mapcar (lambda (s)
-				       (meow/--format-mpd-song s id))
-				     songs))
+	    (consult--read (if-let* ((cur (libmpdel-current-song))
+				     (id (libmpdel--song-id cur)))
+			       (mapcar (lambda (s)
+					 (meow/--format-mpd-song s id))
+				       songs)
+			     (mapcar #'meow/--format-mpd-song songs))
 			   :annotate #'meow/--mpd-annotate
 			   :category 'mpd-queue
 			   :sort nil
