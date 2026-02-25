@@ -35,8 +35,8 @@
 (require 'meow-ui)
 (require 'meow-ai)
 (require 'meow-org)
-(require 'meow-media)
 (require 'meow-mpd)
+(require 'meow-media)
 (require 'meow-mommy)
 
 (setq debug-on-error t)

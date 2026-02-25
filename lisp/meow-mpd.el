@@ -1,8 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 (use-package libmpdel)
+(use-package transient)
+
 (require 'consult)
 (require 'embark)
 (require 'libmpdel)
+(require 'transient)
 
 (defun meow/--libmpdel-guard ()
   (unless (libmpdel-connected-p)
@@ -122,7 +125,7 @@ TYPE is a `libmpdel-search-criteria' type."
 	    (funcall sink 'refresh))))
 	(_ (funcall sink action))))))
 
-(defun meow/consult-mpd-search ()
+(defun meow/mpd-search ()
   "Search through songs with consult."
   (interactive)
   (meow/--libmpdel-guard)
@@ -237,6 +240,65 @@ Doubles up as a generic playlist selector, which you can embark with."
 	 (let ((name (libmpdel--stored-playlist-name playlist)))
 	   (libmpdel-stored-playlists-delete (list playlist))
 	   (libmpdel-playlist-save name)))))))
+
+(defun meow/mpd-toggle-single ()
+  "Toggle single mode."
+  (interactive)
+  (if (string= (libmpdel-single) "forever")
+      (progn
+	(libmpdel-playback-set-single-never)
+	(message "Single off"))
+    (progn
+      (libmpdel-playback-set-single-forever)
+      (message "Single on"))))
+
+(defun meow/mpd-toggle-repeat ()
+  "Toggle repeat mode."
+  (interactive)
+  (if (libmpdel-repeat)
+      (progn
+	(libmpdel-playback-unset-repeat)
+	(message "Repeat off"))
+    (progn
+      (libmpdel-playback-set-repeat)
+      (message "Repeat on"))))
+
+(defvar meow/mpd-volume-step 3)
+(defun meow/mpd-volume-down ()
+  "Move volume down by volume step."
+  (interactive)
+  (let ((volume (- (string-to-number (libmpdel-volume)) meow/mpd-volume-step)))
+    (libmpdel-playback-set-volume volume)
+    (message "Volume %d" volume)))
+
+(defun meow/mpd-volume-up ()
+  "Move volume up by volume step."
+  (interactive)
+  (let ((volume (+ (string-to-number (libmpdel-volume)) meow/mpd-volume-step)))
+    (libmpdel-playback-set-volume volume)
+    (message "Volume %d" volume)))
+
+(transient-define-prefix meow/mpd-transient-menu ()
+  [["Menu"
+    ("q" "Quit" transient-quit-one)]
+   ["Playback"
+    ("p" "Toggle" libmpdel-playback-play-pause :transient t)
+    ("j" "Previous" libmpdel-playback-previous :transient t)
+    ("k" "Next" libmpdel-playback-next :transient t)]
+   ["Playlist"
+    ("l" "Load playlist" meow/mpd-load-playlist)
+    ("s" "Search" meow/mpd-search)
+
+    ("c" "View playlist" meow/mpd-queue)
+    ("C" "Clear playlist" (lambda () (interactive)
+			    (libmpdel-playlist-clear 'current-playlist))
+     :transient t)]
+   ["Settings"
+    ("y" "Toggle single" meow/mpd-toggle-single :transient t)
+    ("r" "Toggle repeat" meow/mpd-toggle-single :transient t)
+
+    ("-" "Volume down" meow/mpd-volume-down :transient t)
+    ("=" "Volume up" meow/mpd-volume-up :transient t)]])
 
 (provide 'meow-mpd)
 ;;; meow-mpd.el ends here
