@@ -64,6 +64,7 @@
   :config
   (require 'vertico-autoloads)
   (vertico-mode)
+  (vertico-buffer-mode)
   :general-config
   (:keymaps 'vertico-map :states '(normal visual)
 	    "j" #'vertico-next
@@ -82,6 +83,17 @@
   (:keymaps 'override :states '(normal visual insert)
 	    "C-c c" #'vertico-buffer-mode
 	    "C-c s" #'vertico-suspend))
+
+(use-package vertico-posframe
+  :after vertico
+  :hook
+  (minibuffer-setup . (lambda ()
+			(when vertico-posframe-mode
+			  (setq-local vertico-posframe-height 35
+				      vertico-count 35))))
+  :general-config
+  (:keymaps 'override :states '(normal visual insert)
+	    "C-c p" #'vertico-posframe-mode))
 
 (use-package consult
   :custom
