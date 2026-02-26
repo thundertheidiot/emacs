@@ -80,7 +80,8 @@
 	    "<backspace>" #'vertico-directory-delete-char
 	    "DEL" #'vertico-directory-delete-char)
   (:keymaps 'override :states '(normal visual insert)
-	    "C-c c" #'vertico-buffer-mode))
+	    "C-c c" #'vertico-buffer-mode
+	    "C-c s" #'vertico-suspend))
 
 (use-package consult
   :custom
