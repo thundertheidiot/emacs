@@ -95,12 +95,16 @@ Preserve window configuration when pressing ESC."
 ;; open media files in mpv
 (use-package openwith
   :custom
-  (openwith-associations `((,(rx nonl (or ".mkv"
-					  ".mp4"
-					  ".mov"
-					  ".webm"))
+  (openwith-associations `((,(rx nonl
+				 (or ".mkv"
+				     ".mp4"
+				     ".mov"
+				     ".webm")
+				 eos)
 			    . ("mpv" (file)))))
   :config
+  (setq consult-preview-excluded-files
+	(string-join (mapcar #'car openwith-associations) "\\|"))
   (openwith-mode))
 
 ;; view pdfs

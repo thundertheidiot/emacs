@@ -287,12 +287,15 @@ Doubles up as a generic playlist selector, which you can embark with."
     ("j" "Previous" libmpdel-playback-previous :transient t)
     ("k" "Next" libmpdel-playback-next :transient t)]
    ["Playlist"
-    ("l" "Load playlist" meow/mpd-load-playlist)
+    ("l" "Load" meow/mpd-load-playlist)
     ("s" "Search" meow/mpd-search)
+
+    ("S" "Save" meow/mpd-save-current-playlist)
 
     ("c" "View playlist" meow/mpd-queue)
     ("C" "Clear playlist" (lambda () (interactive)
-			    (libmpdel-playlist-clear 'current-playlist))
+			    (libmpdel-playlist-clear 'current-playlist)
+			    (message "Playlist cleared"))
      :transient t)]
    ["Settings"
     ("y" "Toggle single" meow/mpd-toggle-single :transient t)

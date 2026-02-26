@@ -39,8 +39,6 @@
 (require 'meow-media)
 (require 'meow-mommy)
 
-(setq debug-on-error t)
-
 ;; gc setup
 (unless (featurep 'igc)
   (setq gc-cons-threshold (* 1024 1024 64))
