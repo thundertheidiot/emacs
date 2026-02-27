@@ -77,30 +77,37 @@ The function is named `meow/mpd-NAME', FORMS are executed with entity bound."
 (add-to-list 'embark-keymap-alist '(mpd-queue . meow/embark-mpd-queue-map))
 (add-to-list 'embark-keymap-alist '(mpd-playlist . meow/embark-mpd-playlist-map))
 
+(defvar meow/mpd-song-fields '(title artist album file)
+  "Fields to include in the searchable text of a formatted MPD song.
+Don't override this, it's let bound in every relevant case.")
+
 (defun meow/--format-mpd-song (song &optional cur-id)
   "Format libmpdel song SONG for consult.
 Highlight the song with CUR-ID."
-  (let ((file (or (libmpdel--song-file song) ""))
-	(title (libmpdel--song-name song))
-	(artist (or (libmpdel-artist-name song) ""))
-	(album (or (libmpdel-album-name song) ""))
-	(is-cur-song (and cur-id
-			  (string= (libmpdel--song-id song) cur-id))))
+  (let* ((file (or (libmpdel--song-file song) ""))
+	 (title (libmpdel--song-name song))
+	 (artist (or (libmpdel-artist-name song) ""))
+	 (album (or (libmpdel-album-name song) ""))
+	 (is-cur-song (and cur-id
+			   (string= (libmpdel--song-id song) cur-id)))
+	 (search-strings
+	  (mapcar (lambda (i)
+		    (pcase i
+		      ('title (or title ""))
+		      ('artist artist)
+		      ('album album)
+		      ('file file)))
+		  meow/mpd-song-fields)))
     (apply
      #'propertize
-     (string-join (list
-		   (or title "")
-		   artist
-		   album
-		   file))
+     (string-join search-strings " ")
      'display (string-join (list
 			    (when is-cur-song
 			      "Now Playing - ")
 			    (or title file)))
      'consult--candidate song
      (when is-cur-song
-       '(face success)))
-    ))
+       '(face success)))))
 
 (defun meow/--mpd-annotate (song)
   "Annotate SONG for good marginalia integration."
@@ -172,11 +179,7 @@ TYPE is a `libmpdel-search-criteria' type."
 			       (consult--async-throttle)
 			       (meow/--async-mpd-search "filename"))))
 	:prompt "Search MPD (a/A/f): "
-	:require-match t))))
-  ;; (libmpdel-list-songs
-  ;;  (libmpdel-search-criteria-create :type "any" :what "")
-  ;;  (lambda (songs)
-  )
+	:require-match t)))))
 
 (defun meow/mpd-queue ()
   "MPD Playlist view with consult."
@@ -187,7 +190,8 @@ TYPE is a `libmpdel-search-criteria' type."
    (lambda (songs)
      (let ((candidate
 	    (consult--read (if-let* ((cur (libmpdel-current-song))
-				     (id (libmpdel--song-id cur)))
+				     (id (libmpdel--song-id cur))
+				     (meow/mpd-song-fields '(title file)))
 			       (mapcar (lambda (s)
 					 (meow/--format-mpd-song s id))
 				       songs)
