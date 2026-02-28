@@ -268,9 +268,62 @@ ORIG-FUN is called with ARGS."
 	(meow/--org-create-todo (find-file-noselect file) arg)
       (user-error "Create an org roam node first"))))
 
+(defun meow/--org-construct-todo-list ()
+  "Get list of org agenda todo items for consult."
+  (meow/org-update-agenda-files)
+  (-filter
+   #'identity
+   (-flatten-n 1
+	       (mapcar
+		(lambda (file)
+		  (with-current-buffer (find-file-noselect file)
+		    (org-map-entries
+		     (lambda ()
+		       (when (org-entry-is-todo-p)
+			 (let ((heading (org-get-heading nil t t t)))
+			   (propertize
+			    (string-join (append (list (org-get-title))
+						 (org-get-outline-path nil t)
+						 (list heading
+						       (or (org-entry-get (point) "SCHEDULED")
+							   (org-entry-get (point) "DEADLINE"))))
+					 " > ")
+			    'consult--candidate (list
+						 :file (buffer-file-name)
+						 :point (point)))))))))
+		org-agenda-files))))
+
+(defun meow/org-mark-todo-as-done ()
+  "Pick a todo with consult and mark it as done."
+  (interactive)
+  (let ((selection
+	 (consult--read
+	  (meow/--org-construct-todo-list)
+	  :prompt "select todo: "
+	  :lookup #'consult--lookup-candidate
+	  :category 'meow/org-heading)))
+    (with-current-buffer (find-file-noselect (plist-get selection :file))
+      (goto-char (plist-get selection :point))
+      (org-todo current-prefix-arg))))
+
+(defun meow/org-goto-todo ()
+  "Pick a todo with consult and go to it."
+  (interactive)
+  (let ((selection
+	 (consult--read
+	  (meow/--org-construct-todo-list)
+	  :prompt "select todo: "
+	  :lookup #'consult--lookup-candidate
+	  :category 'meow/org-heading)))
+    (find-file (plist-get selection :file))
+    (goto-char (plist-get selection :point))))
+
 (meow/leader
-  "ot" '("create todo" . meow/org-add-todo)
-  "oT" '("create todo for node" . (lambda () (interactive) (meow/org-add-todo current-prefix-arg t))))
+  "t" '(:ignore t :wk "todo")
+  "tj" '("jump" . meow/org-goto-todo)
+  "ta" '("create" . meow/org-add-todo)
+  "tA" '("create for node" . (lambda () (interactive) (meow/org-add-todo current-prefix-arg t)))
+  "td" '("mark done" . meow/org-mark-todo-as-done))
 
 (provide 'meow-org)
 ;;; meow-org.el ends here
