@@ -190,6 +190,7 @@ ORIG-FUN is called with ARGS."
 (use-package org-wild-notifier
   :custom
   (org-wild-notifier-keyword-blacklist '("DONE"))
+  (org-wild-notifier--alert-severity 'high)
   :config
   (org-wild-notifier-mode))
 
