@@ -113,8 +113,8 @@ Highlight the song with CUR-ID."
   "Annotate SONG for good marginalia integration."
   (let ((song (get-text-property 0 'consult--candidate song)))
     (format "   %s - %s"
-	    (or (libmpdel-artist-name song) "Unknown Artist")
-	    (or (libmpdel-album-name song) "Unknown Album"))))
+	    (or (ignore-errors (libmpdel-artist-name song)) "Unknown Artist")
+	    (or (ignore-errors (libmpdel-album-name song)) "Unknown Album"))))
 
 (defun meow/--async-mpd-search (type)
   "Create asynchoronus consult search for mpd.
