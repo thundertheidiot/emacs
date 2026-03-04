@@ -108,9 +108,7 @@ ORIG-FUN is called with ARGS."
 #+OPTIONS: \\n:t toc:nil date:nil
 #+LATEX_HEADER: \\pagestyle{empty}
 #+LATEX_HEADER: \\setlength{\\parindent}{0pt}
-#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}
-#+LATEX_HEADER: \\usepackage[most]{tcolorbox}
-#+LATEX_HEADER: \\newtcolorbox{lbox}{{colback=white, colframe=black, boxrule=1pt, hbox, left=3mm, sharp corners, before skip=0pt, after skip=0pt, after upper=\\vspace{-\\baselineskip}}
+#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}\n\n
 ")
 				 :unnarrowed t)
 				))
@@ -160,13 +158,14 @@ ORIG-FUN is called with ARGS."
 (add-hook 'before-save-hook #'meow/org-update-agenda-tag)
 
 (defun meow/org-roam-get-agenda-files ()
-  "Get list of org roam nodes with the `agenda' tag."
+  "Get list of org-roam nodes with the `agenda' or `alwaysagenda' tag."
   (org-roam-db-query
    [:select [nodes:file]
-	    :from tags
-	    :left-join nodes
-	    :on (= tags:node-id nodes:id)
-	    :where (like tag (quote "%\"agenda\"%"))]))
+            :from tags
+            :left-join nodes
+            :on (= tags:node-id nodes:id)
+            :where (or (like tag (quote "%\"agenda\"%"))
+                       (like tag (quote "%\"alwaysagenda\"%")))]))
 
 (defun meow/org-update-agenda-files (&rest _)
   "Update agenda files list."
