@@ -259,12 +259,16 @@
   (dashboard-projects-switch-function #'projectile-switch-project-by-name)
   (dashboard-items '((projects . 5)
 		     (recents . 5)
-		     (agenda . 15)))
+		     (agenda . 20)))
+  (dashboard-filter-agenda-entry
+   (lambda ()
+     (if (member "lukujärjestys" (org-get-tags))
+	 (point)
+       (dashboard-filter-agenda-by-time))))
+  (dashboard-agenda-tags-format #'ignore)
   :config
   (dashboard-setup-startup-hook)
   (setq initial-buffer-choice #'dashboard-open))
-
-(add-hook 'server-after-make-frame-hook #'dashboard-open)
 
 (provide 'meow-ui)
 ;;; meow-ui.el ends here
