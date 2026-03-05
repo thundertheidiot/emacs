@@ -174,6 +174,8 @@ ORIG-FUN is called with ARGS."
 (advice-add 'org-agenda :before #'meow/org-update-agenda-files)
 (advice-add 'org-todo-list :before #'meow/org-update-agenda-files)
 
+(add-hook 'after-init-hook #'meow/org-update-agenda-files)
+
 (use-package org-download
   :hook (dired-mode . org-download-enable)
   :custom (org-download-screenshot-method "grim -g \"$(slurp)\" -t png %s")

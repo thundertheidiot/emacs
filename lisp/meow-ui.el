@@ -253,5 +253,18 @@
 			  (when (display-graphic-p)
 			    (all-the-icons-ibuffer-mode)))))
 
+(use-package dashboard
+  :custom
+  (dashboard-projects-backend 'projectile)
+  (dashboard-projects-switch-function #'projectile-switch-project-by-name)
+  (dashboard-items '((projects . 5)
+		     (recents . 5)
+		     (agenda . 15)))
+  :config
+  (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice #'dashboard-open))
+
+(add-hook 'server-after-make-frame-hook #'dashboard-open)
+
 (provide 'meow-ui)
 ;;; meow-ui.el ends here
