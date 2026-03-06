@@ -5,6 +5,8 @@
   :general-config
   (:keymaps 'empv-youtube-results-mode :states '(normal visual insert)
 	    "RET" 'empv-youtube-results-play-current)
+  (:keymaps 'embark-file-map
+	    "p" #'empv-play-file)
   :custom
   (empv-invidious-instance "https://yewtu.be/api/v1")
   (empv-volume-step 3)

@@ -150,7 +150,11 @@
 		      (embark-act)))
 	    "M-a" (lambda () (interactive)
 		    (embark-select)
-		    (vertico-next))))
+		    (vertico-next)))
+  (:keymaps 'vertico-map :states '(normal visual)
+	    "m" (lambda () (interactive)
+		  (embark-select)
+		  (vertico-next))))
 
 (use-package embark-consult
   :after embark
@@ -266,6 +270,9 @@
 	 (point)
        (dashboard-filter-agenda-by-time))))
   (dashboard-agenda-tags-format #'ignore)
+  :hook
+  (dashboard-mode . (lambda ()
+		      (display-line-numbers-mode -1)))
   :config
   (dashboard-setup-startup-hook)
   (setq initial-buffer-choice #'dashboard-open))
