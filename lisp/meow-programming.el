@@ -67,6 +67,11 @@
   "M-i" #'eldoc
   "M-c" #'meow/complete-with-consult)
 
+(use-package cape
+  :demand t
+  :config
+  (require 'cape-keyword))
+
 ;; automatic formatting
 (use-package apheleia
   :demand t

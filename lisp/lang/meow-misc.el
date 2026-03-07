@@ -7,10 +7,6 @@
   :mode "\\.lua\\'"
   :hook (lua-mode . eglot-ensure))
 
-(use-package gdscript-mode
-  :mode "\\.gdscript\\'"
-  :hook (gdscript-mode . eglot-ensure))
-
 (use-package glsl-mode)
 
 (use-package just-mode)
