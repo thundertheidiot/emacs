@@ -36,7 +36,6 @@
     (unless return
       (meow/last-diff-hl-hunk backward)
       (message "Looped around"))))
-
 (use-package diff-hl
   :demand t
   :custom
@@ -52,16 +51,16 @@
   (advice-add 'diff-hl-next-hunk :around #'advice!diff-hl-next-hunk-loop-around)
   (global-diff-hl-mode +1)
   (mapc (lambda (f)
-	  (set-face-background f "green")
-	  (set-face-foreground f "green"))
+	  (set-face-background f (face-attribute 'success :foreground))
+	  (set-face-foreground f (face-attribute 'success :foreground)))
 	'(diff-hl-insert diff-hl-dired-insert diff-hl-margin-insert))
   (mapc (lambda (f)
-	  (set-face-background f "purple")
-	  (set-face-foreground f "purple"))
+	  (set-face-background f (face-attribute 'font-lock-keyword-face :foreground))
+	  (set-face-foreground f (face-attribute 'font-lock-keyword-face :foreground)))
 	'(diff-hl-change diff-hl-dired-change diff-hl-margin-change))
   (mapc (lambda (f)
-	  (set-face-background f "red")
-	  (set-face-foreground f "red"))
+	  (set-face-background f (face-attribute 'error :foreground))
+	  (set-face-foreground f (face-attribute 'error :foreground)))
 	'(diff-hl-delete diff-hl-dired-delete diff-hl-margin-delete))
   :hook
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
