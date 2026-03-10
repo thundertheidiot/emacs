@@ -114,6 +114,8 @@
   :config
   (global-hl-todo-mode 1))
 
+(add-hook 'prog-mode-hook (lambda () (hl-line-mode 1)))
+
 ;; (use-package yasnippet
 ;;   :custom
 ;;   (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
