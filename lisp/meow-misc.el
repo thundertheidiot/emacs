@@ -119,5 +119,7 @@ Preserve window configuration when pressing ESC."
 ;; editor as new buffer
 (setenv "EDITOR" "emacsclient")
 
+(use-package elfeed)
+
 (provide 'meow-misc)
 ;;; meow-misc.el ends here

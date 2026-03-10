@@ -76,9 +76,9 @@
 	      (message (format "Added %s to load path" final-list)))
 	  (message "Nix process failed"))))))
 
-(defun meow/async-shell-command-buffer (command callback)
+(defun meow/async-shell-command-buffer (command callback &optional buffer)
   "Start process for shell COMMAND, call CALLBACK with the process and buffer after exit."
-  (let* ((buf (generate-new-buffer (format " *meow/async %s*" command)))
+  (let* ((buf (or buffer (generate-new-buffer (format " *meow/async %s*" command))))
 	 (proc (start-process (format "async %s" command) buf
 			      "bash" "-c" command)))
     (set-process-sentinel

@@ -18,11 +18,47 @@
     (nix--make-repl-in-buffer (current-buffer))
     (nix-repl-mode)))
 
+(defvar-local meow/nix-build-callpackage-expression "{}")
+(defvar-local meow/nix-build-expression nil)
+(defvar-local meow/nix-build-binpath nil)
+
+(defun meow/nix-build-and-run ()
+  "Build the current file with nix, run an executable."
+  (interactive)
+  (let ((buffer (generate-new-buffer (format "*meow/nix build %s*"
+					     buffer-file-name))))
+    (meow/async-shell-command-buffer
+     (format "nix build --impure --print-out-paths --expr '%s'"
+	     (or meow/nix-build-expression
+		 (format
+		  "with import <nixpkgs> {}; callPackage \"%s\" %s"
+		  buffer-file-name
+		  meow/nix-build-callpackage-expression)
+		 ))
+     (lambda (process buffer)
+       (pcase (process-exit-status process)
+	 ('0 (let* ((path
+		     (with-current-buffer buffer
+		       (goto-char (point-max))
+		       (skip-chars-backward "\n\t ")
+		       (buffer-substring (line-beginning-position) (line-end-position))))
+		    (bin (or (ignore-errors (expand-file-name meow/nix-build-binpath path))
+			     (read-file-name "Select executable: "
+					     path nil t nil
+					     #'file-executable-p))))
+	       (async-shell-command bin)))
+	 (_ (progn
+	      (select-window (meow/intelligent-split t))
+	      (switch-to-buffer buffer)
+	      (goto-char (point-min))))))
+     buffer)))
+
 (use-package nix-mode
+  :demand t ;; lazy loading is bad, i am an emacs server user
   :mode "\\.nix\\'"
   :hook (nix-mode . eglot-ensure)
   :commands (meow/nix-repl)
-  :general
+  :general-config
   (meow/leader
     "on" '("nix repl" . meow/nix-repl)
     "oN" '("nix repl" . (lambda () (interactive)
@@ -33,6 +69,8 @@
     "poN" '("nix repl" . (lambda () (interactive)
 			   (let ((default-directory (projectile-project-root)))
 			     (meow/nix-repl t)))))
+  (meow/local :keymaps 'nix-mode-map
+    "b" '("nix build" . meow/nix-build-and-run))
   :config
   (require 'nix-repl))
 
