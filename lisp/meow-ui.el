@@ -58,6 +58,7 @@
 (setq scroll-conservatively 10)
 
 (use-package vertico
+  :demand t
   :custom
   (vertico-resize t)
   (vertico-cycle nil)
@@ -94,6 +95,13 @@
   :general-config
   (:keymaps 'override :states '(normal visual insert)
 	    "C-c p" #'vertico-posframe-mode))
+
+(use-package vertico-prescient
+  :after vertico
+  :custom
+  (vertico-prescient-enable-filtering nil)
+  :config
+  (vertico-prescient-mode +1))
 
 (use-package consult
   :custom
@@ -166,6 +174,7 @@
   :after (vertico consult)
   :custom
   (completion-styles '(orderless basic))
+  (orderless-matching-styles '(orderless-literal orderless-prefixes orderless-regexp))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
 

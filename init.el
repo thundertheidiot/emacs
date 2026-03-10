@@ -17,6 +17,9 @@
 (use-package dash)
 (use-package plz)
 
+(use-package no-littering)
+(no-littering-theme-backups)
+
 (require 'meow-helpers)
 (require 'meow-cleanup)
 (require 'meow-undo)
