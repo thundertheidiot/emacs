@@ -9,10 +9,6 @@
   (eglot-connect-timeout nil)
   :config
   (fset #'jsonrpc--log-event #'ignore)
-  ;; nixos executable is OmniSharp
-  (setf
-   (alist-get '(csharp-mode csharp-ts-mode)
-	      eglot-server-programs nil nil #'equal) '("OmniSharp" "-lsp"))
   :general-config
   (meow/leader
     "c" '(:ignore t :wk "code")

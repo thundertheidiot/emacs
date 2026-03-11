@@ -1,4 +1,6 @@
 ;; -*- lexical-binding: t; -*-
+(require 'recentf)
+
 (setq-default tab-width 4
 	      c-basic-offset 'tab-width)
 
@@ -45,16 +47,7 @@ Preserve window configuration when pressing ESC."
     (funcall fun)))
 (advice-add #'keyboard-escape-quit :around #'advice!-keyboard-escape-quit-adv)
 
-;; scrolling
-;; (setq pixel-scroll-precision-large-scroll-height 40.0)
-;; (setq pixel-scroll-precision-use-momentum t)
-
-;; (use-package with-editor
-;;   :hook
-;;   (eshell-mode . with-editor-export-editor)
-;;   :config
-;;   (shell-command-with-editor-mode))
-
+;; better pixel scroll
 (use-package ultra-scroll
   :init
   (setq scroll-conservatively 101 ; important!

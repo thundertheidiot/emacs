@@ -1,7 +1,9 @@
 ;;; -*- lexical-binding: t; -*-
 (use-package haskell-mode
   :mode "\\.hs\\'"
-  :hook (haskell-mode . eglot-ensure))
+  :hook (haskell-mode . eglot-ensure)
+  :config
+  (require 'haskell-mode-autoloads))
 
 (use-package lua-mode
   :mode "\\.lua\\'"
