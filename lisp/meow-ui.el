@@ -12,48 +12,6 @@
 
 (add-hook 'emacs-lisp-mode-hook #'prettify-symbols-mode)
 
-;; fonts
-(defun meow/set-fonts ()
-  (set-face-attribute 'default nil
-		      :family "Monospace"
-		      :height 110
-		      :weight 'regular)
-
-  (set-face-attribute 'variable-pitch nil
-		      :font "Sans-Serif"
-		      :height 120
-		      :weight 'medium)
-
-  (dolist (face '(minibuffer-prompt))
-    (set-face-attribute face nil
-			:height 1.1))
-
-  (set-face-attribute 'fixed-pitch nil
-		      :font "Monospace"
-		      :weight 'medium)
-
-  (set-face-attribute 'font-lock-comment-face nil
-		      :slant 'italic)
-  (set-face-attribute 'font-lock-keyword-face nil
-		      :slant 'italic)
-
-  (add-to-list 'default-frame-alist '(font . "Monospace")))
-
-(defun meow/minibuffer-size ()
-  "Scale font size."
-  (text-scale-set 1.1))
-
-(add-hook 'minibuffer-setup-hook #'meow/minibuffer-size)
-(dolist (buf '(" *Echo Area 0*" " *Echo Area 1*"))
-  (with-current-buffer (get-buffer-create buf)
-    (text-scale-set 1.1)))
-(setq resize-mini-windows 'grow-only)
-(setq max-mini-window-height 2)
-
-(add-hook 'after-init-hook #'meow/set-fonts)
-(add-hook 'server-after-make-frame-hook #'meow/set-fonts)
-
-(setq-default line-spacing 0.12)
 
 (setq scroll-conservatively 10)
 
@@ -209,33 +167,6 @@
   :after corfu
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-(defvar meow/server-solaire-on nil)
-;; color frames differently
-(use-package solaire-mode
-  :hook
-  (after-init . (lambda ()
-		  (when (display-graphic-p)
-		    (solaire-global-mode +1))))
-  (server-after-make-frame . (lambda ()
-			       (when (and (not meow/server-solaire-on) (display-graphic-p))
-				 (solaire-global-mode +1)
-				 (setq meow/server-solaire-on t)))))
-
-(defvar meow/server-catppuccin-reloaded nil)
-;; theme
-(use-package catppuccin-theme
-  :custom
-  (catppuccin-flavor 'mocha)
-  :hook
-  ;; https://github.com/catppuccin/emacs/issues/121
-  (server-after-make-frame . (lambda ()
-			       (when (and (not meow/server-catppuccin-reloaded) (daemonp))
-				 (catppuccin-reload)
-				 (setq meow/server-catppuccin-reloaded t))))
-  :config
-  (load-theme 'catppuccin :no-confirm)
-  (meow/mode-line))
 
 (use-package ligature
   :config

@@ -12,6 +12,21 @@
 
 (add-hook 'after-init-hook #'meow/setup-directories)
 
+(defmacro meow/runonce (name only-daemon &rest forms)
+  "Define a runonce helper NAME, FORMS are executed only once.
+Called on `after-init-hook' and `server-after-make-frame-hook'."
+  (let ((flag (intern (format "--meow/runonce-flag-%s" name))))
+    `(progn
+       ,(unless only-daemon
+	  `(add-hook 'after-init-hook (lambda ()
+					,@forms)))
+       (defvar ,flag nil)
+       (add-hook 'server-after-make-frame-hook
+		 (lambda ()
+		   (unless ,flag
+		     ,@forms
+		     (setq ,flag t)))))))
+
 (defun meow/intelligent-split (&optional force)
   (interactive)
   (let* ((width (window-total-width))

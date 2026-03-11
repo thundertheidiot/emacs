@@ -1,4 +1,7 @@
 ;; -*- lexical-binding: t; -*-
+(require 'flycheck)
+(require 'solaire-mode)
+(require 'tramp)
 
 (use-package nyan-mode
   :demand t
@@ -57,6 +60,8 @@
 (defvar-local meow/mode-line-nyan-cat t)
 ;; ultra scroll hide functions
 (defun meow/mode-line-nyan-cat-scroll (num)
+  "Hide nyan cat during scrolling for snappier movement.
+NUM is passed from the ultra scroll hook."
   (if (eq num -1)
       (setq-local meow/mode-line-nyan-cat nil)
     (setq-local meow/mode-line-nyan-cat t)))
@@ -126,6 +131,7 @@
 		    "%="
 		    (meow/mode-line-nyan-cat (:eval (nyan-create)))))))
 
+;; load on a new theme
 (add-hook 'enable-theme-functions
 	  (lambda (_theme) (meow/mode-line)))
 

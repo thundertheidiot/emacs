@@ -20,9 +20,6 @@
   :hook (magit-mode . magit-todos-mode)
   :config (magit-todos-mode 1))
 
-(use-package forge
-  :after magit)
-
 (defun meow/last-diff-hl-hunk (&optional backward)
   "Go to the last hunk in the file, first if BACKWARD is t."
   (while-let ((pos (diff-hl-search-next-hunk backward)))
@@ -36,6 +33,7 @@
     (unless return
       (meow/last-diff-hl-hunk backward)
       (message "Looped around"))))
+
 (use-package diff-hl
   :demand t
   :custom
@@ -50,22 +48,9 @@
   ;; (require 'diff-hl-flydiff) ;; breaks on igc
   (advice-add 'diff-hl-next-hunk :around #'advice!diff-hl-next-hunk-loop-around)
   (global-diff-hl-mode +1)
-  (mapc (lambda (f)
-	  (set-face-background f (face-attribute 'success :foreground))
-	  (set-face-foreground f (face-attribute 'success :foreground)))
-	'(diff-hl-insert diff-hl-dired-insert diff-hl-margin-insert))
-  (mapc (lambda (f)
-	  (set-face-background f (face-attribute 'font-lock-keyword-face :foreground))
-	  (set-face-foreground f (face-attribute 'font-lock-keyword-face :foreground)))
-	'(diff-hl-change diff-hl-dired-change diff-hl-margin-change))
-  (mapc (lambda (f)
-	  (set-face-background f (face-attribute 'error :foreground))
-	  (set-face-foreground f (face-attribute 'error :foreground)))
-	'(diff-hl-delete diff-hl-dired-delete diff-hl-margin-delete))
   :hook
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh)
-
   ;; (dired-mode . diff-hl-dired-mode)
   ;; (diff-hl-mode . diff-hl-flydiff-mode) ;; breaks on igc right now
   (diff-hl-mode . diff-hl-margin-mode) ;; to simultaniously support flycheck symbols in fringe
@@ -91,10 +76,8 @@
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
 	   "gt" '("timemachine" . git-timemachine-toggle)))
 
-(use-package emsg-blame
-  :demand t
-  :config
-  (global-emsg-blame-mode t))
+(require 'emsg-blame)
+(global-emsg-blame-mode t)
 
 (provide 'meow-git)
 ;;; meow-git.el ends here

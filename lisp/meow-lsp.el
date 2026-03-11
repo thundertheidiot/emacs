@@ -21,9 +21,8 @@
   (:states '(normal visual insert)
 	   "M-r" #'eglot-rename))
 
-(use-package eglot-booster
-  :after eglot
-  :config (eglot-booster-mode))
+(require 'eglot-booster)
+(eglot-booster-mode)
 
 (provide 'meow-lsp)
 ;;; meow-lsp.el ends here

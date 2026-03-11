@@ -1,8 +1,9 @@
 ;; -*- lexical-binding: t; -*-
+(setq-default tab-width 4
+	      c-basic-offset 'tab-width)
+
 (setq use-short-answers t
       native-comp-async-report-warnings-errors 'silent
-      c-basic-offset 'tab-width
-      tab-width 4
 
       ;; gc-cons-threshold (* 8 1024 1024)
       read-process-output-max (* 1024 1024)
@@ -74,6 +75,7 @@ Preserve window configuration when pressing ESC."
   :demand t
   :hook (dired-mode . hl-line-mode)
   :hook (dired-mode . auto-revert-mode)
+  :hook (dired-mode . meow/turn-off-line-numbers)
   :custom
   (dired-dwim-target t)
   (dired-mouse-drag-files t)

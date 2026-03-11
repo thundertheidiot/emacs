@@ -221,11 +221,9 @@ ORIG-FUN is called with ARGS."
 (use-package olivetti
   :custom 
   (olivetti-min-body-width 50)
-  (olivetti-body-width 80)
+  (olivetti-body-width 90)
   (olivetti-style 'fancy)
   (olivetti-margin-width 12)
-  :config
-  (set-face-attribute 'olivetti-fringe nil :background "#313244")
   :hook
   (olivetti-mode-on . (lambda () (olivetti-set-width olivetti-body-width)))
   (org-mode . olivetti-mode))

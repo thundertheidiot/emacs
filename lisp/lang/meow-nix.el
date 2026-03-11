@@ -26,20 +26,22 @@
   "Build the current file with nix build, using a callPackage expression."
   (interactive)
   (async-shell-command
-   (format "nix build --impure --print-out-paths --expr '%s'"
+   (format "nix build --print-build-logs --impure --print-out-paths --expr '%s'"
 	   (or meow/nix-build-expression
 	       (format
 		"with import <nixpkgs> {}; callPackage \"%s\" %s"
 		buffer-file-name
 		meow/nix-build-callpackage-expression)
 	       ))
-   buffer))
+   (or buffer
+       (get-buffer-create "*nix build*"))))
 
 (defun meow/nix-build-and-run ()
   "Build the current file with nix, run an executable."
   (interactive)
   (let* ((buffer (get-buffer-create (format "*nix build&run %s*"
 					    buffer-file-name)))
+	 (current-buffer (current-buffer))
 	 (sentinel
 	  (lambda (process _signal)
 	    (when (and
@@ -50,16 +52,23 @@
 			(goto-char (point-max))
 			(skip-chars-backward "\n\t ")
 			(buffer-substring (line-beginning-position) (line-end-position))))
-		     (bin (or (if current-prefix-arg
-				  nil
-				(ignore-errors (expand-file-name meow/nix-build-binpath path)))
-			      (setq-local meow/nix-build-binpath
-					  (read-file-name "Select executable: "
-							  path nil t nil
-							  #'file-executable-p)))))
+		     (bin (with-current-buffer current-buffer
+			    (or (if current-prefix-arg
+				    nil
+				  (ignore-errors (expand-file-name meow/nix-build-binpath path)))
+				(setq-local meow/nix-build-binpath
+					    (read-file-name "Select executable: "
+							    path nil t nil
+							    #'file-executable-p))))))
 		(async-shell-command bin buffer))))))
     (meow/nix-build buffer)
     (set-process-sentinel (get-buffer-process buffer) sentinel)))
+
+(defun meow/nix-run ()
+  "Simple nix run."
+  (interactive)
+  (async-shell-command "nix run --print-build-logs"
+		       (get-buffer-create "*nix run*")))
 
 (use-package nix-mode
   :demand t ;; lazy loading is bad, i am an emacs server user
@@ -68,6 +77,7 @@
   :commands (meow/nix-repl)
   :general-config
   (meow/leader
+    "nr" '("nix run" . meow/nix-run)
     "on" '("nix repl" . meow/nix-repl)
     "oN" '("nix repl" . (lambda () (interactive)
 			  (meow/nix-repl t)))

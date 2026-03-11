@@ -1,10 +1,12 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-helpers)
 (require 'meow-window-configuration)
+(require 'meow-undo)
+(require 'undo-tree)
+
+(setq evil-want-keybinding nil)
 
 (use-package evil
-  :init
-  (setq evil-want-keybinding nil)
   :custom
   (evil-want-keybinding nil)
   (evil-want-integration t)
@@ -43,7 +45,6 @@
 			  ibuffer
 			  simple-mpc
 			  magit
-			  forge
 			  magit-todos
 			  vdiff
 			  sly

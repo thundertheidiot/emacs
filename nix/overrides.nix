@@ -29,6 +29,10 @@
       install $src/*.el* $out/share/emacs/site-lisp
     '';
 
+    propagatedNativeBuildInputs = [
+      pkgs.emacs-lsp-booster
+    ];
+
     recipe = pkgs.writeText "recipe" ''
       (eglot-booster :fetcher github :repo "jdtsmith/eglot-booster" :files (:defaults "eglot-booster.el"))
     '';

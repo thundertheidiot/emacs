@@ -1,4 +1,5 @@
 ;; -*- lexical-binding: t; -*-
+;; ignore garbage collection for snappier init
 (setq gc-cons-threshold most-positive-fixnum)
 
 (setq package-enable-at-startup nil)
@@ -8,17 +9,9 @@
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
 
-;; TODO fix
-(use-package eglot-booster)
-(use-package emsg-blame)
-(use-package diff-hl)
-
 ;; libraries that are useful for elisp programming
 (use-package dash)
 (use-package plz)
-
-(use-package no-littering)
-(no-littering-theme-backups)
 
 (require 'meow-helpers)
 (require 'meow-cleanup)
@@ -33,15 +26,17 @@
 (require 'lang/meow-nix)
 (require 'lang/meow-godot)
 (require 'lang/meow-misc)
-(require 'meow-git)
 (require 'meow-mode-line)
 (require 'meow-terminal)
 (require 'meow-ui)
+(require 'meow-git)
 (require 'meow-ai)
 (require 'meow-org)
 (require 'meow-mpd)
 (require 'meow-media)
 (require 'meow-mommy)
+
+(require 'meow-theme)
 
 ;; gc setup
 (unless (featurep 'igc)
