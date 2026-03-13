@@ -26,33 +26,33 @@
   (vertico-buffer-mode)
   :general-config
   (:keymaps 'vertico-map :states '(normal visual)
-	    "j" #'vertico-next
-	    "k" #'vertico-previous
-	    "gg" #'vertico-first
-	    "G" #'vertico-last)
+			"j" #'vertico-next
+			"k" #'vertico-previous
+			"gg" #'vertico-first
+			"G" #'vertico-last)
   (:keymaps 'vertico-map :states '(normal visual insert)
-	    "RET" #'vertico-exit
-	    "C-u" #'vertico-quick-exit
-	    "C-j" #'vertico-next
-	    "C-k" #'vertico-previous
-	    "C-l" #'vertico-quick-jump)
+			"RET" #'vertico-exit
+			"C-u" #'vertico-quick-exit
+			"C-j" #'vertico-next
+			"C-k" #'vertico-previous
+			"C-l" #'vertico-quick-jump)
   (:keymaps 'vertico-map :states '(insert)
-	    "<backspace>" #'vertico-directory-delete-char
-	    "DEL" #'vertico-directory-delete-char)
+			"<backspace>" #'vertico-directory-delete-char
+			"DEL" #'vertico-directory-delete-char)
   (:keymaps 'override :states '(normal visual insert)
-	    "C-c c" #'vertico-buffer-mode
-	    "C-c s" #'vertico-suspend))
+			"C-c c" #'vertico-buffer-mode
+			"C-c s" #'vertico-suspend))
 
 (use-package vertico-posframe
   :after vertico
   :hook
   (minibuffer-setup . (lambda ()
-			(when vertico-posframe-mode
-			  (setq-local vertico-posframe-height 35
-				      vertico-count 35))))
+						(when vertico-posframe-mode
+						  (setq-local vertico-posframe-height 35
+									  vertico-count 35))))
   :general-config
   (:keymaps 'override :states '(normal visual insert)
-	    "C-c p" #'vertico-posframe-mode))
+			"C-c p" #'vertico-posframe-mode))
 
 (use-package vertico-prescient
   :after vertico
@@ -70,22 +70,22 @@
   (meow/leader
     "/" '("line search" . consult-line)
     "sg" '("grep" . (lambda () (interactive)
-		      (consult-ripgrep (expand-file-name ""))))
+					  (consult-ripgrep (expand-file-name ""))))
     "f" '("recent file" . consult-recent-file)
     "sf" '("find" . consult-fd)
     "si" '("imenu" . consult-imenu)
     "bs" '("switch" . consult-buffer)
     "bs" '("switch" . consult-buffer)
     "bo" '("open buffer in new window" . (lambda () (interactive)
-					   (select-window (meow/intelligent-split t))
-					   (consult-buffer)))))
+										   (select-window (meow/intelligent-split t))
+										   (consult-buffer)))))
 
 (defun advice!-consult-grep-evil-search-history (ret)
   "Add the selected item to the evil search history."
   (when ret ;; return value is nil if you quit early
     (let ((search (if (string= (substring (car consult--grep-history) 0 1) "#")
-		      (substring (car consult--grep-history) 1 nil)
-		    (car consult--grep-history))))
+					  (substring (car consult--grep-history) 1 nil)
+					(car consult--grep-history))))
       (add-to-history 'regexp-search-ring search)
       (add-to-history 'evil-ex-search-history search)
       (setq evil-ex-search-pattern (list search t t))
@@ -110,17 +110,17 @@
   :demand t
   :general-config
   (:keymaps 'vertico-map :states '(normal visual insert)
-	    "C-;" (lambda () (interactive)
-		    (if embark--selection
-			(embark-act-all)
-		      (embark-act)))
-	    "M-a" (lambda () (interactive)
-		    (embark-select)
-		    (vertico-next)))
+			"C-;" (lambda () (interactive)
+					(if embark--selection
+						(embark-act-all)
+					  (embark-act)))
+			"M-a" (lambda () (interactive)
+					(embark-select)
+					(vertico-next)))
   (:keymaps 'vertico-map :states '(normal visual)
-	    "m" (lambda () (interactive)
-		  (embark-select)
-		  (vertico-next))))
+			"m" (lambda () (interactive)
+				  (embark-select)
+				  (vertico-next))))
 
 (use-package embark-consult
   :after embark
@@ -143,11 +143,11 @@
 
 (defun advice!-crm-indicator (args)
   (cons (format "[CRM%s] %s"
-		(replace-regexp-in-string
-		 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-		 crm-separator)
-		(car args))
-	(cdr args)))
+				(replace-regexp-in-string
+				 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+				 crm-separator)
+				(car args))
+		(cdr args)))
 (advice-add #'completing-read-multiple :filter-args #'advice!-crm-indicator)
 
 (setq minibuffer-prompt-properties '(read-only t cursor-intangible-mode t face minibuffer-prompt)
@@ -171,7 +171,7 @@
 (use-package ligature
   :config
   (ligature-set-ligatures 'prog-mode
-			  '("==" "===" "!=" "!==" "&&" "||"))
+						  '("==" "===" "!=" "!==" "&&" "||"))
   (global-ligature-mode t))
 
 (use-package rainbow-delimiters
@@ -187,32 +187,48 @@
 (use-package all-the-icons-dired
   :after all-the-icons
   :hook (dired-mode . (lambda ()
-			(when (display-graphic-p)
-			  (all-the-icons-dired-mode)))))
+						(when (display-graphic-p)
+						  (all-the-icons-dired-mode)))))
 
 ;; icons for ibuffer
 (use-package all-the-icons-ibuffer
   :after all-the-icons
   :hook (ibuffer-mode . (lambda ()
-			  (when (display-graphic-p)
-			    (all-the-icons-ibuffer-mode)))))
+						  (when (display-graphic-p)
+							(all-the-icons-ibuffer-mode)))))
+
+;; actually parse colors for everything
+(use-package xterm-color
+  :demand t
+  :after eshell
+  :hook (comint-mode . (lambda ()
+						 (setq-local comint-output-filter-functions
+									 (remove 'ansi-color-process-output comint-output-filter-functions))
+						 (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
+  :hook (eshell-before-prompt . (lambda ()
+								  (setq xterm-color-preserve-properties t)))
+  :hook (eshell-mode . (lambda ()
+						 (setenv "TERM" "xterm-256color")))
+  :config
+  (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+  (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions)))
 
 (use-package dashboard
   :custom
   (dashboard-projects-backend 'projectile)
   (dashboard-projects-switch-function #'projectile-switch-project-by-name)
   (dashboard-items '((projects . 5)
-		     (recents . 5)
-		     (agenda . 20)))
+					 (recents . 5)
+					 (agenda . 20)))
   (dashboard-filter-agenda-entry
    (lambda ()
      (if (member "lukujärjestys" (org-get-tags))
-	 (point)
+		 (point)
        (dashboard-filter-agenda-by-time))))
   (dashboard-agenda-tags-format #'ignore)
   :hook
   (dashboard-mode . (lambda ()
-		      (display-line-numbers-mode -1)))
+					  (display-line-numbers-mode -1)))
   :config
   (dashboard-setup-startup-hook)
   (setq initial-buffer-choice #'dashboard-open))

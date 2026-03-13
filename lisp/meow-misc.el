@@ -2,7 +2,7 @@
 (require 'recentf)
 
 (setq-default tab-width 4
-	      c-basic-offset 'tab-width)
+			  c-basic-offset 'tab-width)
 
 (setq use-short-answers t
       native-comp-async-report-warnings-errors 'silent
@@ -22,8 +22,8 @@
       confirm-kill-processes nil
 
       world-clock-list '(("Europe/Helsinki" "Finland")
-			 ("Europe/London" "UK")
-			 ("America/Buenos_Aires" "Diza"))
+						 ("Europe/London" "UK")
+						 ("America/Buenos_Aires" "Diza"))
 
       backward-delete-char-untabify-method nil)
 
@@ -52,16 +52,22 @@ Preserve window configuration when pressing ESC."
   :init
   (setq scroll-conservatively 101 ; important!
         scroll-margin 0
-	jit-lock-defer-time 0.05)  ; defer fontification
+		jit-lock-defer-time 0.05)  ; defer fontification
   :config
   (ultra-scroll-mode 1))
+
+;; this fixes rendering of eldoc for at least haskell language server
+(use-package markdown-mode
+  :ensure nil
+  :demand t
+  :mode "\\.md\\'")
 
 (use-package tramp-sh
   :ensure nil ;; part of emacs
   :config
   (setq tramp-remote-path
-	(append tramp-remote-path
- 		'(tramp-own-remote-path))))
+		(append tramp-remote-path
+ 				'(tramp-own-remote-path))))
 
 (use-package dired
   :ensure nil
@@ -75,12 +81,12 @@ Preserve window configuration when pressing ESC."
   (dired-listing-switches "-alh")
   :general-config
   (:keymaps 'dired-mode-map :states '(normal insert visual motion)
-	    "SPC" nil
-	    "q" 'evil-quit
-	    "<backspace>" 'dired-up-directory
-	    "C-<return>" (lambda () (interactive) (empv-play (dired-get-filename))))
+			"SPC" nil
+			"q" 'evil-quit
+			"<backspace>" 'dired-up-directory
+			"C-<return>" (lambda () (interactive) (empv-play (dired-get-filename))))
   (:keymaps 'dired-mode-map :states '(normal visual motion) :prefix "SPC"
-	    "oe" '("eshell in this window" . (lambda () (interactive) (meow/eshell))))
+			"oe" '("eshell in this window" . (lambda () (interactive) (meow/eshell))))
   :config
   (unless (display-graphic-p)
     (general-def dired-mode-map "DEL" 'dired-up-directory)))
@@ -91,15 +97,15 @@ Preserve window configuration when pressing ESC."
 (use-package openwith
   :custom
   (openwith-associations `((,(rx nonl
-				 (or ".mkv"
-				     ".mp4"
-				     ".mov"
-				     ".webm")
-				 eos)
-			    . ("mpv" (file)))))
+								 (or ".mkv"
+									 ".mp4"
+									 ".mov"
+									 ".webm")
+								 eos)
+							. ("mpv" (file)))))
   :config
   (setq consult-preview-excluded-files
-	(string-join (mapcar #'car openwith-associations) "\\|"))
+		(string-join (mapcar #'car openwith-associations) "\\|"))
   (openwith-mode))
 
 ;; view pdfs
