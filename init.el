@@ -16,6 +16,7 @@
 (require 'meow-helpers)
 (require 'meow-cleanup)
 (require 'meow-undo)
+(require 'meow-evil)
 (require 'meow-window-configuration)
 (require 'meow-keybindings)
 (require 'meow-lsp)
@@ -41,10 +42,12 @@
 ;; gc setup
 (unless (featurep 'igc)
   (setq gc-cons-threshold (* 1024 1024 64))
-  (add-hook 'minibuffer-setup-hook (lambda ()
-				     (setq gc-cons-threshold most-positive-fixnum)))
-  (add-hook 'minibuffer-exit-hook (lambda ()
-				    (setq gc-cons-threshold (* 1024 1024 64)))))
+  (add-hook 'minibuffer-setup-hook
+			(lambda ()
+			  (setq gc-cons-threshold most-positive-fixnum)))
+  (add-hook 'minibuffer-exit-hook
+			(lambda ()
+			  (setq gc-cons-threshold (* 1024 1024 64)))))
 
 (run-with-idle-timer 10 t #'garbage-collect)
 

@@ -29,14 +29,14 @@
    ;;   "")
    
    (propertize " λ" 'face
-	       (if (string-match (rx
-				  "/sudo:root"
-				  (* nonl))
-				 (eshell/pwd))
-		   '(:foreground "red")
-		 '(:foreground "purple")))
+			   (if (string-match (rx
+								  "/sudo:root"
+								  (* nonl))
+								 (eshell/pwd))
+				   '(:foreground "red")
+				 '(:foreground "purple")))
    (propertize " " 'face
-	       'default)))
+			   'default)))
 
 ;; eat is a "full terminal emulator" implemented in native emacs lisp
 ;; this allows for better extensibility and integration than vterm
@@ -60,7 +60,7 @@
   (eshell-prompt-regexp
    (rx line-start
        (*?
-	nonl)
+		nonl)
        "λ "))
   (eshell-visual-commands '())
   :config
@@ -71,33 +71,33 @@
   (eshell-mode . fish-completion-mode)
   :general-config
   (:states '(normal visual) :keymaps 'eshell-mode-map
-	   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1)))
+		   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1)))
   (:states '(normal visual insert) :keymaps 'eshell-mode-map
-	   "C->" (lambda () (interactive) 
-		   (insert (concat "> #<buffer " (read-buffer "Send to: ") ">")))
-	   "C-p" (lambda () (interactive)
-		   (insert (read-file-name "Insert path: "))))
+		   "C->" (lambda () (interactive) 
+				   (insert (concat "> #<buffer " (read-buffer "Send to: ") ">")))
+		   "C-p" (lambda () (interactive)
+				   (insert (read-file-name "Insert path: "))))
   (:keymaps 'eshell-mode-map :states '(normal visual motion)
-	    "RET" (lambda () (interactive)
-		    (unless (ignore-errors (browse-url))
-		      (evil-ret))))
+			"RET" (lambda () (interactive)
+					(unless (ignore-errors (browse-url))
+					  (evil-ret))))
   :general
   (:states '(normal visual insert emacs motion) :prefix "SPC" :keymaps 'override :global-prefix "C-SPC"
-	   "oe" '("eshell" . (lambda () (interactive) 
-			       (select-window (meow/intelligent-split t)) 
-			       (meow/eshell)))
-	   "oE" '("eshell in this window" . (lambda () (interactive) (meow/eshell)))
-	   "poe" '("eshell" . (lambda () (interactive) 
-				(select-window (meow/intelligent-split t))
-				(meow/eshell t)))
-	   "poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t)))))
+		   "oe" '("eshell" . (lambda () (interactive) 
+							   (select-window (meow/intelligent-split t)) 
+							   (meow/eshell)))
+		   "oE" '("eshell in this window" . (lambda () (interactive) (meow/eshell)))
+		   "poe" '("eshell" . (lambda () (interactive) 
+								(select-window (meow/intelligent-split t))
+								(meow/eshell t)))
+		   "poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t)))))
 
 ;; save eshell history on close maybe
 (add-hook 'kill-emacs-hook (lambda ()
-			     (dolist (buf (buffer-list))
-			       (with-current-buffer buf
-				 (when (eq major-mode 'eshell-mode)
-				   (eshell-write-history))))))
+							 (dolist (buf (buffer-list))
+							   (with-current-buffer buf
+								 (when (eq major-mode 'eshell-mode)
+								   (eshell-write-history))))))
 
 (defun eshell/v (&rest args)
   "Exec visual command ARGS in a new window."
@@ -117,7 +117,7 @@
       ;; other things (e.g. envrc.el) may alter the pathas well
       (eshell-set-path (append path meow/eshell-nix-shell-path)))
     (mapcar (lambda (e) (ignore-errors (eshell-set-variable (car e) (cadr e))))
-	    meow/eshell-nix-shell-environment))
+			meow/eshell-nix-shell-environment))
   nil)
 
 (add-hook 'eshell-directory-change-hook #'meow/eshell-apply-nix-shell)
@@ -141,27 +141,27 @@
 (defun eshell/ns (&rest args)
   "Nix shell helper for eshell, ARGS are given to nix shell."
   (let ((path (eshell-get-path))
-	(env process-environment)
-	(packages (mapcar
-		   (lambda (p) (if (s-contains-p "#" p)
-				   p
-				 (format "nixpkgs#%s" p)))
-		   args)))
+		(env process-environment)
+		(packages (mapcar
+				   (lambda (p) (if (s-contains-p "#" p)
+								   p
+								 (format "nixpkgs#%s" p)))
+				   args)))
 
     (let* ((output (shell-command-to-string
-		    (format "nix shell %s --command env"
-			    (mapconcat #'identity packages " "))))
-	   (lines (split-string output "\n" t))
-	   (environment (mapcar (lambda (line)
-				  (s-split-up-to "=" line 1))
-				lines)))
+					(format "nix shell %s --command env"
+							(mapconcat #'identity packages " "))))
+		   (lines (split-string output "\n" t))
+		   (environment (mapcar (lambda (line)
+								  (s-split-up-to "=" line 1))
+								lines)))
       (let ((list '()))
-	(dolist (env environment)
-	  (when (= 2 (length env))
-	    (if (string= (car env) "PATH")
-		(setq meow/eshell-nix-shell-path (split-string (cadr env) ":" t))
-	      (push env list))))
-	(setq meow/eshell-nix-shell-environment list))
+		(dolist (env environment)
+		  (when (= 2 (length env))
+			(if (string= (car env) "PATH")
+				(setq meow/eshell-nix-shell-path (split-string (cadr env) ":" t))
+			  (push env list))))
+		(setq meow/eshell-nix-shell-environment list))
 
       (meow/eshell-apply-nix-shell))))
 
@@ -178,11 +178,11 @@
 Otherwise exit eshell and close the window with `evil-quit'."
   (if (and meow/eshell-nix-shell-path meow/eshell-nix-shell-environment)
       (progn
-	(setq meow/eshell-nix-shell-path nil
-	      meow/eshell-nix-shell-environment nil)
-	;; weird reset hack TODO get a better way
-	(cl-letf (((symbol-function 'eshell-add-to-dir-ring) #'ignore))
-	  (eshell/cd ".")))
+		(setq meow/eshell-nix-shell-path nil
+			  meow/eshell-nix-shell-environment nil)
+		;; weird reset hack TODO get a better way
+		(cl-letf (((symbol-function 'eshell-add-to-dir-ring) #'ignore))
+		  (eshell/cd ".")))
     (progn
       (evil-quit)
       (throw 'eshell-terminal t))))
@@ -236,17 +236,17 @@ with `evil-quit'.
 EVENT has to be finished for anything to happen.  BUF is killed."
   (if (and (boundp 'eshell-parent-buffer) eshell-parent-buffer)
       (when (and (string= event "finished\n") buf)
-	(kill-buffer buf))
+		(kill-buffer buf))
     (when (string= event "finished\n")
       (evil-quit)
       (when buf
-	(kill-buffer buf)))))
+		(kill-buffer buf)))))
 
 (use-package vterm
   :hook (vterm-mode . meow/turn-off-line-numbers)
   :hook (vterm-mode . (lambda ()
-			(setq-local confirm-kill-processes nil
-				    hscroll-margin 0)))
+						(setq-local confirm-kill-processes nil
+									hscroll-margin 0)))
   :commands (vterm)
   :custom
   (vterm-max-scrollback 100000)
@@ -254,23 +254,23 @@ EVENT has to be finished for anything to happen.  BUF is killed."
   (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "ov" '((lambda () (interactive)
-		    (select-window (meow/intelligent-split t))
-		    (meow/vterm)) :wk "vterm")
-	   "oV" '((lambda () (interactive)
-		    (meow/vterm)) :wk "vterm in this window")
-	   "pov" '((lambda () (interactive)
-		     (select-window (meow/intelligent-split t))
-		     (meow/vterm t)) :wk "vterm")
-	   "poV" '((lambda () (interactive)
-		     (meow/vterm t)) :wk "vterm in this window"))
+		   "ov" '((lambda () (interactive)
+					(select-window (meow/intelligent-split t))
+					(meow/vterm)) :wk "vterm")
+		   "oV" '((lambda () (interactive)
+					(meow/vterm)) :wk "vterm in this window")
+		   "pov" '((lambda () (interactive)
+					 (select-window (meow/intelligent-split t))
+					 (meow/vterm t)) :wk "vterm")
+		   "poV" '((lambda () (interactive)
+					 (meow/vterm t)) :wk "vterm in this window"))
   :general-config
   (:states '(normal visual) :keymaps 'vterm-mode-map
-	   "a" 'vterm-evil-append
-	   "A" 'vterm-evil-append-line
-	   "d" 'vterm-evil-delete
-	   "i" 'vterm-evil-insert
-	   "c" 'vterm-evil-change))
+		   "a" 'vterm-evil-append
+		   "A" 'vterm-evil-append-line
+		   "d" 'vterm-evil-delete
+		   "i" 'vterm-evil-insert
+		   "c" 'vterm-evil-change))
 
 ;; https://github.com/akermu/emacs-libvterm/issues/313#issuecomment-1183650463
 (advice-add #'vterm--redraw :around (lambda (fun &rest args) (let ((cursor-type cursor-type)) (apply fun args))))

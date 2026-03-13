@@ -1,70 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-helpers)
 (require 'meow-window-configuration)
-(require 'meow-undo)
-(require 'undo-tree)
-
-(setq evil-want-keybinding nil)
-
-(use-package evil
-  :custom
-  (evil-want-keybinding nil)
-  (evil-want-integration t)
-  (evil-want-minibuffer t)
-  (evil-vsplit-window-right t)
-  (evil-split-window-below t)
-  (evil-undo-system 'undo-tree)
-  :config
-  (evil-set-undo-system evil-undo-system)
-  (evil-set-initial-state 'minibuffer-mode 'insert)
-  (evil-set-initial-state 'minibuffer-inactive-mode 'insert)
-  (evil-mode))
-
-(use-package evil-collection
-  :after evil
-  :custom
-  (evil-collection-setup-minibuffer t)
-  :config
-  (evil-collection-init '(apropos
-			  calc
-			  compile
-			  comint
-			  dashboard
-			  debug
-			  ediff
-			  emoji
-			  eshell
-			  woman
-			  pdf
-			  org
-			  proced
-			  dired
-			  elfeed
-			  wdired
-			  image
-			  ibuffer
-			  simple-mpc
-			  magit
-			  magit-todos
-			  vdiff
-			  sly
-			  wgrep
-			  yaml-mode
-			  diff-hl
-			  vterm
-			  eat)))
-
-(use-package evil-better-visual-line
-  :demand t
-  :after evil
-  :config
-  (evil-better-visual-line-on))
-
-(use-package evil-textobj-tree-sitter
-  :after evil
-  :config
-  (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.outer"))
-  (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.inner")))
 
 (use-package general
   :demand t
@@ -115,16 +51,16 @@
                       (dired default-directory))))
 
   "D" '("dired in current window" . (lambda () (interactive)
-				      (when default-directory
-					(dired default-directory))))
+									  (when default-directory
+										(dired default-directory))))
 
   "o" '(:ignore t :wk "open")
   "oc" '("world clock" . world-clock)
 
   "tp" '("profiler toggle" . (lambda () (interactive)
-			       (if (profiler-running-p)
-				   (profiler-stop)
-				 (profiler-start 'cpu+mem))))
+							   (if (profiler-running-p)
+								   (profiler-stop)
+								 (profiler-start 'cpu+mem))))
 
   ":" '("M-x" . execute-extended-command)
   ";" '("M-x" . execute-extended-command)
@@ -151,13 +87,13 @@
   "eb" '("eval buffer" . eval-buffer)
   "ee" '("eval expression" . eval-expression)
   "ei" '("eval & insert" . (lambda () (interactive)
-			     (insert (format "%s"
-					     (eval (read--expression "E&I: "))))))
+							 (insert (format "%s"
+											 (eval (read--expression "E&I: "))))))
   "eI" '("e&i expr+value" . (lambda () (interactive)
-			      (insert (let ((expr (read--expression "E&I (expr): ")))
-					(format "%s = %s"
-						expr
-						(eval expr)))))))
+							  (insert (let ((expr (read--expression "E&I (expr): ")))
+										(format "%s = %s"
+												expr
+												(eval expr)))))))
 
 (general-define-key
  :states '(normal visual)
