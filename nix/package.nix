@@ -48,9 +48,9 @@
       packageRequires =
         (packages epkgs)
         ++ [
+          epkgs.ewm
           epkgs.eglot-booster
           epkgs.emsg-blame
-          epkgs.ewm
         ];
     })
   ];

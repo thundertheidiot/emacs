@@ -16,11 +16,8 @@
     ];
   });
 
-  ewm = final.trivialBuild {
-    pname = "ewm";
-    version = "1.0";
-
-    src = "${inputs.ewm}/lisp";
+  ewm = import "${inputs.ewm}/nix/default.nix" {
+    inherit pkgs;
   };
 
   eglot-booster = final.trivialBuild {

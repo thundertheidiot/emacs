@@ -64,7 +64,7 @@
 
           environment.systemPackages = [pkgs.xwayland-satellite];
 
-          programs.ewm.package = inputs.self.packages.${pkgs.system}.default;
+          programs.ewm.emacsPackage = inputs.self.packages.${pkgs.system}.default;
         };
       };
 

@@ -10,15 +10,15 @@
   (org-tags-exclude-from-inheritance '("agenda"))
   (calendar-week-start-day 1)
   (org-babel-load-languages '((emacs-lisp . t)
-			      (shell . t)
-			      (eshell . t)
-			      (lisp . t)))
+							  (shell . t)
+							  (eshell . t)
+							  (lisp . t)))
 
   (org-agenda-span 7)
   (org-agenda-start-day "+0d")
   (org-agenda-category-icon-alist `(("school" ,(list (all-the-icons-faicon "graduation-cap" :height 0.8)) nil nil :ascent center)
-				    ("project" ,(list (all-the-icons-faicon "certificate" :height 0.8)) nil nil :ascent center)
-				    ("game" ,(list (all-the-icons-faicon "gamepad" :height 1.0)) nil nil :ascent center)))
+									("project" ,(list (all-the-icons-faicon "certificate" :height 0.8)) nil nil :ascent center)
+									("game" ,(list (all-the-icons-faicon "gamepad" :height 1.0)) nil nil :ascent center)))
   (org-agenda-prefix-format
    `((agenda . " %i %?-12t% s")
      (todo . " %i %-12:c")
@@ -26,31 +26,31 @@
      (search . " %i %-12:c")))
   (org-format-latex-options
    '(:foreground default
-		 :background default
-		 :scale 2.0
-		 :html-foreground "Black"
-		 :html-background "Transparent"
-		 :html-scale 2.0
-		 :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
+				 :background default
+				 :scale 2.0
+				 :html-foreground "Black"
+				 :html-background "Transparent"
+				 :html-scale 2.0
+				 :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
   :init
   (add-hook 'org-mode-hook #'org-indent-mode)
   (add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "oa" '("org agenda" . org-agenda))
+		   "oa" '("org agenda" . org-agenda))
   :general-config
   (:keymaps 'org-mode-map
-	    "C-j" nil)
+			"C-j" nil)
   (:states '(normal visual motion) :keymaps 'org-mode-map :prefix "SPC l"
-	   "l" '(:ignore t :wk "org link")
-	   "li" '("insert org link" . org-insert-link)
-	   "lo" '("open org link" . org-open-at-point)
-	   "le" '("open org link" . org-edit-special)
-	   "lt" '("toggle link display" . org-toggle-link-display))
+		   "l" '(:ignore t :wk "org link")
+		   "li" '("insert org link" . org-insert-link)
+		   "lo" '("open org link" . org-open-at-point)
+		   "le" '("open org link" . org-edit-special)
+		   "lt" '("toggle link display" . org-toggle-link-display))
   (:keymaps 'org-mode-map :states '(normal visual motion)
-	    "RET" (lambda () (interactive)
-		    (unless (ignore-errors (org-open-at-point))
-		      (evil-ret)))))
+			"RET" (lambda () (interactive)
+					(unless (ignore-errors (org-open-at-point))
+					  (evil-ret)))))
 
 (defun meow/org-dpi-advice (orig-fun &rest args)
   "Advice for `org--get-display-dpi', call ORIG-FUN with ARGS.
@@ -101,17 +101,15 @@ ORIG-FUN is called with ARGS."
   :custom
   (org-roam-directory (file-truename "~/Documents/org/roam"))
   (org-roam-capture-templates '(("d" "default"
-				 plain "%?"
-				 :target (file+head
-					  "%<%Y%m%d%H%M%S>-${slug}.org"
-					  "#+title: ${title}
+								 plain "%?"
+								 :target (file+head
+										  "%<%Y%m%d%H%M%S>-${slug}.org"
+										  "#+title: ${title}
 #+OPTIONS: \\n:t toc:nil date:nil
 #+LATEX_HEADER: \\pagestyle{empty}
 #+LATEX_HEADER: \\setlength{\\parindent}{0pt}
-#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}\n\n
-")
-				 :unnarrowed t)
-				))
+#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}\n\n")
+								 :unnarrowed t)))
   :config
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
@@ -119,22 +117,22 @@ ORIG-FUN is called with ARGS."
   (org-roam-setup)
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "r" '(:ignore t :wk "roam")
-	   "rb" '("buffer" . org-roam-buffer-toggle)
-	   "rf" '("find node" . org-roam-node-find)
-	   "rI" '("create id" . org-id-get-create)
-	   "ri" '("insert node" . org-roam-node-insert)))
+		   "r" '(:ignore t :wk "roam")
+		   "rb" '("buffer" . org-roam-buffer-toggle)
+		   "rf" '("find node" . org-roam-node-find)
+		   "rI" '("create id" . org-id-get-create)
+		   "ri" '("insert node" . org-roam-node-insert)))
 
 ;; https://www.d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5
 (defun meow/org-set-agenda-tag ()
   "Set the agenda tag for the current org document, if TODOs exist."
   (if (org-element-map
-	  (org-element-parse-buffer 'headline)
-	  'headline
-	(lambda (h)
-	  (eq (org-element-property :todo-type h)
-	      'todo))
-	nil 'first-match)
+		  (org-element-parse-buffer 'headline)
+		  'headline
+		(lambda (h)
+		  (eq (org-element-property :todo-type h)
+			  'todo))
+		nil 'first-match)
       (org-roam-tag-add '("agenda"))
     (ignore-errors
       (org-roam-tag-remove '("agenda")))))
@@ -147,11 +145,11 @@ ORIG-FUN is called with ARGS."
 (defun meow/org-update-agenda-tag ()
   "Check if conditions are met and set the agenda tag."
   (when (and (not (active-minibuffer-window))
-	     (derived-mode-p 'org-mode)
-	     buffer-file-name
-	     (string-prefix-p
-	      (expand-file-name (file-name-as-directory org-roam-directory))
-	      (file-name-directory buffer-file-name)))
+			 (derived-mode-p 'org-mode)
+			 buffer-file-name
+			 (string-prefix-p
+			  (expand-file-name (file-name-as-directory org-roam-directory))
+			  (file-name-directory buffer-file-name)))
     (meow/org-set-agenda-tag)))
 
 (add-hook 'org-mode-hook #'meow/org-update-agenda-tag)
@@ -181,8 +179,8 @@ ORIG-FUN is called with ARGS."
   :custom (org-download-screenshot-method "grim -g \"$(slurp)\" -t png %s")
   :general
   (:states '(normal visual motion) :keymaps 'org-mode-map :prefix "SPC l"
-	   "s" '("screenshot" . org-download-screenshot)
-	   "c" '("image from clipboard" . org-download-clipboard)))
+		   "s" '("screenshot" . org-download-screenshot)
+		   "c" '("image from clipboard" . org-download-clipboard)))
 
 (use-package alert
   :custom
@@ -197,12 +195,12 @@ ORIG-FUN is called with ARGS."
 
 (defun meow/org-tempo-electric-pair-fix ()
   (setq-local electric-pair-inhibit-predicate
-	      `(lambda (c)
-		 (if (char-equal c ?<)
-		     t
-		   (,electric-pair-inhibit-predicate c))))
+			  `(lambda (c)
+				 (if (char-equal c ?<)
+					 t
+				   (,electric-pair-inhibit-predicate c))))
   (setq-local electric-pair-pairs
-	      (append electric-pair-pairs '((?$ . ?$)))))
+			  (append electric-pair-pairs '((?$ . ?$)))))
 
 (use-package org-tempo
   :demand t
@@ -211,7 +209,7 @@ ORIG-FUN is called with ARGS."
   :hook (org-mode . meow/org-tempo-electric-pair-fix)
   :custom
   (org-structure-template-alist '(("el" . "src emacs-lisp")
-				  ("box" . "lbox"))))
+								  ("box" . "lbox"))))
 
 (use-package org-superstar
   :custom
@@ -234,27 +232,27 @@ ORIG-FUN is called with ARGS."
     (save-excursion
       (let ((top-headings '()))
 
-	(org-map-entries
-	 (lambda ()
-	   (when (not (or (org-entry-is-todo-p)
-			  (org-entry-is-done-p)))
-	     (push (org-get-heading) top-headings))))
+		(org-map-entries
+		 (lambda ()
+		   (when (not (or (org-entry-is-todo-p)
+						  (org-entry-is-done-p)))
+			 (push (org-get-heading) top-headings))))
 
-	(let* ((heading (completing-read "Heading: " (cons "-- Top Level --" (nreverse top-headings))))
-	       (name (completing-read "Todo: " nil)))
-	  (if (string= heading "-- Top Level --")
-	      (progn
-		(goto-char (point-max))
-		(org-insert-heading '(16) t 1))
-	    (progn
-	      (goto-char (point-min))
-	      (re-search-forward (concat "^\\* " (regexp-quote heading) "$"))
-	      (org-insert-heading '(16) t (+ (org-current-level) 1))))
-	  (insert (format "TODO %s" name))
-	  (pcase arg
-	    (`(4) (org-schedule nil))
-	    (`(16))
-	    (_ (org-deadline nil)))))
+		(let* ((heading (completing-read "Heading: " (cons "-- Top Level --" (nreverse top-headings))))
+			   (name (completing-read "Todo: " nil)))
+		  (if (string= heading "-- Top Level --")
+			  (progn
+				(goto-char (point-max))
+				(org-insert-heading '(16) t 1))
+			(progn
+			  (goto-char (point-min))
+			  (re-search-forward (concat "^\\* " (regexp-quote heading) "$"))
+			  (org-insert-heading '(16) t (+ (org-current-level) 1))))
+		  (insert (format "TODO %s" name))
+		  (pcase arg
+			(`(4) (org-schedule nil))
+			(`(16))
+			(_ (org-deadline nil)))))
       (save-buffer))))
 
 (defun meow/org-add-todo (&optional arg force-roam-find)
@@ -263,8 +261,8 @@ ORIG-FUN is called with ARGS."
   (if (and (not force-roam-find) (derived-mode-p 'org-mode))
       (meow/--org-create-todo (current-buffer) arg)
     (if-let* ((node (org-roam-node-read))
-	      (file (org-roam-node-file node)))
-	(meow/--org-create-todo (find-file-noselect file) arg)
+			  (file (org-roam-node-file node)))
+		(meow/--org-create-todo (find-file-noselect file) arg)
       (user-error "Create an org roam node first"))))
 
 (defun meow/--org-construct-todo-list ()
@@ -273,34 +271,34 @@ ORIG-FUN is called with ARGS."
   (-filter
    #'identity
    (-flatten-n 1
-	       (mapcar
-		(lambda (file)
-		  (with-current-buffer (find-file-noselect file)
-		    (org-map-entries
-		     (lambda ()
-		       (when (org-entry-is-todo-p)
-			 (let ((heading (org-get-heading nil t t t)))
-			   (propertize
-			    (string-join (append (list (org-get-title))
-						 (org-get-outline-path nil t)
-						 (list heading
-						       (or (org-entry-get (point) "SCHEDULED")
-							   (org-entry-get (point) "DEADLINE"))))
-					 " > ")
-			    'consult--candidate (list
-						 :file (buffer-file-name)
-						 :point (point)))))))))
-		org-agenda-files))))
+			   (mapcar
+				(lambda (file)
+				  (with-current-buffer (find-file-noselect file)
+					(org-map-entries
+					 (lambda ()
+					   (when (org-entry-is-todo-p)
+						 (let ((heading (org-get-heading nil t t t)))
+						   (propertize
+							(string-join (append (list (org-get-title))
+												 (org-get-outline-path nil t)
+												 (list heading
+													   (or (org-entry-get (point) "SCHEDULED")
+														   (org-entry-get (point) "DEADLINE"))))
+										 " > ")
+							'consult--candidate (list
+												 :file (buffer-file-name)
+												 :point (point)))))))))
+				org-agenda-files))))
 
 (defun meow/org-mark-todo-as-done ()
   "Pick a todo with consult and mark it as done."
   (interactive)
   (let ((selection
-	 (consult--read
-	  (meow/--org-construct-todo-list)
-	  :prompt "select todo: "
-	  :lookup #'consult--lookup-candidate
-	  :category 'meow/org-heading)))
+		 (consult--read
+		  (meow/--org-construct-todo-list)
+		  :prompt "select todo: "
+		  :lookup #'consult--lookup-candidate
+		  :category 'meow/org-heading)))
     (with-current-buffer (find-file-noselect (plist-get selection :file))
       (goto-char (plist-get selection :point))
       (org-todo current-prefix-arg))))
@@ -309,11 +307,11 @@ ORIG-FUN is called with ARGS."
   "Pick a todo with consult and go to it."
   (interactive)
   (let ((selection
-	 (consult--read
-	  (meow/--org-construct-todo-list)
-	  :prompt "select todo: "
-	  :lookup #'consult--lookup-candidate
-	  :category 'meow/org-heading)))
+		 (consult--read
+		  (meow/--org-construct-todo-list)
+		  :prompt "select todo: "
+		  :lookup #'consult--lookup-candidate
+		  :category 'meow/org-heading)))
     (find-file (plist-get selection :file))
     (goto-char (plist-get selection :point))))
 
