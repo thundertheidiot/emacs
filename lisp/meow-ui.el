@@ -209,6 +209,16 @@
 								  (setq xterm-color-preserve-properties t)))
   :hook (eshell-mode . (lambda ()
 						 (setenv "TERM" "xterm-256color")))
+  :hook (shell-mode . (lambda ()
+						;; Disable font-locking in this buffer to improve performance
+						(font-lock-mode -1)
+						;; Prevent font-locking from being re-enabled in this buffer
+						(make-local-variable 'font-lock-function)
+						(setq font-lock-function (lambda (_) nil))
+						;; Replace ansi-color-process-output with xterm-color-filter
+						(make-local-variable 'comint-output-filter-functions)
+						(remove-hook 'comint-output-filter-functions 'ansi-color-process-output t)
+						(add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
   :config
   (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
   (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions)))
