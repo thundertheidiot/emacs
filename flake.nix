@@ -6,6 +6,8 @@
   inputs.home-manager.url = "github:nix-community/home-manager";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+  inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git";
+
   # not sure if aly's fork does much, but it was apparently important for her
   # https://github.com/nialov/actions.nix/compare/master...alyraffauf:actions.nix:master
   inputs.actions.url = "github:alyraffauf/actions.nix";
@@ -53,6 +55,16 @@
           programs.emacs.package = inputs.self.packages.${pkgs.system}.default;
 
           imports = [./nix/home-manager.nix];
+        };
+      };
+
+      flake.nixosModules = {
+        ewm = {pkgs, ...}: {
+          imports = [inputs.ewm.nixosModules.default];
+
+          environment.systemPackages = [pkgs.xwayland-satellite];
+
+          programs.ewm.package = inputs.self.packages.${pkgs.system}.default;
         };
       };
 

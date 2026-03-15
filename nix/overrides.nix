@@ -16,22 +16,22 @@
     ];
   });
 
+  ewm = final.trivialBuild {
+    pname = "ewm";
+    version = "1.0";
+
+    src = "${inputs.ewm}/lisp";
+  };
+
   eglot-booster = final.trivialBuild {
     pname = "eglot-booster";
     version = "1.0.0";
 
     src = inputs.eglot-booster;
-    dontUnpack = true;
 
-    installPhase = ''
-      LISPDIR=$out/share/emacs/site-lisp
-      install -d $LISPDIR
-      install $src/*.el* $out/share/emacs/site-lisp
-    '';
-
-    recipe = pkgs.writeText "recipe" ''
-      (eglot-booster :fetcher github :repo "jdtsmith/eglot-booster" :files (:defaults "eglot-booster.el"))
-    '';
+    propagatedNativeBuildInputs = [
+      pkgs.emacs-lsp-booster
+    ];
   };
 
   emsg-blame = final.trivialBuild {
@@ -43,17 +43,6 @@
     ];
 
     src = inputs.emsg-blame;
-    dontUnpack = true;
-
-    installPhase = ''
-      LISPDIR=$out/share/emacs/site-lisp
-      install -d $LISPDIR
-      install $src/*.el* $out/share/emacs/site-lisp
-    '';
-
-    recipe = pkgs.writeText "recipe" ''
-      (emsg-blame :fetcher github :repo "ISouthRain/emsg-blame" :files (:defaults "emsg-blame.el"))
-    '';
   };
 
   # weird problem

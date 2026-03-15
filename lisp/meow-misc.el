@@ -1,8 +1,11 @@
 ;; -*- lexical-binding: t; -*-
+(require 'recentf)
+
+(setq-default tab-width 4
+			  c-basic-offset 'tab-width)
+
 (setq use-short-answers t
       native-comp-async-report-warnings-errors 'silent
-      c-basic-offset 'tab-width
-      tab-width 4
 
       ;; gc-cons-threshold (* 8 1024 1024)
       read-process-output-max (* 1024 1024)
@@ -19,8 +22,8 @@
       confirm-kill-processes nil
 
       world-clock-list '(("Europe/Helsinki" "Finland")
-			 ("Europe/London" "UK")
-			 ("America/Buenos_Aires" "Diza"))
+						 ("Europe/London" "UK")
+						 ("America/Buenos_Aires" "Diza"))
 
       backward-delete-char-untabify-method nil)
 
@@ -44,48 +47,46 @@ Preserve window configuration when pressing ESC."
     (funcall fun)))
 (advice-add #'keyboard-escape-quit :around #'advice!-keyboard-escape-quit-adv)
 
-;; scrolling
-;; (setq pixel-scroll-precision-large-scroll-height 40.0)
-;; (setq pixel-scroll-precision-use-momentum t)
-
-;; (use-package with-editor
-;;   :hook
-;;   (eshell-mode . with-editor-export-editor)
-;;   :config
-;;   (shell-command-with-editor-mode))
-
+;; better pixel scroll
 (use-package ultra-scroll
   :init
   (setq scroll-conservatively 101 ; important!
         scroll-margin 0
-	jit-lock-defer-time 0.05)  ; defer fontification
+		jit-lock-defer-time 0.05)  ; defer fontification
   :config
   (ultra-scroll-mode 1))
+
+;; this fixes rendering of eldoc for at least haskell language server
+(use-package markdown-mode
+  :ensure nil
+  :demand t
+  :mode "\\.md\\'")
 
 (use-package tramp-sh
   :ensure nil ;; part of emacs
   :config
   (setq tramp-remote-path
-	(append tramp-remote-path
- 		'(tramp-own-remote-path))))
+		(append tramp-remote-path
+ 				'(tramp-own-remote-path))))
 
 (use-package dired
   :ensure nil
   :demand t
   :hook (dired-mode . hl-line-mode)
   :hook (dired-mode . auto-revert-mode)
+  :hook (dired-mode . meow/turn-off-line-numbers)
   :custom
   (dired-dwim-target t)
   (dired-mouse-drag-files t)
   (dired-listing-switches "-alh")
   :general-config
   (:keymaps 'dired-mode-map :states '(normal insert visual motion)
-	    "SPC" nil
-	    "q" 'evil-quit
-	    "<backspace>" 'dired-up-directory
-	    "C-<return>" (lambda () (interactive) (empv-play (dired-get-filename))))
+			"SPC" nil
+			"q" 'evil-quit
+			"<backspace>" 'dired-up-directory
+			"C-<return>" (lambda () (interactive) (empv-play (dired-get-filename))))
   (:keymaps 'dired-mode-map :states '(normal visual motion) :prefix "SPC"
-	    "oe" '("eshell in this window" . (lambda () (interactive) (meow/eshell))))
+			"oe" '("eshell in this window" . (lambda () (interactive) (meow/eshell))))
   :config
   (unless (display-graphic-p)
     (general-def dired-mode-map "DEL" 'dired-up-directory)))
@@ -96,15 +97,15 @@ Preserve window configuration when pressing ESC."
 (use-package openwith
   :custom
   (openwith-associations `((,(rx nonl
-				 (or ".mkv"
-				     ".mp4"
-				     ".mov"
-				     ".webm")
-				 eos)
-			    . ("mpv" (file)))))
+								 (or ".mkv"
+									 ".mp4"
+									 ".mov"
+									 ".webm")
+								 eos)
+							. ("mpv" (file)))))
   :config
   (setq consult-preview-excluded-files
-	(string-join (mapcar #'car openwith-associations) "\\|"))
+		(string-join (mapcar #'car openwith-associations) "\\|"))
   (openwith-mode))
 
 ;; view pdfs
@@ -118,6 +119,8 @@ Preserve window configuration when pressing ESC."
 
 ;; editor as new buffer
 (setenv "EDITOR" "emacsclient")
+
+(use-package elfeed)
 
 (provide 'meow-misc)
 ;;; meow-misc.el ends here

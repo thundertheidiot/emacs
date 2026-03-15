@@ -45,7 +45,13 @@
 
       version = "1.0";
 
-      packageRequires = packages epkgs;
+      packageRequires =
+        (packages epkgs)
+        ++ [
+          epkgs.eglot-booster
+          epkgs.emsg-blame
+          epkgs.ewm
+        ];
     })
   ];
 

@@ -6,6 +6,7 @@
 (require 'embark)
 (require 'libmpdel)
 (require 'transient)
+(require 'dash)
 
 (defun meow/--libmpdel-guard ()
   (unless (libmpdel-connected-p)
@@ -189,18 +190,17 @@ TYPE is a `libmpdel-search-criteria' type."
    'current-playlist
    (lambda (songs)
      (let ((candidate
-	    (consult--read (if-let* ((cur (libmpdel-current-song))
-				     (id (libmpdel--song-id cur))
-				     (meow/mpd-song-fields '(title file)))
-			       (mapcar (lambda (s)
-					 (meow/--format-mpd-song s id))
-				       songs)
-			     (mapcar #'meow/--format-mpd-song songs))
-			   :annotate #'meow/--mpd-annotate
-			   :category 'mpd-queue
-			   :sort nil
-			   :lookup #'consult--lookup-candidate
-			   :require-match t)))
+	    (consult--read
+	     (if-let* ((cur (libmpdel-current-song))
+		       (id (libmpdel--song-id cur)))
+		 (--map (meow/--format-mpd-song it id)
+			songs)
+	       (-map #'meow/--format-mpd-song songs))
+	     :annotate #'meow/--mpd-annotate
+	     :category 'mpd-queue
+	     :sort nil
+	     :lookup #'consult--lookup-candidate
+	     :require-match t)))
        (meow/mpd-play-song candidate)))))
 
 (defun meow/mpd-load-playlist ()

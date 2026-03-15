@@ -13,7 +13,7 @@
 (use-package consult-flycheck
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "sd" '("flycheck" . consult-flycheck)))
+		   "sd" '("flycheck" . consult-flycheck)))
 
 ;; integrate flycheck with lsp
 (use-package flycheck-eglot
@@ -35,27 +35,27 @@
   (require 'corfu-autoloads)
   :general-config
   (:states '(insert)
-	   "C-j" nil
-	   "C-k" nil)
+		   "C-j" nil
+		   "C-k" nil)
   (:states '(normal visual insert) :keymaps 'corfu-mode-map
-	   "C-j" nil
-	   "C-k" nil
-	   "C-i" nil)
+		   "C-j" nil
+		   "C-k" nil
+		   "C-i" nil)
   (:keymaps 'corfu-map
-	    "RET" nil
-	    "<up>" nil
-	    "<down>" nil
-	    "<tab>" nil
-	    "TAB" nil
-	    "M-i" (lambda () (interactive)
-		    (let ((current-prefix-arg t))
-		      (call-interactively #'corfu-info-documentation)))
-	    "C-j" #'corfu-next
-	    "C-k" #'corfu-previous
-	    "S-RET" #'corfu-complete
-	    "S-<return>" #'corfu-complete
-	    "C-RET" #'corfu-complete
-	    "C-<return>" #'corfu-complete))
+			"RET" nil
+			"<up>" nil
+			"<down>" nil
+			"<tab>" nil
+			"TAB" nil
+			"M-i" (lambda () (interactive)
+					(let ((current-prefix-arg t))
+					  (call-interactively #'corfu-info-documentation)))
+			"C-j" #'corfu-next
+			"C-k" #'corfu-previous
+			"S-RET" #'corfu-complete
+			"S-<return>" #'corfu-complete
+			"C-RET" #'corfu-complete
+			"C-<return>" #'corfu-complete))
 
 (defun meow/complete-with-consult ()
   "Start `completion-at-point' with `consult-completion-in-region'."
@@ -67,12 +67,17 @@
   "M-i" #'eldoc
   "M-c" #'meow/complete-with-consult)
 
+(use-package cape
+  :demand t
+  :config
+  (require 'cape-keyword))
+
 ;; automatic formatting
 (use-package apheleia
   :demand t
   :config
   (setf (alist-get 'nixfmt apheleia-formatters)
-	'("alejandra"))
+		'("alejandra"))
   (apheleia-global-mode +1))
 
 ;; project management
@@ -84,30 +89,32 @@
   (projectile-mode)
   :general
   (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-	   "P" '(:keymap projectile-command-map :package projectile)
-	   "p" '(:ignore t :package projectile :wk "project")
-	   "pp" '("switch project" . projectile-switch-project)
-	   "ps" '("search project" . (lambda () (interactive) (consult-ripgrep (projectile-project-root))))
-	   "p." '("find project file" . projectile-find-file)
-	   "po" '(:ignore t :wk "open")
-	   "pog" '("project version control (git)" . projectile-vc)
-	   "pb" '("switch buffer in project" . projectile-switch-to-buffer)))
+		   "P" '(:keymap projectile-command-map :package projectile)
+		   "p" '(:ignore t :package projectile :wk "project")
+		   "pp" '("switch project" . projectile-switch-project)
+		   "ps" '("search project" . (lambda () (interactive) (consult-ripgrep (projectile-project-root))))
+		   "p." '("find project file" . projectile-find-file)
+		   "po" '(:ignore t :wk "open")
+		   "pog" '("project version control (git)" . projectile-vc)
+		   "pb" '("switch buffer in project" . projectile-switch-to-buffer)))
 
 (use-package ibuffer-projectile
   :hook
   (ibuffer-mode . (lambda () (ibuffer-projectile-set-filter-groups)
-		    (unless (eq ibuffer-sorting-mode 'alphabetic)
-		      (ibuffer-do-sort-by-alphabetic)))))
+					(unless (eq ibuffer-sorting-mode 'alphabetic)
+					  (ibuffer-do-sort-by-alphabetic)))))
 
 (use-package hl-todo
   :demand t
   :custom
   (hl-todo-keyword-faces '(("TODO" . ,(face-attribute 'error :foreground))
-			   ("HACK" . ,(face-attribute 'warning :foreground))
-			   ("NOTE" . ,(face-attribute 'match :foreground))
-			   ("FIXME" . ,(face-attribute 'error :foreground))))
+						   ("HACK" . ,(face-attribute 'warning :foreground))
+						   ("NOTE" . ,(face-attribute 'match :foreground))
+						   ("FIXME" . ,(face-attribute 'error :foreground))))
   :config
   (global-hl-todo-mode 1))
+
+(add-hook 'prog-mode-hook (lambda () (hl-line-mode 1)))
 
 ;; (use-package yasnippet
 ;;   :custom
@@ -126,8 +133,8 @@
 (defun meow/tmc (args)
   "Call tmc as a shell command with ARGS."
   (let ((default-directory (or
-			    (when (file-in-directory-p default-directory meow/tmc-dir)
-			      (locate-dominating-file default-directory ".tmcproject.yml")))))
+							(when (file-in-directory-p default-directory meow/tmc-dir)
+							  (locate-dominating-file default-directory ".tmcproject.yml")))))
     (async-shell-command (format "tmc %s" args))))
 
 (defun meow/--tmc-pick-exercise (course callback)
@@ -136,17 +143,17 @@
    (format "tmc exercises %s" course)
    (lambda (proc buf)
      (let* ((string (with-current-buffer buf
-		      (goto-char (point-min))
-		      (search-forward "Soft deadline:")
-		      (search-forward "\n")
-		      (buffer-substring (point) (point-max))))
-	    (exercise (completing-read "Pick exercise: "
-				       (seq-filter (lambda (s) (not (string-empty-p s)))
-						   (mapcar #'s-trim
-							   (split-string string "\n")))
-				       )))
+					  (goto-char (point-min))
+					  (search-forward "Soft deadline:")
+					  (search-forward "\n")
+					  (buffer-substring (point) (point-max))))
+			(exercise (completing-read "Pick exercise: "
+									   (seq-filter (lambda (s) (not (string-empty-p s)))
+												   (mapcar #'s-trim
+														   (split-string string "\n")))
+									   )))
        (when exercise
-	 (funcall callback (cadr (split-string exercise ": ")))))
+		 (funcall callback (cadr (split-string exercise ": ")))))
      )))
 
 (defun meow/--tmc-open-exercise (course)
@@ -162,20 +169,20 @@
   (interactive "P")
   (if (and (not arg) (file-in-directory-p default-directory meow/tmc-dir))
       (let ((course (car (split-string
-			  (file-relative-name default-directory meow/tmc-dir)
-			  "/" t))))
-	(meow/--tmc-open-exercise course))
+						  (file-relative-name default-directory meow/tmc-dir)
+						  "/" t))))
+		(meow/--tmc-open-exercise course))
     (meow/async-shell-command-string
      "tmc courses"
      (lambda (_proc buf)
        (let* ((string (with-current-buffer buf
-			(buffer-string)))
-	      (course (completing-read "Pick course: "
-				       (seq-filter
-					(lambda (s) (and (not (string-empty-p s))
-							 (not (s-contains-p "Updates" s))))
-					(split-string string "\n")))))
-	 (meow/--tmc-open-exercise course))))))
+						(buffer-string)))
+			  (course (completing-read "Pick course: "
+									   (seq-filter
+										(lambda (s) (and (not (string-empty-p s))
+														 (not (s-contains-p "Updates" s))))
+										(split-string string "\n")))))
+		 (meow/--tmc-open-exercise course))))))
 
 (provide 'meow-programming)
 ;;; meow-programming.el ends here

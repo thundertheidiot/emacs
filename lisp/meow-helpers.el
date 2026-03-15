@@ -12,6 +12,21 @@
 
 (add-hook 'after-init-hook #'meow/setup-directories)
 
+(defmacro meow/runonce (name only-daemon &rest forms)
+  "Define a runonce helper NAME, FORMS are executed only once.
+Called on `after-init-hook' and `server-after-make-frame-hook'."
+  (let ((flag (intern (format "--meow/runonce-flag-%s" name))))
+    `(progn
+       ,(unless only-daemon
+	  `(add-hook 'after-init-hook (lambda ()
+					,@forms)))
+       (defvar ,flag nil)
+       (add-hook 'server-after-make-frame-hook
+		 (lambda ()
+		   (unless ,flag
+		     ,@forms
+		     (setq ,flag t)))))))
+
 (defun meow/intelligent-split (&optional force)
   (interactive)
   (let* ((width (window-total-width))
@@ -76,9 +91,9 @@
 	      (message (format "Added %s to load path" final-list)))
 	  (message "Nix process failed"))))))
 
-(defun meow/async-shell-command-buffer (command callback)
+(defun meow/async-shell-command-buffer (command callback &optional buffer)
   "Start process for shell COMMAND, call CALLBACK with the process and buffer after exit."
-  (let* ((buf (generate-new-buffer (format " *meow/async %s*" command)))
+  (let* ((buf (or buffer (generate-new-buffer (format " *meow/async %s*" command))))
 	 (proc (start-process (format "async %s" command) buf
 			      "bash" "-c" command)))
     (set-process-sentinel

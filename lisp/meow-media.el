@@ -4,7 +4,9 @@
   :demand t
   :general-config
   (:keymaps 'empv-youtube-results-mode :states '(normal visual insert)
-	    "RET" 'empv-youtube-results-play-current)
+			"RET" 'empv-youtube-results-play-current)
+  (:keymaps 'embark-file-map
+			"p" #'empv-play-file)
   :custom
   (empv-invidious-instance "https://yewtu.be/api/v1")
   (empv-volume-step 3)
@@ -44,8 +46,8 @@ MPV is called with MPV-ARGS and MPD is called with MPD-ARGS."
     '("get_property_string" "playlist")
     (lambda (result)
       (if (> (length (json-parse-string result)) 0)
-	  (apply ,mpv ,mpv-args)
-	(apply ,mpd ,mpd-args)))))
+		  (apply ,mpv ,mpv-args)
+		(apply ,mpd ,mpd-args)))))
 
 (defun media-menu--toggle ()
   (interactive)

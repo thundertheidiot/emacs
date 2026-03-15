@@ -18,12 +18,66 @@
     (nix--make-repl-in-buffer (current-buffer))
     (nix-repl-mode)))
 
+(defvar-local meow/nix-build-callpackage-expression "{}")
+(defvar-local meow/nix-build-expression nil)
+(defvar-local meow/nix-build-binpath nil)
+
+(defun meow/nix-build (&optional buffer)
+  "Build the current file with nix build, using a callPackage expression."
+  (interactive)
+  (async-shell-command
+   (format "nix build --print-build-logs --impure --print-out-paths --expr '%s'"
+	   (or meow/nix-build-expression
+	       (format
+		"with import <nixpkgs> {}; callPackage \"%s\" %s"
+		buffer-file-name
+		meow/nix-build-callpackage-expression)
+	       ))
+   (or buffer
+       (get-buffer-create "*nix build*"))))
+
+(defun meow/nix-build-and-run ()
+  "Build the current file with nix, run an executable."
+  (interactive)
+  (let* ((buffer (get-buffer-create (format "*nix build&run %s*"
+					    buffer-file-name)))
+	 (current-buffer (current-buffer))
+	 (sentinel
+	  (lambda (process _signal)
+	    (when (and
+		   (memq (process-status process) '(exit signal))
+		   (eq (process-exit-status process) 0))
+	      (let* ((path
+		      (with-current-buffer buffer
+			(goto-char (point-max))
+			(skip-chars-backward "\n\t ")
+			(buffer-substring (line-beginning-position) (line-end-position))))
+		     (bin (with-current-buffer current-buffer
+			    (or (if current-prefix-arg
+				    nil
+				  (ignore-errors (expand-file-name meow/nix-build-binpath path)))
+				(setq-local meow/nix-build-binpath
+					    (read-file-name "Select executable: "
+							    path nil t nil
+							    #'file-executable-p))))))
+		(async-shell-command bin buffer))))))
+    (meow/nix-build buffer)
+    (set-process-sentinel (get-buffer-process buffer) sentinel)))
+
+(defun meow/nix-run ()
+  "Simple nix run."
+  (interactive)
+  (async-shell-command "nix run --print-build-logs"
+		       (get-buffer-create "*nix run*")))
+
 (use-package nix-mode
+  :demand t ;; lazy loading is bad, i am an emacs server user
   :mode "\\.nix\\'"
   :hook (nix-mode . eglot-ensure)
   :commands (meow/nix-repl)
-  :general
+  :general-config
   (meow/leader
+    "nr" '("nix run" . meow/nix-run)
     "on" '("nix repl" . meow/nix-repl)
     "oN" '("nix repl" . (lambda () (interactive)
 			  (meow/nix-repl t)))
@@ -33,6 +87,9 @@
     "poN" '("nix repl" . (lambda () (interactive)
 			   (let ((default-directory (projectile-project-root)))
 			     (meow/nix-repl t)))))
+  (meow/local :keymaps 'nix-mode-map
+    "r" '("nix build&run" . meow/nix-build-and-run)
+    "b" '("nix build" . meow/nix-build))
   :config
   (require 'nix-repl))
 
