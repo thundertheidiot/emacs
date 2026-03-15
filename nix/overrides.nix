@@ -16,13 +16,6 @@
     ];
   });
 
-  ewm = final.trivialBuild {
-    pname = "ewm";
-    version = "1.0";
-
-    src = "${inputs.ewm}/lisp";
-  };
-
   eglot-booster = final.trivialBuild {
     pname = "eglot-booster";
     version = "1.0.0";

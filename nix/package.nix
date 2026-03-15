@@ -50,7 +50,6 @@
         ++ [
           epkgs.eglot-booster
           epkgs.emsg-blame
-          epkgs.ewm
         ];
     })
   ];
