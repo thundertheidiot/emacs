@@ -64,12 +64,7 @@
 
           environment.systemPackages = [pkgs.xwayland-satellite];
 
-          programs.ewm.package = inputs.self.packages.${pkgs.system}.default.withPackages (_: [
-            (import "${inputs.ewm}/nix/package.nix" {
-              inherit pkgs;
-              emacsPackage = inputs.self.packages.${pkgs.system}.default;
-            })
-          ]);
+          programs.ewm.package = inputs.self.packages.${pkgs.system}.default;
         };
       };
 

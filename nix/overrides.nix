@@ -16,6 +16,10 @@
     ];
   });
 
+  ewm = import "${inputs.ewm}/nix/default.nix" {
+    inherit pkgs;
+  };
+
   eglot-booster = final.trivialBuild {
     pname = "eglot-booster";
     version = "1.0.0";
