@@ -108,12 +108,8 @@ ORIG-FUN is called with ARGS."
 #+OPTIONS: \\n:t toc:nil date:nil
 #+LATEX_HEADER: \\pagestyle{empty}
 #+LATEX_HEADER: \\setlength{\\parindent}{0pt}
-#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}
-#+LATEX_HEADER: \\usepackage[most]{tcolorbox}
-#+LATEX_HEADER: \\newtcolorbox{lbox}{{colback=white, colframe=black, boxrule=1pt, hbox, left=3mm, sharp corners, before skip=0pt, after skip=0pt, after upper=\\vspace{-\\baselineskip}}
-")
-				 :unnarrowed t)
-				))
+#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}")
+				 :unnarrowed t)))
   :config
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
