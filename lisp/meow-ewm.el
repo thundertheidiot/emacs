@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 (with-eval-after-load "ewm"
   (when (file-directory-p (expand-file-name "ewm.el" user-emacs-directory))
-	(load (expand-file-name "ewm.el" user-emacs-directory)))
+	(load-file (expand-file-name "ewm.el" user-emacs-directory)))
 
   (defvar consult-source-xdg-apps
 	`(:name "Apps"
