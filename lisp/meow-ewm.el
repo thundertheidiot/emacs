@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 (with-eval-after-load "ewm"
-  (let ((local-ewm-file (expand-file-name "ewm.el" user-emacs-directory)))
+  (let ((local-ewm-file (expand-file-name "ewm-local.el" user-emacs-directory)))
 	(when (or (file-directory-p local-ewm-file)
 			  (file-symlink-p local-ewm-file))
 	  (load-file local-ewm-file)))
