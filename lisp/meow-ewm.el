@@ -1,7 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 (with-eval-after-load "ewm"
-  (when (file-directory-p (expand-file-name "ewm.el" user-emacs-directory))
-	(load (expand-file-name "ewm.el" user-emacs-directory)))
+  (let ((local-ewm-file (expand-file-name "ewm.el" user-emacs-directory)))
+	(when (or (file-directory-p local-ewm-file)
+			  (file-symlink-p local-ewm-file))
+	  (load local-ewm-file)))
 
   (setq ewm-input-config
 		'((touchpad :natural-scroll t :tap t :dwt t)
