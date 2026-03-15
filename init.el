@@ -37,6 +37,7 @@
 (require 'meow-mpd)
 (require 'meow-media)
 (require 'meow-mommy)
+(require 'meow-ewm)
 
 (require 'meow-theme)
 
