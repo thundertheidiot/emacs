@@ -25,6 +25,7 @@
 (require 'lang/meow-rust)
 (require 'lang/meow-c\#)
 (require 'lang/meow-nix)
+(require 'lang/meow-haskell)
 (require 'lang/meow-godot)
 (require 'lang/meow-misc)
 (require 'meow-mode-line)
