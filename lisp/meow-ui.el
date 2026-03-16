@@ -227,9 +227,7 @@
   :custom
   (dashboard-projects-backend 'projectile)
   (dashboard-projects-switch-function #'projectile-switch-project-by-name)
-  (dashboard-items '((projects . 5)
-					 (recents . 5)
-					 (agenda . 20)))
+  (dashboard-items '((agenda . 20)))
   (dashboard-filter-agenda-entry
    (lambda ()
      (if (member "lukujärjestys" (org-get-tags))
