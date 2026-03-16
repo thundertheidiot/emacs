@@ -5,21 +5,21 @@
   ;;   		  (file-symlink-p local-ewm-file))
   ;;     (load-file local-ewm-file)))
 
-  (setq ewm-input-config
-		'((touchpad :natural-scroll t :tap t :dwt t)
-		  (mouse :accel-profile "flat")
-		  (keyboard :repeat-delay 300 :repeat-rate 50
-					:xkb-layouts "us,fi"
-					:xkb-options "grp:win_space_toggle")))
+  ;; (setq ewm-input-config
+  ;; 		'((touchpad :natural-scroll t :tap t :dwt t)
+  ;; 		  (mouse :accel-profile "flat")
+  ;; 		  (keyboard :repeat-delay 300 :repeat-rate 50
+  ;; 					:xkb-layouts "us,fi"
+  ;; 					:xkb-options "grp:win_space_toggle")))
 
-  (setq ewm-mouse-follows-focus t)
+  ;; (setq ewm-mouse-follows-focus t)
 
-  (setq ewm-intercept-prefixes (mapcar (lambda (key)
-										 (aref (kbd key) 0))
-									   '("M-x"
-										 "C-SPC")))
+  ;; (setq ewm-intercept-prefixes (mapcar (lambda (key)
+  ;; 										 (aref (kbd key) 0))
+  ;; 									   '("M-x"
+  ;; 										 "C-SPC")))
 
-  (ewm--send-input-config)
+  ;; (ewm--send-input-config)
 
   (defvar consult-source-xdg-apps
 	`(:name "Apps"
