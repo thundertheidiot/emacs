@@ -17,7 +17,8 @@
   (setq ewm-intercept-prefixes (mapcar (lambda (key)
 										 (aref (kbd key) 0))
 									   '("M-x"
-										 "C-SPC")))
+										 "C-SPC"
+										 "<print>")))
 
   ;; tab bar as bar
   (setq tab-bar-show t)
