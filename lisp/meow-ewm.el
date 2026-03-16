@@ -19,7 +19,49 @@
 									   '("M-x"
 										 "C-SPC")))
 
-  ;; (ewm--send-input-config)
+  ;; tab bar as bar
+  (setq tab-bar-show t)
+  
+  (setq tab-bar-format
+		'(tab-bar-format-history
+		  tab-bar-format-tabs
+		  tab-bar-separator
+		  
+		  tab-bar-format-align-right
+		  tab-bar-format-global))
+
+  (require 'time)
+  (setq display-time-format " %H:%M ")
+  (setq display-time-interval 30)
+  (setq display-time-load-average nil)
+
+  (display-time-mode 1)
+
+  (require 'battery)
+  (display-battery-mode)
+
+  (defun meow/battery-display ()
+	(if-let* ((status (ignore-errors (funcall battery-status-function))))
+		(let* ((percentage (string-to-number (alist-get ?\p status)))
+			   (charging (string-match-p "Charging" (alist-get ?\B status)))
+			   (icon (cond
+					  (charging "")
+					  ((>= percentage 90) "")
+					  ((>= percentage 75) "")
+					  ((>= percentage 50) "")
+					  ((>= percentage 25) "")
+					  (t ""))))
+		  (format "%s %s (%s:%s)  "
+				  icon
+				  (alist-get ?\p status)
+
+				  (alist-get ?\h status)
+				  (alist-get ?\m status)))
+	  ""))
+
+  (setq global-mode-string '(""
+							 display-time-string
+							 (:eval (meow/battery-display))))
 
   (defvar consult-source-xdg-apps
 	`(:name "Apps"
@@ -30,12 +72,19 @@
 			:action ,#'ewm-launch-xdg-command))
   (add-to-list 'consult-buffer-sources consult-source-xdg-apps)
 
+  (defun meow/ewm-screenshot ()
+	(interactive)
+	(let ((freeze (start-process "wayfreeze" nil "wayfreeze")))
+	  (meow/async-shell-command-buffer
+	   "grim -g \"$(slurp)\" - | wl-copy"
+	   (lambda (&rest _)
+		 (delete-process freeze)
+		 (message "Screenshot copied to clipboard"))
+	   nil)))
+
   (general-def :keymaps 'ewm-mode-map
 	"s-d" #'consult-buffer
-	"<print>" (lambda () (interactive)
-				(start-process-shell-command
-				 "screenshot" nil
-				 "wayfreeze & sleep 0.1 && grim -g \"$(slurp)\" - | wl-copy; pkill wayfreeze"))
+	"<print>" #'meow/ewm-screenshot
 	"s-h" #'windmove-left
 	"s-j" #'windmove-down
 	"s-k" #'windmove-up

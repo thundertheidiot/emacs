@@ -18,9 +18,12 @@ in {
       emacs-lsp-booster
       emacs-all-the-icons-fonts
       python314Packages.trafilatura
+
       # screenshot
       grim
       slurp
+      wayfreeze
+      wl-clipboard-rs
     ];
 
     xdg.configFile."emacs/early-init.el" = {
