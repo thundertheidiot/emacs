@@ -70,6 +70,7 @@
 	`(:name "Apps"
 			:narrow ?a
 			:category app
+			:hidden t
 			:items ,(lambda ()
 					  (mapcar #'car (ewm-list-xdg-apps)))
 			:action ,#'ewm-launch-xdg-command))
