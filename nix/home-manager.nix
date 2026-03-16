@@ -23,7 +23,7 @@ in {
       grim
       slurp
       wayfreeze
-      wl-clipboard-rs
+      wl-clipboard
     ];
 
     xdg.configFile."emacs/early-init.el" = {
