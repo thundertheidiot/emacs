@@ -51,12 +51,11 @@
 					  ((>= percentage 50) "")
 					  ((>= percentage 25) "")
 					  (t ""))))
-		  (format "%s %s (%s:%s)  "
+		  (format "%s %s (%s)  "
 				  icon
 				  (alist-get ?\p status)
 
-				  (alist-get ?\h status)
-				  (alist-get ?\m status)))
+				  (alist-get ?\t status)))
 	  ""))
 
   (setq global-mode-string '(""
