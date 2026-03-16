@@ -5,6 +5,9 @@
     		  (file-symlink-p local-ewm-file))
       (load-file local-ewm-file)))
 
+  (setq focus-follows-mouse t)
+  (setq mouse-autoselect-window t)
+
   (setq ewm-input-config
 		'((touchpad :natural-scroll t :tap t :dwt t)
 		  (mouse :accel-profile "flat")
