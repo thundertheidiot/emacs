@@ -32,6 +32,10 @@
 
   (general-def :keymaps 'ewm-mode-map
 	"s-d" #'consult-buffer
+	"<print>" (lambda () (interactive)
+				(start-process-shell-command
+				 "screenshot" nil
+				 "wayfreeze & sleep 0.1 && grim -g \"$(slurp)\" - | wl-copy; pkill wayfreeze"))
 	"s-h" #'windmove-left
 	"s-j" #'windmove-down
 	"s-k" #'windmove-up

@@ -16,9 +16,18 @@
     ];
   });
 
-  ewm = import "${inputs.ewm}/nix/default.nix" {
-    inherit pkgs;
-  };
+  ewm =
+    (import "${inputs.ewm}/nix/default.nix" {
+      inherit pkgs;
+    })
+    // {
+      propagatedNativeBuildInputs = [
+        pkgs.wayfreeze
+        pkgs.grim
+        pkgs.slurp
+        pkgs.wl-clipboard-rs
+      ];
+    };
 
   eglot-booster = final.trivialBuild {
     pname = "eglot-booster";
