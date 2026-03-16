@@ -31,6 +31,10 @@
   (add-to-list 'consult-buffer-sources consult-source-xdg-apps)
 
   (general-def :keymaps 'ewm-mode-map
-	"s-d" #'consult-buffer))
+	"s-d" #'consult-buffer
+	"s-h" #'windmove-left
+	"s-j" #'windmove-down
+	"s-k" #'windmove-up
+	"s-l" #'windmove-right))
 
 (provide 'meow-ewm)
