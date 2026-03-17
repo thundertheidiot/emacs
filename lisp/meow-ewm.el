@@ -80,7 +80,8 @@ WRAP wraps around."
 					:xkb-layouts "us,fi"
 					:xkb-options "grp:win_space_toggle")))
 
-  (setq ewm-mouse-follows-focus t)
+  (setopt ewm-mouse-follows-focus t)
+  (setopt ewm-focus-follows-mouse t)
 
   (setq ewm-intercept-prefixes (mapcar (lambda (key)
 										 (aref (kbd key) 0))
@@ -104,11 +105,11 @@ WRAP wraps around."
 		  tab-bar-format-global))
 
   (require 'time)
+  (display-time-mode 1)
+
   (setq display-time-format " %H:%M ")
   (setq display-time-interval 30)
   (setq display-time-load-average nil)
-
-  (display-time-mode 1)
 
   (require 'battery)
   (display-battery-mode)

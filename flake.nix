@@ -6,7 +6,7 @@
   inputs.home-manager.url = "github:nix-community/home-manager";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-  inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git";
+  inputs.ewm.url = "git+https://codeberg.org/thundertheidiot/ewm.git?ref=dev";
 
   # not sure if aly's fork does much, but it was apparently important for her
   # https://github.com/nialov/actions.nix/compare/master...alyraffauf:actions.nix:master

@@ -93,17 +93,18 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1773334781,
-        "narHash": "sha256-e2GH7/VeedXEEsRJ1KOLVdee2bG3+EVCJij5JAYEBrI=",
-        "ref": "refs/heads/master",
-        "rev": "d17ce7bcfe4f713db025d587027db9884995e8d1",
-        "revCount": 380,
+        "lastModified": 1773764904,
+        "narHash": "sha256-llCnSYVFbm64xIUTUgWkvqRXmUpqyRYDtogZP8C52pk=",
+        "ref": "dev",
+        "rev": "648452330c21f08d1c56bb0e555a07508f51c92e",
+        "revCount": 381,
         "type": "git",
-        "url": "https://codeberg.org/ezemtsov/ewm.git"
+        "url": "https://codeberg.org/thundertheidiot/ewm.git"
       },
       "original": {
+        "ref": "dev",
         "type": "git",
-        "url": "https://codeberg.org/ezemtsov/ewm.git"
+        "url": "https://codeberg.org/thundertheidiot/ewm.git"
       }
     },
     "flake-compat": {
