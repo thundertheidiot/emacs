@@ -36,17 +36,17 @@
   (add-hook 'org-mode-hook #'org-indent-mode)
   (add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
   :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-		   "oa" '("org agenda" . org-agenda))
+  (meow/leader
+	"oa" '("org agenda" . org-agenda))
   :general-config
   (:keymaps 'org-mode-map
 			"C-j" nil)
-  (:states '(normal visual motion) :keymaps 'org-mode-map :prefix "SPC l"
-		   "l" '(:ignore t :wk "org link")
-		   "li" '("insert org link" . org-insert-link)
-		   "lo" '("open org link" . org-open-at-point)
-		   "le" '("open org link" . org-edit-special)
-		   "lt" '("toggle link display" . org-toggle-link-display))
+  (meow/local
+	"l" '(:ignore t :wk "org link")
+	"li" '("insert org link" . org-insert-link)
+	"lo" '("open org link" . org-open-at-point)
+	"le" '("open org link" . org-edit-special)
+	"lt" '("toggle link display" . org-toggle-link-display))
   (:keymaps 'org-mode-map :states '(normal visual motion)
 			"RET" (lambda () (interactive)
 					(unless (ignore-errors (org-open-at-point))
@@ -116,12 +116,12 @@ ORIG-FUN is called with ARGS."
   (org-roam-db-autosync-mode)
   (org-roam-setup)
   :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-		   "r" '(:ignore t :wk "roam")
-		   "rb" '("buffer" . org-roam-buffer-toggle)
-		   "rf" '("find node" . org-roam-node-find)
-		   "rI" '("create id" . org-id-get-create)
-		   "ri" '("insert node" . org-roam-node-insert)))
+  (meow/leader
+	"r" '(:ignore t :wk "roam")
+	"rb" '("buffer" . org-roam-buffer-toggle)
+	"rf" '("find node" . org-roam-node-find)
+	"rI" '("create id" . org-id-get-create)
+	"ri" '("insert node" . org-roam-node-insert)))
 
 ;; https://www.d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5
 (defun meow/org-set-agenda-tag ()

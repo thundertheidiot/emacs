@@ -82,15 +82,15 @@
 					(unless (ignore-errors (browse-url))
 					  (evil-ret))))
   :general
-  (:states '(normal visual insert emacs motion) :prefix "SPC" :keymaps 'override :global-prefix "C-SPC"
-		   "oe" '("eshell" . (lambda () (interactive) 
-							   (select-window (meow/intelligent-split t)) 
-							   (meow/eshell)))
-		   "oE" '("eshell in this window" . (lambda () (interactive) (meow/eshell)))
-		   "poe" '("eshell" . (lambda () (interactive) 
-								(select-window (meow/intelligent-split t))
-								(meow/eshell t)))
-		   "poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t)))))
+  (meow/leader
+	"oe" '("eshell" . (lambda () (interactive) 
+						(select-window (meow/intelligent-split t)) 
+						(meow/eshell)))
+	"oE" '("eshell in this window" . (lambda () (interactive) (meow/eshell)))
+	"poe" '("eshell" . (lambda () (interactive) 
+						 (select-window (meow/intelligent-split t))
+						 (meow/eshell t)))
+	"poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t)))))
 
 ;; save eshell history on close maybe
 (add-hook 'kill-emacs-hook (lambda ()
@@ -253,17 +253,17 @@ EVENT has to be finished for anything to happen.  BUF is killed."
   :config
   (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
   :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-		   "ov" '((lambda () (interactive)
-					(select-window (meow/intelligent-split t))
-					(meow/vterm)) :wk "vterm")
-		   "oV" '((lambda () (interactive)
-					(meow/vterm)) :wk "vterm in this window")
-		   "pov" '((lambda () (interactive)
-					 (select-window (meow/intelligent-split t))
-					 (meow/vterm t)) :wk "vterm")
-		   "poV" '((lambda () (interactive)
-					 (meow/vterm t)) :wk "vterm in this window"))
+  (meow/leader
+	"ov" '((lambda () (interactive)
+			 (select-window (meow/intelligent-split t))
+			 (meow/vterm)) :wk "vterm")
+	"oV" '((lambda () (interactive)
+			 (meow/vterm)) :wk "vterm in this window")
+	"pov" '((lambda () (interactive)
+			  (select-window (meow/intelligent-split t))
+			  (meow/vterm t)) :wk "vterm")
+	"poV" '((lambda () (interactive)
+			  (meow/vterm t)) :wk "vterm in this window"))
   :general-config
   (:states '(normal visual) :keymaps 'vterm-mode-map
 		   "a" 'vterm-evil-append

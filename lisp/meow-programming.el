@@ -12,8 +12,8 @@
 ;; consult menu for flycheck errors
 (use-package consult-flycheck
   :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-		   "sd" '("flycheck" . consult-flycheck)))
+  (meow/leader
+	"sd" '("flycheck" . consult-flycheck)))
 
 ;; integrate flycheck with lsp
 (use-package flycheck-eglot
@@ -88,15 +88,15 @@
   :config
   (projectile-mode)
   :general
-  (:states '(normal visual motion) :keymaps 'override :prefix "SPC"
-		   "P" '(:keymap projectile-command-map :package projectile)
-		   "p" '(:ignore t :package projectile :wk "project")
-		   "pp" '("switch project" . projectile-switch-project)
-		   "ps" '("search project" . (lambda () (interactive) (consult-ripgrep (projectile-project-root))))
-		   "p." '("find project file" . projectile-find-file)
-		   "po" '(:ignore t :wk "open")
-		   "pog" '("project version control (git)" . projectile-vc)
-		   "pb" '("switch buffer in project" . projectile-switch-to-buffer)))
+  (meow/leader
+	"P" '(:keymap projectile-command-map :package projectile)
+	"p" '(:ignore t :package projectile :wk "project")
+	"pp" '("switch project" . projectile-switch-project)
+	"ps" '("search project" . (lambda () (interactive) (consult-ripgrep (projectile-project-root))))
+	"p." '("find project file" . projectile-find-file)
+	"po" '(:ignore t :wk "open")
+	"pog" '("project version control (git)" . projectile-vc)
+	"pb" '("switch buffer in project" . projectile-switch-to-buffer)))
 
 (use-package ibuffer-projectile
   :hook
