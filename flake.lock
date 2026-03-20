@@ -93,11 +93,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1773954185,
-        "narHash": "sha256-WFWtNFFLwyB1we0XCh+mc9gru3lTAqxOxzW/i1olxqA=",
+        "lastModified": 1773996649,
+        "narHash": "sha256-fLwSdJtZ9oSl21iMBc6OpDz/VeaKmkXQ3p+YkjYvYpI=",
         "ref": "dev",
-        "rev": "5d08c422c361d17fef7f428b86f55e9c9199aaae",
-        "revCount": 384,
+        "rev": "c85cf68362624243b3cffc1b2e9ba8879e863111",
+        "revCount": 386,
         "type": "git",
         "url": "https://codeberg.org/thundertheidiot/ewm.git"
       },

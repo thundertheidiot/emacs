@@ -83,15 +83,17 @@ WRAP wraps around."
   (setopt ewm-mouse-follows-focus t)
   (setopt ewm-focus-follows-mouse t)
 
-  (setq ewm-intercept-prefixes (mapcar (lambda (key)
-										 (aref (kbd key) 0))
-									   '("M-x"
-										 "C-SPC"
-										 "<print>"
-										 "<AudioRaiseVolume>"
-										 "<AudioLowerVolume>"
-										 "s-,"
-										 "s-.")))
+  (setopt ewm-intercept-prefixes '("M-x"
+								   "C-SPC"))
+
+  (setopt ewm-fullscreen-intercept-prefixes '("s-f"
+											  "<print>"
+											  "<AudioRaiseVolume>"
+											  "<AudioLowerVolume>"
+											  "s-,"
+											  "s-."))
+
+  (ewm--send-intercept-keys)
 
   ;; tab bar as bar
   (setq tab-bar-show t)
