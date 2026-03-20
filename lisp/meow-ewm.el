@@ -147,7 +147,22 @@ WRAP wraps around."
 			:items ,(lambda ()
 					  (mapcar #'car (ewm-list-xdg-apps)))
 			:action ,#'ewm-launch-xdg-command))
+
+  (defvar consult-source-ewm-buffers
+	`(:name "EWM"
+			:narrow ?e
+			:category buffer
+			:face consult-buffer
+			:state ,#'consult--buffer-state
+			:hidden t
+			:items ,(lambda ()
+					  (consult--buffer-query :sort 'visibility
+											 :as #'consult--buffer-pair
+											 :mode 'ewm-surface-mode))
+			:action ,#'ewm-launch-xdg-command))
+
   (add-to-list 'consult-buffer-sources consult-source-xdg-apps)
+  (add-to-list 'consult-buffer-sources consult-source-ewm-buffers)
 
   (general-def :keymaps 'ewm-mode-map
 	"s-d" #'consult-buffer
