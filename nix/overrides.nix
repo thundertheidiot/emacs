@@ -19,6 +19,7 @@
   ewm =
     (import "${inputs.ewm}/nix/default.nix" {
       inherit pkgs;
+      withScreencastSupport = true;
     })
     // {
       propagatedNativeBuildInputs = [
