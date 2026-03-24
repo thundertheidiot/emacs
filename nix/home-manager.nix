@@ -30,6 +30,10 @@ in {
     # https://codeberg.org/ezemtsov/ewm/pulls/53
     xdg.portal = {
       enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+        xdg-desktop-portal-gnome
+      ];
       config.ewm = {
         default = "gnome;gtk;";
         "org.freedesktop.impl.portal.Access" = "gtk";
