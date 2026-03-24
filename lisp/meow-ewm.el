@@ -84,14 +84,17 @@ WRAP wraps around."
   (setopt ewm-focus-follows-mouse t)
 
   (setopt ewm-intercept-prefixes '("M-x"
-								   "C-SPC"))
-
-  (setopt ewm-fullscreen-intercept-prefixes '("s-f"
-											  "<print>"
-											  "<AudioRaiseVolume>"
-											  "<AudioLowerVolume>"
-											  "s-,"
-											  "s-."))
+								   "C-SPC"
+								   ("s-f" :fullscreen)
+								   ("<Print>" :fullscreen)
+								   ("<AudioRaiseVolume>" :fullscreen)
+								   ("<AudioLowerVolume>" :fullscreen)
+								   ("<AudioMute>" :fullscreen)
+								   ("<AudioMicMute>" :fullscreen)
+								   ("<MonBrightnessUp>" :fullscreen)
+								   ("<MonBrightnessDown>" :fullscreen)
+								   ("s-," :fullscreen)
+								   ("s-." :fullscreen)))
 
   (ewm--send-intercept-keys)
 
