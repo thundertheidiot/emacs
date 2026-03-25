@@ -24,6 +24,7 @@
       world-clock-list '(("Europe/Helsinki" "Finland")
 						 ("Europe/London" "UK")
 						 ("America/Chicago" "car")
+						 ("Europe/Rome" "emax")
 						 ("America/Buenos_Aires" "Diza"))
 
       backward-delete-char-untabify-method nil)
