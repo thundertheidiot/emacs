@@ -38,7 +38,6 @@
 		(append apheleia-formatters-mode-extension-assoc
 				'((tsx-ts-mode . ".tsx")
 				  (typescript-ts-mode ".ts"))))
-  
   (setf
    (alist-get 'typescript-ts-mode apheleia-mode-alist)
    '(eslint))
