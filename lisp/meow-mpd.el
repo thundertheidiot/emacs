@@ -17,9 +17,9 @@
 The function is named `meow/mpd-NAME', FORMS are executed with entity bound."
   `(defun ,(intern (format "meow/mpd-%s" name)) (entity)
      (when-let ((entity
-		 (if (stringp entity)
-		     (get-text-property 0 'consult--candidate entity)
-		   entity)))
+				 (if (stringp entity)
+					 (get-text-property 0 'consult--candidate entity)
+				   entity)))
        ,@forms)))
 
 (meow/mpd-wrapper
@@ -86,26 +86,26 @@ Don't override this, it's let bound in every relevant case.")
   "Format libmpdel song SONG for consult.
 Highlight the song with CUR-ID."
   (let* ((file (or (libmpdel--song-file song) ""))
-	 (title (libmpdel--song-name song))
-	 (artist (or (libmpdel-artist-name song) ""))
-	 (album (or (libmpdel-album-name song) ""))
-	 (is-cur-song (and cur-id
-			   (string= (libmpdel--song-id song) cur-id)))
-	 (search-strings
-	  (mapcar (lambda (i)
-		    (pcase i
-		      ('title (or title ""))
-		      ('artist artist)
-		      ('album album)
-		      ('file file)))
-		  meow/mpd-song-fields)))
+		 (title (libmpdel--song-name song))
+		 (artist (or (libmpdel-artist-name song) ""))
+		 (album (or (libmpdel-album-name song) ""))
+		 (is-cur-song (and cur-id
+						   (string= (libmpdel--song-id song) cur-id)))
+		 (search-strings
+		  (mapcar (lambda (i)
+					(pcase i
+					  ('title (or title ""))
+					  ('artist artist)
+					  ('album album)
+					  ('file file)))
+				  meow/mpd-song-fields)))
     (apply
      #'propertize
      (string-join search-strings " ")
      'display (string-join (list
-			    (when is-cur-song
-			      "Now Playing - ")
-			    (or title file)))
+							(when is-cur-song
+							  "Now Playing - ")
+							(or title file)))
      'consult--candidate song
      (when is-cur-song
        '(face success)))))
@@ -114,8 +114,8 @@ Highlight the song with CUR-ID."
   "Annotate SONG for good marginalia integration."
   (let ((song (get-text-property 0 'consult--candidate song)))
     (format "   %s - %s"
-	    (or (ignore-errors (libmpdel-artist-name song)) "Unknown Artist")
-	    (or (ignore-errors (libmpdel-album-name song)) "Unknown Album"))))
+			(or (ignore-errors (libmpdel-artist-name song)) "Unknown Artist")
+			(or (ignore-errors (libmpdel-album-name song)) "Unknown Album"))))
 
 (defun meow/--async-mpd-search (type)
   "Create asynchoronus consult search for mpd.
@@ -123,15 +123,15 @@ TYPE is a `libmpdel-search-criteria' type."
   (lambda (sink)
     (lambda (action)
       (pcase action
-	((pred stringp)
+		((pred stringp)
 
-	 (funcall sink 'flush)
-	 (libmpdel-list-songs
-	  (libmpdel-search-criteria-create :type type :what action)
-	  (lambda (songs)
-	    (funcall sink (mapcar #'meow/--format-mpd-song songs))
-	    (funcall sink 'refresh))))
-	(_ (funcall sink action))))))
+		 (funcall sink 'flush)
+		 (libmpdel-list-songs
+		  (libmpdel-search-criteria-create :type type :what action)
+		  (lambda (songs)
+			(funcall sink (mapcar #'meow/--format-mpd-song songs))
+			(funcall sink 'refresh))))
+		(_ (funcall sink action))))))
 
 (defun meow/mpd-search ()
   "Search through songs with consult."
@@ -142,45 +142,46 @@ TYPE is a `libmpdel-search-criteria' type."
    "listallinfo"
    (lambda (data)
      (let ((consult-async-split-style 'none)
-	   (completion-ignore-case t))
+		   (vertico-sort-override-function nil)
+		   (completion-ignore-case t))
        (consult--multi
-	(list `(:name "Any"
-		      :category mpd
-		      :enabled ,(lambda () (not consult--narrow))
-		      :annotate ,#'meow/--mpd-annotate
-		      :action ,#'meow/mpd-add-song
-		      :items ,(mapcar #'meow/--format-mpd-song
-				      (libmpdel--create-songs-from-data data))
-		      :sort nil)
-	      `(:name "Album"
-		      :category mpd
-		      :narrow ?a
-		      :hidden t
-		      :annotate ,#'meow/--mpd-annotate
-		      :action ,#'meow/mpd-add-song
-		      :async ,(consult--async-pipeline
-			       (consult--async-throttle)
-			       (meow/--async-mpd-search "album")))
-	      `(:name "Artist"
-		      :category mpd
-		      :narrow ?A
-		      :hidden t
-		      :annotate ,#'meow/--mpd-annotate
-		      :action ,#'meow/mpd-add-song
-		      :async ,(consult--async-pipeline
-			       (consult--async-throttle)
-			       (meow/--async-mpd-search "artist")))
-	      `(:name "Filename"
-		      :category mpd
-		      :narrow ?f
-		      :hidden t
-		      :annotate ,#'meow/--mpd-annotate
-		      :action ,#'meow/mpd-add-song
-		      :async ,(consult--async-pipeline
-			       (consult--async-throttle)
-			       (meow/--async-mpd-search "filename"))))
-	:prompt "Search MPD (a/A/f): "
-	:require-match t)))))
+		(list `(:name "Any"
+					  :category mpd
+					  :enabled ,(lambda () (not consult--narrow))
+					  :annotate ,#'meow/--mpd-annotate
+					  :action ,#'meow/mpd-add-song
+					  :items ,(mapcar #'meow/--format-mpd-song
+									  (libmpdel--create-songs-from-data data))
+					  :sort nil)
+			  `(:name "Album"
+					  :category mpd
+					  :narrow ?a
+					  :hidden t
+					  :annotate ,#'meow/--mpd-annotate
+					  :action ,#'meow/mpd-add-song
+					  :async ,(consult--async-pipeline
+							   (consult--async-throttle)
+							   (meow/--async-mpd-search "album")))
+			  `(:name "Artist"
+					  :category mpd
+					  :narrow ?A
+					  :hidden t
+					  :annotate ,#'meow/--mpd-annotate
+					  :action ,#'meow/mpd-add-song
+					  :async ,(consult--async-pipeline
+							   (consult--async-throttle)
+							   (meow/--async-mpd-search "artist")))
+			  `(:name "Filename"
+					  :category mpd
+					  :narrow ?f
+					  :hidden t
+					  :annotate ,#'meow/--mpd-annotate
+					  :action ,#'meow/mpd-add-song
+					  :async ,(consult--async-pipeline
+							   (consult--async-throttle)
+							   (meow/--async-mpd-search "filename"))))
+		:prompt "Search MPD (a/A/f): "
+		:require-match t)))))
 
 (defun meow/mpd-queue ()
   "MPD Playlist view with consult."
@@ -189,18 +190,19 @@ TYPE is a `libmpdel-search-criteria' type."
   (libmpdel-list-songs
    'current-playlist
    (lambda (songs)
-     (let ((candidate
-	    (consult--read
-	     (if-let* ((cur (libmpdel-current-song))
-		       (id (libmpdel--song-id cur)))
-		 (--map (meow/--format-mpd-song it id)
-			songs)
-	       (-map #'meow/--format-mpd-song songs))
-	     :annotate #'meow/--mpd-annotate
-	     :category 'mpd-queue
-	     :sort nil
-	     :lookup #'consult--lookup-candidate
-	     :require-match t)))
+     (let* ((vertico-sort-override-function nil)
+			(candidate
+			 (consult--read
+			  (if-let* ((cur (libmpdel-current-song))
+						(id (libmpdel--song-id cur)))
+				  (--map (meow/--format-mpd-song it id)
+						 songs)
+				(-map #'meow/--format-mpd-song songs))
+			  :annotate #'meow/--mpd-annotate
+			  :category 'mpd-queue
+			  :sort nil
+			  :lookup #'consult--lookup-candidate
+			  :require-match t)))
        (meow/mpd-play-song candidate)))))
 
 (defun meow/mpd-load-playlist ()
@@ -211,15 +213,16 @@ Doubles up as a generic playlist selector, which you can embark with."
   (libmpdel-list
    'stored-playlists
    (lambda (playlists)
-     (let ((candidate
-	    (consult--read (mapcar (lambda (p)
-				     (propertize
-				      (libmpdel--stored-playlist-name p)
-				      'consult--candidate p))
-				   playlists)
-			   :category 'mpd-playlist
-			   :lookup #'consult--lookup-candidate
-			   :require-match t)))
+     (let* ((vertico-sort-override-function nil)
+			(candidate
+			 (consult--read (mapcar (lambda (p)
+									  (propertize
+									   (libmpdel--stored-playlist-name p)
+									   'consult--candidate p))
+									playlists)
+							:category 'mpd-playlist
+							:lookup #'consult--lookup-candidate
+							:require-match t)))
        (meow/mpd-replace-playlist candidate)
        (libmpdel-play)))))
 
@@ -230,29 +233,30 @@ Doubles up as a generic playlist selector, which you can embark with."
   (libmpdel-list
    'stored-playlists
    (lambda (playlists)
-     (let ((playlist (consult--read
-		      (mapcar (lambda (p)
-				(propertize (libmpdel--stored-playlist-name p)
-					    'consult--candidate p))
-			      playlists)
-		      :prompt "Name: "
-		      :category 'mpd-playlist
-		      :lookup (lambda (selected candidates &rest _)
-				(or (consult--lookup-candidate selected candidates)
-				    selected)))))
+     (let* ((vertico-sort-override-function nil)
+			(playlist (consult--read
+					   (mapcar (lambda (p)
+								 (propertize (libmpdel--stored-playlist-name p)
+											 'consult--candidate p))
+							   playlists)
+					   :prompt "Name: "
+					   :category 'mpd-playlist
+					   :lookup (lambda (selected candidates &rest _)
+								 (or (consult--lookup-candidate selected candidates)
+									 selected)))))
        (if (stringp playlist)
-	   (libmpdel-playlist-save playlist)
-	 (let ((name (libmpdel--stored-playlist-name playlist)))
-	   (libmpdel-stored-playlists-delete (list playlist))
-	   (libmpdel-playlist-save name)))))))
+		   (libmpdel-playlist-save playlist)
+		 (let ((name (libmpdel--stored-playlist-name playlist)))
+		   (libmpdel-stored-playlists-delete (list playlist))
+		   (libmpdel-playlist-save name)))))))
 
 (defun meow/mpd-toggle-single ()
   "Toggle single mode."
   (interactive)
   (if (string= (libmpdel-single) "forever")
       (progn
-	(libmpdel-playback-set-single-never)
-	(message "Single off"))
+		(libmpdel-playback-set-single-never)
+		(message "Single off"))
     (progn
       (libmpdel-playback-set-single-forever)
       (message "Single on"))))
@@ -262,8 +266,8 @@ Doubles up as a generic playlist selector, which you can embark with."
   (interactive)
   (if (libmpdel-repeat)
       (progn
-	(libmpdel-playback-unset-repeat)
-	(message "Repeat off"))
+		(libmpdel-playback-unset-repeat)
+		(message "Repeat off"))
     (progn
       (libmpdel-playback-set-repeat)
       (message "Repeat on"))))
@@ -298,8 +302,8 @@ Doubles up as a generic playlist selector, which you can embark with."
 
     ("c" "View playlist" meow/mpd-queue)
     ("C" "Clear playlist" (lambda () (interactive)
-			    (libmpdel-playlist-clear 'current-playlist)
-			    (message "Playlist cleared"))
+							(libmpdel-playlist-clear 'current-playlist)
+							(message "Playlist cleared"))
      :transient t)]
    ["Settings"
     ("y" "Toggle single" meow/mpd-toggle-single :transient t)
