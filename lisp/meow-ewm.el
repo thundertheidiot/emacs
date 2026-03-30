@@ -93,6 +93,8 @@ WRAP wraps around."
 								   ("<AudioMicMute>" :fullscreen)
 								   ("<MonBrightnessUp>" :fullscreen)
 								   ("<MonBrightnessDown>" :fullscreen)
+								   ("s-p" :fullscreen)
+								   ("<AudioPlay>" :fullscreen)
 								   ("s-," :fullscreen)
 								   ("s-." :fullscreen)))
 
@@ -172,6 +174,8 @@ WRAP wraps around."
 	"<print>" #'meow/ewm-screenshot
 	"<AudioRaiseVolume>" (meow/ewm-shell-command "wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%+")
 	"<AudioLowerVolume>" (meow/ewm-shell-command "wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%-")
+	"s-p" #'libmpdel-playback-play-pause
+	"<AudioPlay>" #'libmpdel-playback-play-pause
 	"s-h" #'windmove-left
 	"s-j" #'windmove-down
 	"s-k" #'windmove-up
