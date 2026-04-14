@@ -106,8 +106,7 @@ Preserve window configuration when pressing ESC."
 								 eos)
 							. ("mpv" (file)))))
   :config
-  (setq consult-preview-excluded-files
-		(string-join (mapcar #'car openwith-associations) "\\|"))
+  (setq consult-preview-excluded-files (mapcar #'car openwith-associations))
   (openwith-mode))
 
 ;; view pdfs
