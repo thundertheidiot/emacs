@@ -194,8 +194,23 @@ Otherwise exit eshell and close the window with `evil-quit'."
 (use-package ghostel
   :demand t
   :hook (ghostel-mode . meow/turn-off-line-numbers)
+  :hook (ghostel-mode . (lambda ()
+						  (face-remap-add-relative
+						   'default
+						   :background (face-background 'solaire-default-face nil t))))
+  :hook (ghostel-compile-view-mode . (lambda ()
+									   (setq-local font-lock-defaults nil)
+									   (font-lock-mode -1)
+									   (setq-local jit-lock-mode nil)))
   :custom
-  (ghostel-tramp-shell-integration t))
+  (ghostel-tramp-shell-integration t)
+  :config
+  (require 'ghostel-compile)
+  :general-config
+  (meow/leader
+	"cc" '("compile" . ghostel-compile))
+  (:states '(normal visual) :keymaps '(ghostel-compile-mode-map ghostel-compile-view-mode-map)
+		   "gr" #'ghostel-recompile))
 (use-package evil-ghostel
   :ensure nil
   :hook (ghostel-mode . evil-ghostel-mode))
