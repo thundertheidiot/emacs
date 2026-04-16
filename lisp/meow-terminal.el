@@ -199,6 +199,9 @@ Otherwise exit eshell and close the window with `evil-quit'."
 						   'default
 						   :background (face-background 'solaire-default-face nil t))))
   :hook (ghostel-compile-view-mode . (lambda ()
+									   ;; these override the colors left behind by ghostel when i move the cursor
+									   ;; compile mode error highlighting isn't very important, i mostly use modern languages
+									   ;; where the compiler already highlights things for me
 									   (setq-local font-lock-defaults nil)
 									   (font-lock-mode -1)
 									   (setq-local jit-lock-mode nil)))
@@ -206,9 +209,49 @@ Otherwise exit eshell and close the window with `evil-quit'."
   (ghostel-tramp-shell-integration t)
   :config
   (require 'ghostel-compile)
+  (add-hook 'ghostel-compile-finish-functions
+			;; amazing jank to color some stuff in after disabling font lock mode
+			(lambda (&rest _)
+			  (let ((inhibit-read-only t)
+					(face `(:foreground ,(catppuccin-color 'overlay0))))
+				(goto-char (point-min))
+				(let ((s (line-beginning-position))
+					  (e (progn
+						   (forward-line 1)
+						   (line-end-position))))
+				  (add-face-text-property s e face t))
+				(goto-char (point-max))
+				(search-backward "Compilation")
+				(let ((s (line-beginning-position))
+					  (e (line-end-position)))
+				  (add-face-text-property s e face t))
+				(if-let* ((s (ignore-errors
+							   (search-forward "finished")
+							   (goto-char (match-beginning 0))))
+						  (e (ignore-errors (search-forward " "))))
+					(add-face-text-property s e `(:foreground ,(catppuccin-color 'green)))
+				  (when-let* ((s (ignore-errors (search-forward "exited abnormally") (goto-char (match-beginning 0))))
+							  (e (ignore-errors (search-forward " at") (goto-char (match-beginning 0)))))
+					(add-face-text-property s e `(:foreground ,(catppuccin-color 'red))))))))
   :general-config
   (meow/leader
-	"cc" '("compile" . ghostel-compile))
+	"cc" '("compile" . (lambda () (interactive)
+						 (unless (or (eq major-mode 'ghostel-compile-mode)
+									 (eq major-mode 'ghostel-compile-view-mode))
+						   (select-window (meow/intelligent-split t)))
+						 (call-interactively #'ghostel-compile)))
+	"ov" '("ghostel" . (lambda () (interactive)
+						 (select-window (meow/intelligent-split t))
+						 (ghostel t)))
+	"oV" '("ghostel" . (lambda () (interactive)
+						 (ghostel t)))
+	"pov" '("ghostel" . (lambda () (interactive)
+						  (let ((default-directory (projectile-project-root)))
+							(select-window (meow/intelligent-split t))
+							(ghostel t))))
+	"poV" '("ghostel" . (lambda () (interactive)
+						  (let ((default-directory (projectile-project-root)))
+							(ghostel t)))))
   (:states '(normal visual) :keymaps '(ghostel-compile-mode-map ghostel-compile-view-mode-map)
 		   "gr" #'ghostel-recompile))
 (use-package evil-ghostel
@@ -279,17 +322,17 @@ EVENT has to be finished for anything to happen.  BUF is killed."
   :config
   (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
   :general
-  (meow/leader
-	"ov" '((lambda () (interactive)
-			 (select-window (meow/intelligent-split t))
-			 (meow/vterm)) :wk "vterm")
-	"oV" '((lambda () (interactive)
-			 (meow/vterm)) :wk "vterm in this window")
-	"pov" '((lambda () (interactive)
-			  (select-window (meow/intelligent-split t))
-			  (meow/vterm t)) :wk "vterm")
-	"poV" '((lambda () (interactive)
-			  (meow/vterm t)) :wk "vterm in this window"))
+  ;; (meow/leader
+  ;; 	"ov" '((lambda () (interactive)
+  ;; 			 (select-window (meow/intelligent-split t))
+  ;; 			 (meow/vterm)) :wk "vterm")
+  ;; 	"oV" '((lambda () (interactive)
+  ;; 			 (meow/vterm)) :wk "vterm in this window")
+  ;; 	"pov" '((lambda () (interactive)
+  ;; 			  (select-window (meow/intelligent-split t))
+  ;; 			  (meow/vterm t)) :wk "vterm")
+  ;; 	"poV" '((lambda () (interactive)
+  ;; 			  (meow/vterm t)) :wk "vterm in this window"))
   :general-config
   (:states '(normal visual) :keymaps 'vterm-mode-map
 		   "a" 'vterm-evil-append
