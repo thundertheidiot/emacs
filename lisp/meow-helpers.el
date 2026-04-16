@@ -6,9 +6,9 @@
 
 (defun meow/setup-directories ()
   (mapc (lambda (dir)
-	  (unless (file-directory-p dir)
-	    (make-directory dir)))
-	meow/create-directories))
+		  (unless (file-directory-p dir)
+			(make-directory dir)))
+		meow/create-directories))
 
 (add-hook 'after-init-hook #'meow/setup-directories)
 
@@ -18,23 +18,23 @@ Called on `after-init-hook' and `server-after-make-frame-hook'."
   (let ((flag (intern (format "--meow/runonce-flag-%s" name))))
     `(progn
        ,(unless only-daemon
-	  `(add-hook 'after-init-hook (lambda ()
-					,@forms)))
+		  `(add-hook 'after-init-hook (lambda ()
+										,@forms)))
        (defvar ,flag nil)
        (add-hook 'server-after-make-frame-hook
-		 (lambda ()
-		   (unless ,flag
-		     ,@forms
-		     (setq ,flag t)))))))
+				 (lambda ()
+				   (unless ,flag
+					 ,@forms
+					 (setq ,flag t)))))))
 
 (defun meow/intelligent-split (&optional force)
   (interactive)
   (let* ((width (window-total-width))
-	 (height (window-total-height))
-	 (aspect (/ (float width) (float height)))
-	 (window (cond ((and (< width split-width-threshold) (< height split-height-threshold) (not force)) (current-buffer))
-		       ((> aspect 2.3) (split-window-right))
-		       (t (split-window-below)))))
+		 (height (window-total-height))
+		 (aspect (/ (float width) (float height)))
+		 (window (cond ((and (< width split-width-threshold) (< height split-height-threshold) (not force)) (current-buffer))
+					   ((> aspect 2.3) (split-window-right))
+					   (t (split-window-below)))))
     (ignore-errors (balance-windows (window-parent)))
     window))
 
@@ -57,6 +57,8 @@ Called on `after-init-hook' and `server-after-make-frame-hook'."
   "Turn off line numbers 🤯."
   (display-line-numbers-mode 0))
 
+(add-hook 'compilation-mode-hook #'meow/turn-off-line-numbers)
+
 (defun add-to-load-path (package)
   "Add PACKAGE from the Emacs flake to `load-path'."
   (interactive "sPackage: ")
@@ -64,42 +66,42 @@ Called on `after-init-hook' and `server-after-make-frame-hook'."
   (let ((path "github:thundertheidiot/emacs"))
     (with-temp-buffer
       (let ((exit-code (call-process "nix" nil (list t nil) nil
-				     "build"
-				     "--print-out-paths"
-				     "--no-link"
-				     "--impure"
-				     "--expr"
-				     (format
-				      (concat
-				       "let "
-				       "flake = builtins.getFlake \"%s\";"
-				       "epkgs = flake.packages.\"${builtins.currentSystem}\".emacs.epkgs;"
-				       "in epkgs.\"%s\"")
-				      path
-				      package))))
-	(if (eq exit-code 0)
-	    (let* ((store-path (substring (buffer-string) 0 -1))
-		   (path (concat store-path "/share/emacs/site-lisp"))
-		   (files (directory-files-recursively path "\\.elc?$"))
-		   (directories (mapcar
-				 (lambda (file) (file-name-directory file))
-				 files))
-		   (final-list (delete-dups directories)))
-	      (mapc (lambda (path)
-		      (add-to-list 'load-path path))
-		    final-list)
-	      (message (format "Added %s to load path" final-list)))
-	  (message "Nix process failed"))))))
+									 "build"
+									 "--print-out-paths"
+									 "--no-link"
+									 "--impure"
+									 "--expr"
+									 (format
+									  (concat
+									   "let "
+									   "flake = builtins.getFlake \"%s\";"
+									   "epkgs = flake.packages.\"${builtins.currentSystem}\".emacs.epkgs;"
+									   "in epkgs.\"%s\"")
+									  path
+									  package))))
+		(if (eq exit-code 0)
+			(let* ((store-path (substring (buffer-string) 0 -1))
+				   (path (concat store-path "/share/emacs/site-lisp"))
+				   (files (directory-files-recursively path "\\.elc?$"))
+				   (directories (mapcar
+								 (lambda (file) (file-name-directory file))
+								 files))
+				   (final-list (delete-dups directories)))
+			  (mapc (lambda (path)
+					  (add-to-list 'load-path path))
+					final-list)
+			  (message (format "Added %s to load path" final-list)))
+		  (message "Nix process failed"))))))
 
 (defun meow/async-shell-command-buffer (command callback &optional buffer)
   "Start process for shell COMMAND, call CALLBACK with the process and buffer after exit."
   (let* ((buf (or buffer (generate-new-buffer (format " *meow/async %s*" command))))
-	 (proc (start-process (format "async %s" command) buf
-			      "bash" "-c" command)))
+		 (proc (start-process (format "async %s" command) buf
+							  "bash" "-c" command)))
     (set-process-sentinel
      proc
      (lambda (process _event)
        (when (eq (process-status process) 'exit)
-	 (funcall callback process buf))))))
+		 (funcall callback process buf))))))
 
 (provide 'meow-helpers)

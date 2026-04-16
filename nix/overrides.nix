@@ -65,6 +65,48 @@
     ];
   };
 
+  ghostel = final.trivialBuild {
+    pname = "ghostel";
+    version = "git";
+
+    packageRequires = with final; [
+      evil
+      s
+    ];
+
+    nativeBuildInputs = [
+      pkgs.zig
+      pkgs.zig.hook
+    ];
+
+    # https://github.com/dakra/ghostel/blob/main/build.zig.zon
+    postPatch = let
+      ghosttyDep = pkgs.fetchzip {
+        url = "https://github.com/ghostty-org/ghostty/archive/01825411ab2720e47e6902e9464e805bc6a062a1.tar.gz";
+        sha256 = "sha256-zDOIAbNdKPfNemiz0aJDjOIWamCpb3FsYxnOr9f2ke0=";
+      };
+
+      ghosttyZigDeps = pkgs.callPackage "${ghosttyDep}/build.zig.zon.nix" {};
+    in ''
+      mkdir -p $TMPDIR/zig-cache/p
+      ln -s ${ghosttyDep} "$TMPDIR/zig-cache/p/ghostty-1.3.2-dev-5UdBCzaaBwVjJOr-ltYINjybeEOAmLAauH5oq8-cdNGN"
+      for dir in ${ghosttyZigDeps}/*; do
+        ln -s $dir $TMPDIR/zig-cache/p/$(basename $dir)
+      done
+    '';
+
+    postInstall = ''
+      ZIG_GLOBAL_CACHE_DIR="$TMPDIR/zig-cache" \
+      ZIG_LOCAL_CACHE_DIR="$TMPDIR/zig-cache" zig build \
+        -Doptimize=ReleaseFast \
+        --color off \
+        --prefix $TMPDIR/zig-out
+      cp $TMPDIR/zig-out/lib/libghostel-module.so $out/share/emacs/site-lisp/ghostel-module.so
+    '';
+
+    src = inputs.ghostel;
+  };
+
   rustic = prev.rustic.overrideAttrs {
     packageRequires = with final; [
       flycheck

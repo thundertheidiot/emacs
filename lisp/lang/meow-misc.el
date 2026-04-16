@@ -19,6 +19,13 @@
 (use-package qml-mode
   :mode "\\.qml\\'")
 
+(use-package web-mode
+  :config
+  (define-derived-mode astro-mode web-mode "astro")
+  (setq auto-mode-alist
+		(append '((".*\\.astro\\'" . astro-mode))
+				auto-mode-alist)))
+
 (use-package typescript-ts-mode
   :demand t
   :ensure nil
@@ -28,7 +35,7 @@
   :hook (tsx-ts-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-			   '((typescript-mode tsx-ts-mode)
+			   '((typescript-mode tsx-ts-mode astro-mode)
 				 "rass"
 				 "--" "typescript-language-server" "--stdio"
 				 "--" "vscode-eslint-language-server" "--stdio"))
