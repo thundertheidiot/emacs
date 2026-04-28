@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-helpers)
 (require 's)
-(require 'evil)
 
 (use-package fish-completion)
 
@@ -189,16 +188,6 @@ Otherwise exit eshell and close the window with `evil-quit'."
       (throw 'eshell-terminal t))))
 
 (defalias 'eshell/e 'eshell/exit)
-
-;; ghostel
-(use-package ghostel
-  :demand t
-  :hook (ghostel-mode . meow/turn-off-line-numbers)
-  :custom
-  (ghostel-tramp-shell-integration t))
-(use-package evil-ghostel
-  :ensure nil
-  :hook (ghostel-mode . evil-ghostel-mode))
 
 ;; vterm
 (defun meow/vterm (&optional projectile)
