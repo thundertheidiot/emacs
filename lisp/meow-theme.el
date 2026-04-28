@@ -32,20 +32,20 @@
   (mapc
    (lambda (f)
      (set-face-attribute f nil
-						 :background green
-						 :foreground green))
+			 :background green
+			 :foreground green))
    '(diff-hl-insert diff-hl-dired-insert diff-hl-margin-insert))
   (mapc
    (lambda (f)
      (set-face-attribute f nil
-						 :background purple
-						 :foreground purple))
+			 :background purple
+			 :foreground purple))
    '(diff-hl-change diff-hl-dired-change diff-hl-margin-change))
   (mapc
    (lambda (f)
      (set-face-attribute f nil
-						 :background red
-						 :foreground red))
+			 :background red
+			 :foreground red))
    '(diff-hl-delete diff-hl-dired-delete diff-hl-margin-delete)))
 
 (set-face-attribute 'olivetti-fringe nil :inherit 'solaire-fringe-face)
@@ -56,31 +56,31 @@
 (meow/runonce
  "fonts" nil
  (set-face-attribute 'default nil
-					 :family "Monospace"
-					 :height 110
-					 :weight 'regular)
+		     :family "Monospace"
+		     :height 110
+		     :weight 'regular)
 
  (set-face-attribute 'variable-pitch nil
-					 :font "Sans-Serif"
-					 :height 120
-					 :weight 'medium)
+		     :font "Sans-Serif"
+		     :height 120
+		     :weight 'medium)
 
  (dolist (face '(minibuffer-prompt))
    (set-face-attribute face nil
-					   :height 1.1))
+		       :height 1.1))
 
  (set-face-attribute 'fixed-pitch nil
-					 :font "Monospace"
-					 :weight 'medium)
+		     :font "Monospace"
+		     :weight 'medium)
 
  (set-face-attribute 'font-lock-comment-face nil
-					 :slant 'italic)
+		     :slant 'italic)
  (set-face-attribute 'font-lock-keyword-face nil
-					 :slant 'italic))
+		     :slant 'italic))
 
 (add-hook 'minibuffer-setup-hook
-		  (lambda ()
-			(text-scale-set 1.1)))
+	  (lambda ()
+	    (text-scale-set 1.1)))
 
 (dolist (buf '(" *Echo Area 0*" " *Echo Area 1*"))
   (with-current-buffer (get-buffer-create buf)
