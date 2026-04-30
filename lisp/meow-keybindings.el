@@ -93,7 +93,15 @@
 							  (insert (let ((expr (read--expression "E&I (expr): ")))
 										(format "%s = %s"
 												expr
-												(eval expr)))))))
+												(eval expr))))))
+  "em" '("insert calc eval" . (lambda () (interactive)
+								(insert (calc-eval (read-string "Calc expression: ")))))
+  "eM" '("insert calc eval" . (lambda () (interactive)
+								(let ((expr (read-string "Calc expression: ")))
+								  (insert
+								   (format "%s = %s"
+										   expr
+										   (calc-eval expr)))))))
 
 (general-define-key
  :states '(normal visual)

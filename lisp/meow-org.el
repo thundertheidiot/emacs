@@ -35,10 +35,9 @@
   :init
   (add-hook 'org-mode-hook #'org-indent-mode)
   (add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
-  :general
+  :general-config
   (meow/leader
 	"oa" '("org agenda" . org-agenda))
-  :general-config
   (:keymaps 'org-mode-map
 			"C-j" nil)
   (meow/local
