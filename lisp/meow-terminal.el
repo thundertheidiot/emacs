@@ -71,7 +71,8 @@
   (eshell-mode . fish-completion-mode)
   :general-config
   (:states 'insert :keymaps 'eshell-mode-map
-		   "RET" #'eshell-send-input)
+		   "RET" #'eshell-send-input
+		   "<return>" #'eshell-send-input)
   (:states '(normal visual) :keymaps 'eshell-mode-map
 		   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1)))
   (:states '(normal visual insert) :keymaps 'eshell-mode-map
