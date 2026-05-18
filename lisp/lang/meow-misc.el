@@ -26,6 +26,10 @@
 		(append '((".*\\.astro\\'" . astro-mode))
 				auto-mode-alist)))
 
+(use-package vue-mode
+  :mode "\\.vue\\'")
+
+
 (use-package typescript-ts-mode
   :demand t
   :ensure nil
