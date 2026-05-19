@@ -27,8 +27,19 @@
 				auto-mode-alist)))
 
 (use-package vue-mode
-  :mode "\\.vue\\'")
+  :mode "\\.vue\\'"
+  :hook (vue-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+			   '(vue-mode
+				 "rass"
+				 "--" "vue-language-server" "--stdio"
+				 ))
+  (set-face-background 'mmm-default-submode-face nil))
 
+(use-package php-mode
+  :mode "\\.php\\'"
+  :hook (php-mode . eglot-ensure))
 
 (use-package typescript-ts-mode
   :demand t
