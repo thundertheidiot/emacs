@@ -33,6 +33,9 @@
   (define-derived-mode vue-web-mode web-mode "vue")
   (define-derived-mode bladephp-web-mode web-mode "bladephp")
   (add-hook 'vue-web-mode-hook #'eglot-ensure)
+  (add-hook 'vue-web-mode-hook (lambda ()
+								 (setq-local eglot-ignored-server-capabilities
+											 '(:documentOnTypeFormattingProvider))))
   (add-hook 'bladephp-web-mode-hook #'eglot-ensure)
   (setq auto-mode-alist
 		(append '((".*\\.astro\\'" . astro-mode)
@@ -41,11 +44,7 @@
 				auto-mode-alist))
   (add-to-list 'eglot-server-programs
 			   '(vue-web-mode
-				 "rass"
-				 "--"
-				 "vue-language-server" "--stdio"
-				 "--"
-				 "tailwindcss-language-server" "--stdio"))
+				 "vue-language-server" "--stdio"))
   (add-to-list 'eglot-server-programs
 			   '(bladephp-web-mode
 				 "rass"
