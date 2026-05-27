@@ -61,4 +61,8 @@
   :config
   (global-evil-surround-mode 1))
 
+(use-package evil-matchit
+  :config
+  (global-evil-matchit-mode 1))
+
 (provide 'meow-evil)

@@ -19,27 +19,55 @@
 (use-package qml-mode
   :mode "\\.qml\\'")
 
+(use-package php-mode
+  :mode "\\.php\\'"
+  :hook (php-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+			   '(php-mode
+				 "intelephense" "--stdio")))
+
 (use-package web-mode
   :config
   (define-derived-mode astro-mode web-mode "astro")
+  (define-derived-mode vue-web-mode web-mode "vue")
+  (define-derived-mode bladephp-web-mode web-mode "bladephp")
+  (add-hook 'vue-web-mode-hook #'eglot-ensure)
+  (add-hook 'bladephp-web-mode-hook #'eglot-ensure)
   (setq auto-mode-alist
-		(append '((".*\\.astro\\'" . astro-mode))
-				auto-mode-alist)))
-
-(use-package vue-mode
-  :mode "\\.vue\\'"
-  :hook (vue-mode . eglot-ensure)
-  :config
+		(append '((".*\\.astro\\'" . astro-mode)
+				  (".*\\.vue\\'" . vue-web-mode)
+				  (".*\\.blade\\.php\\'" . bladephp-web-mode))
+				auto-mode-alist))
   (add-to-list 'eglot-server-programs
-			   '(vue-mode
+			   '(vue-web-mode
 				 "rass"
-				 "--" "vue-language-server" "--stdio"
-				 ))
-  (set-face-background 'mmm-default-submode-face nil))
+				 "--"
+				 "vue-language-server" "--stdio"
+				 "--"
+				 "tailwindcss-language-server" "--stdio"))
+  (add-to-list 'eglot-server-programs
+			   '(bladephp-web-mode
+				 "rass"
+				 "--"
+				 "intelephense" "--stdio"
+				 "--"
+				 "tailwindcss-language-server" "--stdio")))
 
-(use-package php-mode
-  :mode "\\.php\\'"
-  :hook (php-mode . eglot-ensure))
+(use-package emmet-mode
+  :hook
+  ((web-mode html-mode) . emmet-mode))
+
+;; (use-package vue-mode
+;;   :mode "\\.vue\\'"
+;;   :hook (vue-mode . eglot-ensure)
+;;   :config
+;;   (add-to-list 'eglot-server-programs
+;; 			   '(vue-mode
+;; 				 "rass"
+;; 				 "--" "vue-language-server" "--stdio"
+;; 				 ))
+;;   (set-face-background 'mmm-default-submode-face nil))
 
 (use-package typescript-ts-mode
   :demand t
