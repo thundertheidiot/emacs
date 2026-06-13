@@ -61,7 +61,9 @@
   "Start `completion-at-point' with `consult-completion-in-region'."
   (interactive)
   (let ((completion-in-region-function #'consult-completion-in-region))
-    (completion-at-point)))
+	(if (eglot-managed-p)
+		(cape-interactive #'eglot-completion-at-point)
+	  (completion-at-point))))
 
 (general-def :states '(normal visual insert)
   "M-i" #'eldoc

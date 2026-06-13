@@ -27,24 +27,31 @@
 			   '(php-mode
 				 "intelephense" "--stdio")))
 
+(defun meow/vue-lsp-setup ()
+  (setq lsp-tailwindcss-server-path (executable-find "tailwindcss-language-server"))
+  (setf
+   (lsp--client-priority (gethash 'ts-ls lsp-clients))
+   1)
+  (setf
+   (lsp--client-priority (gethash 'vue-semantic-server lsp-clients))
+   1))
+
 (use-package web-mode
   :config
   (define-derived-mode astro-mode web-mode "astro")
-  (define-derived-mode vue-web-mode web-mode "vue")
+  (define-derived-mode vue-mode web-mode "vue")
   (define-derived-mode bladephp-web-mode web-mode "bladephp")
-  (add-hook 'vue-web-mode-hook #'eglot-ensure)
-  (add-hook 'vue-web-mode-hook (lambda ()
-								 (setq-local eglot-ignored-server-capabilities
-											 '(:documentOnTypeFormattingProvider))))
+  (add-hook 'vue-mode-hook
+			(lambda ()
+			  
+			  (lsp-deferred)))
+
   (add-hook 'bladephp-web-mode-hook #'eglot-ensure)
   (setq auto-mode-alist
 		(append '((".*\\.astro\\'" . astro-mode)
-				  (".*\\.vue\\'" . vue-web-mode)
+				  (".*\\.vue\\'" . vue-mode)
 				  (".*\\.blade\\.php\\'" . bladephp-web-mode))
 				auto-mode-alist))
-  (add-to-list 'eglot-server-programs
-			   '(vue-web-mode
-				 "vue-language-server" "--stdio"))
   (add-to-list 'eglot-server-programs
 			   '(bladephp-web-mode
 				 "rass"
