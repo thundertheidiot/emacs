@@ -43,7 +43,7 @@
   (define-derived-mode bladephp-web-mode web-mode "bladephp")
   (add-hook 'vue-mode-hook
 			(lambda ()
-			  
+			  (meow/vue-lsp-setup)
 			  (lsp-deferred)))
 
   (add-hook 'bladephp-web-mode-hook #'eglot-ensure)
