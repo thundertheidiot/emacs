@@ -28,6 +28,7 @@
   :config
   (require 'lsp-mode-autoloads)
   (require 'lsp-javascript)
+  (require 'lsp-volar)
   (require 'lsp-tailwindcss))
 
 ;; (use-package lsp-ui
