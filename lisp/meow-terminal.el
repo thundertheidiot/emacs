@@ -192,6 +192,16 @@ Otherwise exit eshell and close the window with `evil-quit'."
 
 (defalias 'eshell/e 'eshell/exit)
 
+;; ghostel
+(use-package ghostel
+  :demand t
+  :hook (ghostel-mode . meow/turn-off-line-numbers)
+  :custom
+  (ghostel-tramp-shell-integration t))
+
+(use-package evil-ghostel
+  :hook (ghostel-mode . evil-ghostel-mode))
+
 ;; vterm
 (defun meow/vterm (&optional projectile)
   (if projectile
