@@ -314,12 +314,37 @@ ORIG-FUN is called with ARGS."
     (find-file (plist-get selection :file))
     (goto-char (plist-get selection :point))))
 
+(defun meow/org-clock-toggle ()
+  "Go to the last clocked in document, clock out or clock in again."
+  (interactive)
+  (if (org-clocking-p)
+	  (save-window-excursion
+		(org-clock-goto)
+		(let ((heading (org-get-heading t t t t))
+			  (title (org-get-title)))
+		  (message "Clocked out of %s in document %s." heading title))
+		(org-clock-out))
+	(save-window-excursion
+	  (org-clock-goto)
+	  (message "hi")
+	  (let ((heading (org-get-heading t t t t))
+			(title (org-get-title)))
+		(message "Clocked into %s in document %s." heading title))
+	  (org-clock-in))))
+
 (meow/leader
   "t" '(:ignore t :wk "todo")
   "tj" '("jump" . meow/org-goto-todo)
   "ta" '("create" . meow/org-add-todo)
   "tA" '("create for node" . (lambda () (interactive) (meow/org-add-todo current-prefix-arg t)))
-  "td" '("mark done" . meow/org-mark-todo-as-done))
+  "td" '("mark done" . meow/org-mark-todo-as-done)
+  ;; org clock
+  "tc" '(:ignore t :wk "clock")
+  "tcg" '("goto" . org-clock-goto)
+  "tcc" '("clock toggle" . meow/org-clock-toggle)
+  "tci" '("clock in" . org-clock-in)
+  "tco" '("clock out" . org-clock-out))
+
 
 (provide 'meow-org)
 ;;; meow-org.el ends here

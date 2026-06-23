@@ -2,6 +2,8 @@
 (require 'flycheck)
 (require 'solaire-mode)
 (require 'tramp)
+(require 'org)
+(require 'org-clock)
 
 (use-package nyan-mode
   :demand t
@@ -21,17 +23,17 @@
 (defun meow/mode-line-update-faces ()
   "Update mode line faces (run on theme change)."
   (face-spec-set 'meow/mode-line-okay-face `((t
-					      :foreground ,(face-attribute 'magit-process-ok :foreground)
-					      :inherit mode-line-active)))
+											  :foreground ,(face-attribute 'magit-process-ok :foreground)
+											  :inherit mode-line-active)))
   (face-spec-set 'meow/mode-line-error-face `((t
-					       :foreground ,(face-attribute 'error :foreground)
-					       :inherit mode-line-active)))
+											   :foreground ,(face-attribute 'error :foreground)
+											   :inherit mode-line-active)))
   (face-spec-set 'meow/mode-line-warning-face `((t
-						 :foreground ,(face-attribute 'warning :foreground)
-						 :inherit mode-line-active)))
+												 :foreground ,(face-attribute 'warning :foreground)
+												 :inherit mode-line-active)))
   (face-spec-set 'meow/mode-line-emphasize-face `((t
-						   :foreground ,(face-attribute 'font-lock-keyword-face :foreground)
-						   :inherit mode-line-active))))
+												   :foreground ,(face-attribute 'font-lock-keyword-face :foreground)
+												   :inherit mode-line-active))))
 
 (defvar-local meow/cached-git-info nil)
 (defun meow/invalidate-git-cache (&rest _)
@@ -42,19 +44,19 @@
 (defun meow/mode-line-flycheck-update (&optional status)
   "Update flycheck text with STATUS."
   (when-let* ((text
-	       (pcase status
-		 ('finished
-		  (if flycheck-current-errors
-		      (let* ((errors (flycheck-count-errors flycheck-current-errors))
-			     (c-error (alist-get 'error errors))
-			     (c-warning (alist-get 'warning errors)))
-			(concat
-			 (when c-error
-			   (propertize (format " %s   " c-error) 'face 'meow/mode-line-error-face))
-			 (when c-warning
-			   (propertize (format " %s   " c-warning) 'face 'meow/mode-line-warning-face))))
-		    (propertize "   " 'face 'meow/mode-line-okay-face)))
-		 (_ nil))))
+			   (pcase status
+				 ('finished
+				  (if flycheck-current-errors
+					  (let* ((errors (flycheck-count-errors flycheck-current-errors))
+							 (c-error (alist-get 'error errors))
+							 (c-warning (alist-get 'warning errors)))
+						(concat
+						 (when c-error
+						   (propertize (format " %s   " c-error) 'face 'meow/mode-line-error-face))
+						 (when c-warning
+						   (propertize (format " %s   " c-warning) 'face 'meow/mode-line-warning-face))))
+					(propertize "   " 'face 'meow/mode-line-okay-face)))
+				 (_ nil))))
     (setq meow/mode-line-flycheck text)))
 
 (defvar-local meow/mode-line-nyan-cat t)
@@ -70,9 +72,19 @@ NUM is passed from the ultra scroll hook."
   "Tramp string for mode line."
   (when (file-remote-p default-directory)
     (let* ((vec (tramp-dissect-file-name default-directory))
-	   (user (or (tramp-file-name-user vec) ""))
-	   (host (tramp-file-name-host vec)))
+		   (user (or (tramp-file-name-user vec) ""))
+		   (host (tramp-file-name-host vec)))
       (propertize (format "%s@%s   " user host) 'face 'meow/mode-line-emphasize-face))))
+
+(defun meow/mode-line-org-clock ()
+  "Org clock mode line string."
+  (when (org-clocking-p)
+	(let* ((time (floor (org-time-convert-to-integer
+						 (time-since org-clock-start-time))
+						60))
+		   (h (floor time 60))
+		   (m (% time 60)))
+	  (format " %d:%02d  " h m))))
 
 (defun meow/mode-line ()
   "Set up custom mode line, this is called on `enable-theme-functions'."
@@ -84,10 +96,10 @@ NUM is passed from the ultra scroll hook."
 
   ;; box to make mode line look nicer
   (mapc (lambda (face)
-	  (set-face-attribute face nil
-			      :box `(:line-width (1 . 10) :color ,(face-background face nil t) :style nil)
-			      :height 110))
-	'(mode-line-active mode-line-inactive))
+		  (set-face-attribute face nil
+							  :box `(:line-width (1 . 10) :color ,(face-background face nil t) :style nil)
+							  :height 110))
+		'(mode-line-active mode-line-inactive))
 
   ;; update faces
   (meow/mode-line-update-faces)
@@ -97,43 +109,46 @@ NUM is passed from the ultra scroll hook."
   (force-mode-line-update)
 
   (let ((envrc-none (propertize "" 'face 'mode-line-active))
-	(envrc-on (propertize "" 'face 'meow/mode-line-okay-face))
-	(envrc-error (propertize "" 'face 'meow/mode-line-error-face)))
+		(envrc-on (propertize "" 'face 'meow/mode-line-okay-face))
+		(envrc-error (propertize "" 'face 'meow/mode-line-error-face)))
     (setq-default mode-line-format
-		  `("   "
-		    (:eval
-		     (propertize "%b" 'face 'bold))
-		    "   L%l   " ;; line number
+				  `("   "
+					(:eval
+					 (propertize "%b" 'face 'bold))
+					"   L%l   " ;; line number
 
-		    (:eval
-		     (meow/mode-line-tramp-format))
+					(:eval
+					 (meow/mode-line-tramp-format))
 
-		    (:eval
-		     (pcase envrc--status
-		       ('none ,envrc-none)
-		       ('on ,envrc-on)
-		       (_ ,envrc-error)))
+					(:eval
+					 (pcase envrc--status
+					   ('none ,envrc-none)
+					   ('on ,envrc-on)
+					   (_ ,envrc-error)))
 
-		    "   "
+					"   "
 
-		    ;; (:eval
-		    ;;  (unless (file-remote-p default-directory)
-		    ;;    (propertize (format "  %s   " (or meow/cached-git-info
-		    ;; 					  (when-let* ((branch (magit-get-current-branch)))
-		    ;; 					    (setq meow/cached-git-info branch))))
-		    ;; 		   'face ',emphasize-face)))
+					;; (:eval
+					;;  (unless (file-remote-p default-directory)
+					;;    (propertize (format "  %s   " (or meow/cached-git-info
+					;; 					  (when-let* ((branch (magit-get-current-branch)))
+					;; 					    (setq meow/cached-git-info branch))))
+					;; 		   'face ',emphasize-face)))
 
-		    (eglot--managed-mode eglot--mode-line-format "")
-		    (eglot--managed-mode "   " "")
+					(eglot--managed-mode eglot--mode-line-format "")
+					(eglot--managed-mode "   " "")
 
-		    (meow/mode-line-flycheck (:eval meow/mode-line-flycheck))
+					(meow/mode-line-flycheck (:eval meow/mode-line-flycheck))
 
-		    "%="
-		    (meow/mode-line-nyan-cat (:eval (nyan-create)))))))
+					(:eval
+					 (meow/mode-line-org-clock))
+
+					"%="
+					(meow/mode-line-nyan-cat (:eval (nyan-create)))))))
 
 ;; load on a new theme
 (add-hook 'enable-theme-functions
-	  (lambda (_theme) (meow/mode-line)))
+		  (lambda (_theme) (meow/mode-line)))
 
 ;; (advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
 ;; (add-hook 'find-file-hook #'meow/invalidate-git-cache)
