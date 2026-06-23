@@ -326,7 +326,6 @@ ORIG-FUN is called with ARGS."
 		(org-clock-out))
 	(save-window-excursion
 	  (org-clock-goto)
-	  (message "hi")
 	  (let ((heading (org-get-heading t t t t))
 			(title (org-get-title)))
 		(message "Clocked into %s in document %s." heading title))
