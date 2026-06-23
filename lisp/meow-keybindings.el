@@ -132,7 +132,11 @@
  "<C-wheel-down>" 'text-scale-decrease)
 
 (general-def :keymaps 'override
-  "M-x" 'execute-extended-command)
+  "M-x" 'execute-extended-command
+  "M-r" (lambda () (interactive)
+		  (if (eglot-managed-p)
+			  (call-interactively #'eglot-rename)
+			(call-interactively #'lsp-rename))))
 
 
 (provide 'meow-keybindings)

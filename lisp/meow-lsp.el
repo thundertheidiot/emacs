@@ -13,9 +13,7 @@
   (meow/leader
     "c" '(:ignore t :wk "code")
     "ca" '("code actions" . (lambda () (interactive)
-							  (eglot-code-actions (point-min) (point-max) nil t))))
-  (:states '(normal visual insert)
-		   "M-r" #'eglot-rename))
+							  (eglot-code-actions (point-min) (point-max) nil t)))))
 
 (require 'eglot-booster)
 (eglot-booster-mode)
@@ -29,7 +27,15 @@
   (require 'lsp-mode-autoloads)
   (require 'lsp-javascript)
   (require 'lsp-volar)
-  (require 'lsp-tailwindcss))
+  (require 'lsp-tailwindcss)
+
+  ;; handled by apheleia
+  (setq lsp-typescript-format-enable nil
+		lsp-javascript-format-enable nil
+		lsp-enable-on-type-formatting nil
+		lsp-enable-indentation nil
+		lsp-enable-relative-indentation nil
+		lsp-format-buffer-on-save nil))
 
 ;; (use-package lsp-ui
 ;;   :hook (lsp-mode . lsp-ui-mode)
