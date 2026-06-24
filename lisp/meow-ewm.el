@@ -73,12 +73,13 @@ WRAP wraps around."
   (setq focus-follows-mouse t)
   (setq mouse-autoselect-window t)
 
-  (setq ewm-input-config
-		'((touchpad :natural-scroll t :tap t :dwt t)
-		  (mouse :accel-profile "flat")
-		  (keyboard :repeat-delay 300 :repeat-rate 50
-					:xkb-layouts "us,fi"
-					:xkb-options "grp:win_space_toggle")))
+  (setopt ewm-input-config
+		  '((touchpad :natural-scroll t :tap t :dwt t)
+			(mouse :accel-profile "flat")
+			(keyboard :repeat-delay 300 :repeat-rate 50
+					  :xkb-layouts "us,fi"
+					  :xkb-variants "colemak_dh_ortho"
+					  :xkb-options "grp:win_space_toggle")))
 
   (setopt ewm-mouse-follows-focus t)
   (setopt ewm-focus-follows-mouse t)
