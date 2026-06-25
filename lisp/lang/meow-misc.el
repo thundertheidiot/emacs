@@ -52,6 +52,7 @@
 				  (".*\\.vue\\'" . vue-mode)
 				  (".*\\.blade\\.php\\'" . bladephp-web-mode))
 				auto-mode-alist))
+  (add-to-list 'apheleia-mode-alist '(vue-mode . eslint))
   (add-to-list 'eglot-server-programs
 			   '(bladephp-web-mode
 				 "rass"
