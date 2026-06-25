@@ -76,7 +76,7 @@
     })
   ];
 
-  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-pgtk.overrideAttrs (prev: {
+  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-igc-pgtk.overrideAttrs (prev: {
     env =
       prev.env
       // {
@@ -86,6 +86,7 @@
     configureFlags =
       prev.configureFlags
       ++ [
+        "--with-mps"
         "--with-native-compilation=aot"
         "--disable-gc-mark-trace"
         "--enable-link-time-optimization"
