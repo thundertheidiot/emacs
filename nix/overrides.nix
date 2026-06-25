@@ -52,6 +52,14 @@
     src = inputs.emsg-blame;
   };
 
+  lsp-mode = prev.lsp-mode.overrideAttrs (prev: {
+    buildPhase =
+      ''
+        export LSP_USE_PLISTS=true
+      ''
+      + prev.buildPhase;
+  });
+
   # weird problem
   # https://github.com/NixOS/nixpkgs/issues/388829
   alert = prev.alert.overrideAttrs {
