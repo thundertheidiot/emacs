@@ -76,7 +76,7 @@
     })
   ];
 
-  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-igc-pgtk.overrideAttrs (prev: {
+  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-pgtk.overrideAttrs (prev: {
     env =
       prev.env
       // {
