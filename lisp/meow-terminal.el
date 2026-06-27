@@ -78,9 +78,7 @@
 	"poe" '("eshell" . (lambda () (interactive) 
 						 (select-window (meow/intelligent-split t))
 						 (meow/eshell t)))
-	"poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t))))
-  (:states '(normal visual)
-		   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1))))
+	"poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t)))))
 
 (defun meow/eshell-keybindings ()
   "Some weirdness with an evil-collection update (?) creates a conflict.
@@ -89,6 +87,8 @@ This is run on `eshell-first-time-mode-hook', and seems to work."
 	:states 'insert :keymaps 'eshell-mode-map
 	"RET" #'eshell-send-input
 	"<return>" #'eshell-send-input
+	:states '(normal visual)
+	"A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1))
 	:states '(normal visual insert)
 	"C->" (lambda () (interactive) 
 			(insert (concat "> #<buffer " (read-buffer "Send to: ") ">")))
