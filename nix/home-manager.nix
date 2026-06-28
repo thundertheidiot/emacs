@@ -24,6 +24,8 @@ in {
       slurp
       wayfreeze
       wl-clipboard
+
+      brightnessctl
     ];
 
     # ewm portals

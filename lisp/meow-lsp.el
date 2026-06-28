@@ -16,6 +16,7 @@
 							  (eglot-code-actions (point-min) (point-max) nil t)))))
 
 (require 'eglot-booster)
+(setq eglot-booster-io-only t)
 (eglot-booster-mode)
 
 ;; lsp mode for the couple things that need it, vue rn
