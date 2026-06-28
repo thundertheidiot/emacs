@@ -66,6 +66,9 @@
   (consult-line-start-from-top nil)
   :config
   (require 'consult-autoloads)
+  (require 'consult-xref)
+  (setq xref-show-xrefs-function #'consult-xref
+		xref-show-definitions-function #'consult-xref)
   :general-config
   (meow/leader
     "/" '("line search" . consult-line)
@@ -74,6 +77,7 @@
     "f" '("recent file" . consult-recent-file)
     "sf" '("find" . consult-fd)
     "si" '("imenu" . consult-imenu)
+    "sI" '("imenu multi" . consult-imenu-multi)
     "bs" '("switch" . consult-buffer)
     "bs" '("switch" . consult-buffer)
     "bo" '("open buffer in new window" . (lambda () (interactive)

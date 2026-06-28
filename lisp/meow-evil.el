@@ -22,6 +22,13 @@
   :custom
   (evil-collection-setup-minibuffer t)
   :config
+  ;; this fixes keybind conflicts
+  (setq evil-collection-binding-overrides
+        `((repl-submit :state insert)
+		  (repl-newline :state normal :enabled
+						(lambda (map-sym &rest _)
+						  (not (eq map-sym 'eshell-mode-map))))
+		  (repl-force-newline :enabled nil)))
   (evil-collection-init '(apropos
 						  calc
 						  compile

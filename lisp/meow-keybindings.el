@@ -44,6 +44,7 @@
   
   "l" '(:ignore t :wk "local (mode specific)")
   "s" '(:ignore t :wk "search")
+  "ss" '("find function" . xref-find-definitions)
 
   "d" '("dired" . (lambda () (interactive)
                     (when default-directory
@@ -70,10 +71,10 @@
   "h" '(:ignore t :wk "help")
   "hb" '("describe binding" . describe-bindings)
   "hf" '("describe function" . describe-function)
+  "hs" '("find source" . find-function)
   "hv" '("describe variable" . describe-variable)
   "hF" '("describe face" . describe-face)
   "hk" '("describe key" . describe-key)
-  "hs" '("find function" . find-function)
   "ha" '("describe" . apropos)
   
   "b" '(:ignore t :wk "buffer")
@@ -137,7 +138,6 @@
 		  (if (eglot-managed-p)
 			  (call-interactively #'eglot-rename)
 			(call-interactively #'lsp-rename))))
-
 
 (provide 'meow-keybindings)
 ;;; meow-keybindings.el ends here
