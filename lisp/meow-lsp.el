@@ -21,6 +21,8 @@
 
 ;; lsp mode for the couple things that need it, vue rn
 (use-package lsp-mode
+  :init
+  (setq lsp-use-plists t)
   :custom
   (lsp-log-io nil)
   (lsp-headerline-breadcrumb-enable nil)

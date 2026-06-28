@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-helpers)
 (require 's)
+(require 'projectile)
+(require 'evil)
 
 (use-package fish-completion)
 
@@ -70,21 +72,6 @@
   (eshell-mode . meow/turn-off-line-numbers)
   (eshell-mode . fish-completion-mode)
   :general-config
-  (:states 'insert :keymaps 'eshell-mode-map
-		   "RET" #'eshell-send-input
-		   "<return>" #'eshell-send-input)
-  (:states '(normal visual) :keymaps 'eshell-mode-map
-		   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1)))
-  (:states '(normal visual insert) :keymaps 'eshell-mode-map
-		   "C->" (lambda () (interactive) 
-				   (insert (concat "> #<buffer " (read-buffer "Send to: ") ">")))
-		   "C-p" (lambda () (interactive)
-				   (insert (read-file-name "Insert path: "))))
-  (:keymaps 'eshell-mode-map :states '(normal visual motion)
-			"RET" (lambda () (interactive)
-					(unless (ignore-errors (browse-url))
-					  (evil-ret))))
-  :general
   (meow/leader
 	"oe" '("eshell" . (lambda () (interactive) 
 						(select-window (meow/intelligent-split t)) 
@@ -93,7 +80,30 @@
 	"poe" '("eshell" . (lambda () (interactive) 
 						 (select-window (meow/intelligent-split t))
 						 (meow/eshell t)))
-	"poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t)))))
+	"poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t))))
+  (:states '(normal visual) :keymaps 'eshell-mode-map
+		   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1))))
+
+(defun meow/eshell-keybindings ()
+  "Some weirdness with an evil-collection update (?) creates a conflict.
+This is run on `eshell-first-time-mode-hook', and seems to work."
+  (general-def
+	:states 'insert :keymaps 'eshell-mode-map
+	"RET" #'eshell-send-input
+	"<return>" #'eshell-send-input
+	:states '(normal visual)
+	"A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1))
+	:states '(normal visual insert)
+	"C->" (lambda () (interactive) 
+			(insert (concat "> #<buffer " (read-buffer "Send to: ") ">")))
+	"C-p" (lambda () (interactive)
+			(insert (read-file-name "Insert path: ")))
+	:keymaps 'eshell-mode-map :states '(normal visual motion)
+	"RET" (lambda () (interactive)
+			(unless (ignore-errors (browse-url))
+			  (evil-ret)))))
+
+(add-hook 'eshell-first-time-mode-hook #'meow/eshell-keybindings)
 
 ;; save eshell history on close maybe
 (add-hook 'kill-emacs-hook (lambda ()
@@ -192,108 +202,48 @@ Otherwise exit eshell and close the window with `evil-quit'."
 
 (defalias 'eshell/e 'eshell/exit)
 
+(defun meow/ghostel-projectile ()
+  (let ((default-directory
+		 (projectile-project-root)))
+	(ghostel t)))
+
 ;; ghostel
 (use-package ghostel
   :demand t
-  ;; :hook (ghostel-mode . meow/turn-off-line-numbers)
+  :hook (ghostel-mode . meow/turn-off-line-numbers)
   :custom
-  (ghostel-tramp-shell-integration t))
+  (ghostel-tramp-shell-integration t)
+  :general-config
+  (meow/leader
+	"ot" '("ghostel" . (lambda () (interactive)
+						 (select-window (meow/intelligent-split t))
+						 (ghostel t)))
+	"oT" '("ghostel" . (lambda () (interactive)
+						 (ghostel t)))
+	"pot" '("ghostel" . (lambda () (interactive)
+						  (select-window (meow/intelligent-split t))
+						  (meow/ghostel-projectile)))
+	"poT" '("ghostel" . (lambda () (interactive)
+						  (meow/ghostel-projectile)))))
+
+(defun meow/ghostel-kill-buffer-properly (orig-fun &rest args)
+  "Also close the window ghostel created.
+Around advice for `ghostel--sentinel'.  ORIG-FUN is called with ARGS."
+  (let ((original-kill-buffer (symbol-function 'kill-buffer)))
+	(cl-letf (((symbol-function 'kill-buffer)
+			   (lambda (buf)
+				 (evil-quit)
+				 (funcall original-kill-buffer buf))))
+	  (apply orig-fun args))))
+
+(advice-add 'ghostel--sentinel :around #'meow/ghostel-kill-buffer-properly)
 
 (use-package evil-ghostel
   :hook (ghostel-mode . evil-ghostel-mode))
 
-;; vterm
-(defun meow/vterm (&optional projectile)
-  (if projectile
-      (projectile-run-vterm t)
-    (vterm t))
-  (end-of-buffer)
-  (evil-append-line 1))
-
-(defun vterm-evil-insert ()
-  "Mimic evil i in vterm."
-  (interactive)
-  (vterm-goto-char (point))
-  (call-interactively #'evil-insert))
-
-(defun vterm-evil-append ()
-  "Mimic evil a in vterm."
-  (interactive)
-  (vterm-goto-char (1+ (point)))
-  (call-interactively #'evil-append))
-
-(defun vterm-evil-append-line ()
-  "Mimic A in vterm."
-  (interactive)
-  (vterm-goto-char (point-max))
-  (call-interactively #'evil-insert))
-
-(defun vterm-evil-delete ()
-  "Provide similar behavior as `evil-delete'."
-  (interactive)
-  (let ((inhibit-read-only t))
-    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
-      (call-interactively 'evil-delete))))
-
-(defun vterm-evil-change ()
-  "Provide similar behavior as `evil-change'."
-  (interactive)
-  (let ((inhibit-read-only t))
-    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
-      (call-interactively 'evil-change))))
-
-(defun meow/vterm-process-finished (buf event)
-  "Added to `vterm-exit-functions'.
-When running under eshell, just kill the buffer, otherwise also kill the window
-with `evil-quit'.
-EVENT has to be finished for anything to happen.  BUF is killed."
-  (if (and (boundp 'eshell-parent-buffer) eshell-parent-buffer)
-      (when (and (string= event "finished\n") buf)
-		(kill-buffer buf))
-    (when (string= event "finished\n")
-      (evil-quit)
-      (when buf
-		(kill-buffer buf)))))
-
-(use-package vterm
-  :hook (vterm-mode . meow/turn-off-line-numbers)
-  :hook (vterm-mode . (lambda ()
-						(setq-local confirm-kill-processes nil
-									hscroll-margin 0)))
-  :commands (vterm)
-  :custom
-  (vterm-max-scrollback 100000)
-  :config
-  (add-hook 'vterm-exit-functions #'meow/vterm-process-finished)
-  :general
-  (meow/leader
-	"ov" '((lambda () (interactive)
-			 (select-window (meow/intelligent-split t))
-			 (meow/vterm)) :wk "vterm")
-	"oV" '((lambda () (interactive)
-			 (meow/vterm)) :wk "vterm in this window")
-	"pov" '((lambda () (interactive)
-			  (select-window (meow/intelligent-split t))
-			  (meow/vterm t)) :wk "vterm")
-	"poV" '((lambda () (interactive)
-			  (meow/vterm t)) :wk "vterm in this window"))
-  :general-config
-  (:states '(normal visual) :keymaps 'vterm-mode-map
-		   "a" 'vterm-evil-append
-		   "A" 'vterm-evil-append-line
-		   "d" 'vterm-evil-delete
-		   "i" 'vterm-evil-insert
-		   "c" 'vterm-evil-change))
-
-;; https://github.com/akermu/emacs-libvterm/issues/313#issuecomment-1183650463
-(advice-add #'vterm--redraw :around (lambda (fun &rest args) (let ((cursor-type cursor-type)) (apply fun args))))
-
-;; eshell visual exec in vterm
-(use-package eshell-vterm
-  :demand t
-  :after eshell
-  :config 
-  (eshell-vterm-mode))
+(use-package ghostel-eshell
+  :ensure nil
+  :hook (eshell-load . ghostel-eshell-visual-command-mode))
 
 (provide 'meow-terminal)
 ;;; meow-terminal.el ends here

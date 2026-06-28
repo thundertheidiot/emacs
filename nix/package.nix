@@ -86,6 +86,7 @@
     configureFlags =
       prev.configureFlags
       ++ [
+        "--with-mps"
         "--with-native-compilation=aot"
         "--disable-gc-mark-trace"
         "--enable-link-time-optimization"
