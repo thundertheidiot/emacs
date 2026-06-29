@@ -44,6 +44,8 @@
   
   "l" '(:ignore t :wk "local (mode specific)")
   "s" '(:ignore t :wk "search")
+  "c" '(:ignore t :wk "code")
+  "cc" '("compile" . compile)
 
   "d" '("dired" . (lambda () (interactive)
                     (when default-directory
