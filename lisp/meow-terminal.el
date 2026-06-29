@@ -73,37 +73,21 @@
   (eshell-mode . fish-completion-mode)
   :general-config
   (meow/leader
-	"oe" '("eshell" . (lambda () (interactive) 
-						(select-window (meow/intelligent-split t)) 
+	"oe" '("eshell" . (lambda () (interactive)
+						(select-window (meow/intelligent-split t))
 						(meow/eshell)))
 	"oE" '("eshell in this window" . (lambda () (interactive) (meow/eshell)))
-	"poe" '("eshell" . (lambda () (interactive) 
+	"poe" '("eshell" . (lambda () (interactive)
 						 (select-window (meow/intelligent-split t))
 						 (meow/eshell t)))
 	"poE" '("eshell in this window" . (lambda () (interactive) (meow/eshell t))))
   (:states '(normal visual) :keymaps 'eshell-mode-map
-		   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1))))
-
-(defun meow/eshell-keybindings ()
-  "Some weirdness with an evil-collection update (?) creates a conflict.
-This is run on `eshell-first-time-mode-hook', and seems to work."
-  (general-def
-	:states 'insert :keymaps 'eshell-mode-map
-	"RET" #'eshell-send-input
-	"<return>" #'eshell-send-input
-	:states '(normal visual)
-	"A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1))
-	:states '(normal visual insert)
-	"C->" (lambda () (interactive) 
-			(insert (concat "> #<buffer " (read-buffer "Send to: ") ">")))
-	"C-p" (lambda () (interactive)
-			(insert (read-file-name "Insert path: ")))
-	:keymaps 'eshell-mode-map :states '(normal visual motion)
-	"RET" (lambda () (interactive)
-			(unless (ignore-errors (browse-url))
-			  (evil-ret)))))
-
-(add-hook 'eshell-first-time-mode-hook #'meow/eshell-keybindings)
+		   "A" (lambda () (interactive) (end-of-buffer) (evil-append-line 1)))
+  (:states '(normal visual insert) :keymaps 'eshell-mode-map
+		   "C->" (lambda () (interactive)
+				   (insert (format " > #<buffer %s>" (get-buffer-create (read-buffer "Send to: ")))))
+		   "C-p" (lambda () (interactive)
+				   (insert (read-file-name "Insert path: ")))))
 
 ;; save eshell history on close maybe
 (add-hook 'kill-emacs-hook (lambda ()

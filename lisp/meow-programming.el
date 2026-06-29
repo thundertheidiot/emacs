@@ -60,7 +60,8 @@
 (defun meow/complete-with-consult ()
   "Start `completion-at-point' with `consult-completion-in-region'."
   (interactive)
-  (let ((completion-in-region-function #'consult-completion-in-region))
+  (let ((completion-in-region-function #'consult-completion-in-region)
+		(completion-ignore-case t))
 	(if (eglot-managed-p)
 		(cape-interactive #'eglot-completion-at-point)
 	  (completion-at-point))))
