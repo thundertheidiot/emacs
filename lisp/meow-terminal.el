@@ -197,6 +197,10 @@ Otherwise exit eshell and close the window with `evil-quit'."
   :hook (ghostel-mode . meow/turn-off-line-numbers)
   :custom
   (ghostel-tramp-shell-integration t)
+  :config
+  (set-face-attribute 'ghostel-default nil
+					  :inherit 'solaire-default-face
+					  :background (face-attribute 'solaire-default-face :background))
   :general-config
   (meow/leader
 	"ot" '("ghostel" . (lambda () (interactive)
