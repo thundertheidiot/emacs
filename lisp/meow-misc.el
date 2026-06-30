@@ -67,9 +67,32 @@ Preserve window configuration when pressing ESC."
 (use-package tramp-sh
   :ensure nil ;; part of emacs
   :config
+  ;; https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+
+  (connection-local-set-profile-variables
+   'remote-direct-async-process
+   '((tramp-direct-async-process . t)))
+
+  (connection-local-set-profiles
+   '(:application tramp :protocol "scp")
+   'remote-direct-async-process)
+
+  (connection-local-set-profiles
+   '(:application tramp :protocol "rsync")
+   'remote-direct-async-process)
+
   (setq tramp-remote-path
 		(append tramp-remote-path
- 				'(tramp-own-remote-path))))
+ 				'(tramp-own-remote-path))
+		remote-file-name-inhibit-locks t
+		tramp-use-scp-direct-remote-copying t
+		remote-file-name-inhibit-auto-save-visited t
+		tramp-copy-size-limit (* 2 1024 1024)
+		tramp-verbose 2
+		magit-tramp-pipe-stty-settings 'pty
+		vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+									 vc-ignore-dir-regexp
+									 tramp-file-name-regexp)))
 
 (use-package dired
   :ensure nil
