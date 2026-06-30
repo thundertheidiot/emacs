@@ -48,6 +48,7 @@
 
   "c" '(:ignore t :wk "code")
   "cc" '("compile" . compile)
+  "cr" '("recompile" . recompile)
 
   "d" '("dired" . (lambda () (interactive)
                     (when default-directory
