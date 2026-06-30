@@ -46,6 +46,9 @@
   "s" '(:ignore t :wk "search")
   "ss" '("find function" . xref-find-definitions)
 
+  "c" '(:ignore t :wk "code")
+  "cc" '("compile" . compile)
+
   "d" '("dired" . (lambda () (interactive)
                     (when default-directory
                       (select-window (meow/intelligent-split t))

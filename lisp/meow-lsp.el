@@ -11,7 +11,6 @@
   (fset #'jsonrpc--log-event #'ignore)
   :general-config
   (meow/leader
-    "c" '(:ignore t :wk "code")
     "ca" '("code actions" . (lambda () (interactive)
 							  (eglot-code-actions (point-min) (point-max) nil t)))))
 

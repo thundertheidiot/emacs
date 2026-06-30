@@ -229,5 +229,15 @@ Around advice for `ghostel--sentinel'.  ORIG-FUN is called with ARGS."
   :ensure nil
   :hook (eshell-load . ghostel-eshell-visual-command-mode))
 
+(use-package ghostel-compile
+  :ensure nil
+  :config
+  (advice-add #'ghostel-compile--prepare-buffer :filter-return
+			  (lambda (buf &rest _)
+				(with-current-buffer buf
+				  (display-line-numbers-mode t))
+				buf))
+  (ghostel-compile-global-mode))
+
 (provide 'meow-terminal)
 ;;; meow-terminal.el ends here
