@@ -143,5 +143,10 @@
 			  (call-interactively #'eglot-rename)
 			(call-interactively #'lsp-rename))))
 
+(general-def :keymaps 'Info-mode-map
+  :states '(normal visual insert)
+  "<return>" 'Info-follow-nearest-node
+  "RET" 'Info-follow-nearest-node)
+
 (provide 'meow-keybindings)
 ;;; meow-keybindings.el ends here

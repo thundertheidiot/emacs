@@ -68,6 +68,8 @@ NUM is passed from the ultra scroll hook."
       (setq-local meow/mode-line-nyan-cat nil)
     (setq-local meow/mode-line-nyan-cat t)))
 
+(defvar meow/mode-line-org-agenda nil)
+
 (defun meow/mode-line-tramp-format ()
   "Tramp string for mode line."
   (when (file-remote-p default-directory)
@@ -149,6 +151,11 @@ NUM is passed from the ultra scroll hook."
 ;; load on a new theme
 (add-hook 'enable-theme-functions
 		  (lambda (_theme) (meow/mode-line)))
+
+;; refresh mode line colors for flavor load
+(advice-add 'catppuccin-load-flavor :after
+			(lambda (&rest _)
+			  (meow/mode-line)))
 
 ;; (advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
 ;; (add-hook 'find-file-hook #'meow/invalidate-git-cache)
