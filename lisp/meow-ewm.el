@@ -9,9 +9,9 @@ WRAP wraps around."
 		   (mapcar (lambda (f)
 					 (frame-monitor-attributes f))
 				   (seq-filter
-					;; filter out the corfu frame
 					(lambda (f)
-					  (not (eq f corfu--frame)))
+					  ;; nil for non ewm
+					  (frame-parameter f 'ewm-home-output))
 					(frame-list)))
 		   :lessp
 		   (lambda (a b)
