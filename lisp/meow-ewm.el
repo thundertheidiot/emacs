@@ -75,7 +75,6 @@ WRAP wraps around."
 			(mouse :accel-profile "flat")
 			(keyboard :repeat-delay 300 :repeat-rate 50
 					  :xkb-layouts "us,fi"
-					  :xkb-variants "colemak_dh_ortho,"
 					  :xkb-options "grp:win_space_toggle")))
 
   (setopt ewm-mouse-follows-focus t)
