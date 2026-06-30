@@ -44,7 +44,8 @@
   
   "l" '(:ignore t :wk "local (mode specific)")
   "s" '(:ignore t :wk "search")
-  "ss" '("find function" . xref-find-definitions)
+  "ss" '("find definition" . xref-find-definitions)
+  "sr" '("find references" . xref-find-references)
 
   "c" '(:ignore t :wk "code")
   "cc" '("compile" . compile)
