@@ -50,37 +50,42 @@
 
 (set-face-attribute 'olivetti-fringe nil :inherit 'solaire-fringe-face)
 
-(add-to-list 'default-frame-alist '(font . "Monospace"))
+(add-to-list 'default-frame-alist '(font . "Monospace-14"))
+(set-frame-font "Monospace-14")
+
+(add-hook 'server-after-make-frame-hook
+		  (lambda ()
+			(set-frame-font "Monospace-14")))
 
 ;; font setup
-(meow/runonce
- "fonts" nil
- (set-face-attribute 'default nil
-					 :family "Monospace"
-					 :height 110
-					 :weight 'regular)
+;; (meow/runonce
+;;  "fonts" nil
+;;  (set-face-attribute 'default nil
+;; 					 :family "Monospace"
+;; 					 :height 110
+;; 					 :weight 'regular)
 
- (set-face-attribute 'variable-pitch nil
-					 :font "Sans-Serif"
-					 :height 120
-					 :weight 'medium)
+;;  (set-face-attribute 'variable-pitch nil
+;; 					 :font "Sans-Serif"
+;; 					 :height 120
+;; 					 :weight 'medium)
 
- (dolist (face '(minibuffer-prompt))
-   (set-face-attribute face nil
-					   :height 1.1))
+;;  (dolist (face '(minibuffer-prompt))
+;;    (set-face-attribute face nil
+;; 					   :height 1.1))
 
- (set-face-attribute 'fixed-pitch nil
-					 :font "Monospace"
-					 :weight 'medium)
+;;  (set-face-attribute 'fixed-pitch nil
+;; 					 :font "Monospace"
+;; 					 :weight 'medium)
 
- (set-face-attribute 'font-lock-comment-face nil
-					 :slant 'italic)
- (set-face-attribute 'font-lock-keyword-face nil
-					 :slant 'italic))
+;;  (set-face-attribute 'font-lock-comment-face nil
+;; 					 :slant 'italic)
+;;  (set-face-attribute 'font-lock-keyword-face nil
+;; 					 :slant 'italic))
 
-(add-hook 'minibuffer-setup-hook
-		  (lambda ()
-			(text-scale-set 1.1)))
+;; (add-hook 'minibuffer-setup-hook
+;; 		  (lambda ()
+;; 			(text-scale-set 1.1)))
 
 (setq resize-mini-windows 'grow-only
       max-mini-window-height 2)

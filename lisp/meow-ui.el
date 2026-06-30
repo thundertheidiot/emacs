@@ -140,6 +140,12 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
 
+(use-package hotfuzz
+  :config
+  (add-to-list 'completion-styles 'hotfuzz)
+  (setq consult--tofu-char #x100000
+		consult--tofu-range #x00fffe))
+
 (use-package marginalia
   :demand t
   :config

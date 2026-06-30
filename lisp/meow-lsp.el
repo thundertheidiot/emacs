@@ -8,11 +8,7 @@
   (eglot-sync-connect nil)
   (eglot-connect-timeout nil)
   :config
-  (fset #'jsonrpc--log-event #'ignore)
-  :general-config
-  (meow/leader
-    "ca" '("code actions" . (lambda () (interactive)
-							  (eglot-code-actions (point-min) (point-max) nil t)))))
+  (fset #'jsonrpc--log-event #'ignore))
 
 (require 'eglot-booster)
 (setq eglot-booster-io-only t)
@@ -20,6 +16,7 @@
 
 ;; lsp mode for the couple things that need it, vue rn
 (use-package lsp-mode
+  :demand t
   :init
   (setq lsp-use-plists t)
   :custom
@@ -30,6 +27,10 @@
   (require 'lsp-javascript)
   (require 'lsp-volar)
   (require 'lsp-tailwindcss)
+
+  ;; allow filtering completions for lsp capf
+  (add-to-list 'completion-category-overrides
+			   '(lsp-capf (styles hotfuzz orderless basic)))
 
   ;; handled by apheleia
   (setq lsp-typescript-format-enable nil
