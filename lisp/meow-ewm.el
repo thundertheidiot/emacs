@@ -188,6 +188,7 @@ WRAP wraps around."
 	(when (or (file-directory-p local-ewm-directory)
 			  (file-symlink-p local-ewm-directory))
 	  (mapc #'load-file
-			(directory-files local-ewm-directory t)))))
+			(directory-files local-ewm-directory t
+							 (rx (not ".") nonl))))))
 
 (provide 'meow-ewm)
