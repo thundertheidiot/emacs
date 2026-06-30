@@ -65,6 +65,13 @@ WRAP wraps around."
 	 (start-process-shell-command "ewm shell command" nil ,command)))
 
 (with-eval-after-load "ewm"
+  (let ((local-ewm-directory (expand-file-name "ewm/pre" user-emacs-directory)))
+	(when (or (file-directory-p local-ewm-directory)
+			  (file-symlink-p local-ewm-directory))
+	  (mapc #'load-file
+			(directory-files local-ewm-directory t
+							 (rx (not ".") nonl)))))
+
   (setq focus-follows-mouse t)
   (setq mouse-autoselect-window t)
 
@@ -183,7 +190,7 @@ WRAP wraps around."
 			(meow/ewm-switch-monitor-by-direction t)))
 
   ;; load local configuration
-  (let ((local-ewm-directory (expand-file-name "ewm" user-emacs-directory)))
+  (let ((local-ewm-directory (expand-file-name "ewm/post" user-emacs-directory)))
 	(when (or (file-directory-p local-ewm-directory)
 			  (file-symlink-p local-ewm-directory))
 	  (mapc #'load-file
