@@ -141,8 +141,9 @@
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package hotfuzz
+  :custom
+  (completion-styles '(orderless hotfuzz basic))
   :config
-  (add-to-list 'completion-styles 'hotfuzz)
   (setq consult--tofu-char #x100000
 		consult--tofu-range #x00fffe))
 
