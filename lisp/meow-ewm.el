@@ -65,13 +65,10 @@ WRAP wraps around."
 	 (start-process-shell-command "ewm shell command" nil ,command)))
 
 (with-eval-after-load "ewm"
-  (let ((local-ewm-file (expand-file-name "ewm-local.el" user-emacs-directory)))
-    (when (or (file-directory-p local-ewm-file)
-    		  (file-symlink-p local-ewm-file))
-      (load-file local-ewm-file)))
-
   (setq focus-follows-mouse t)
   (setq mouse-autoselect-window t)
+
+  (setopt ewm-animations-enabled nil)
 
   (setopt ewm-input-config
 		  '((touchpad :natural-scroll t :tap t :dwt t)
@@ -184,6 +181,13 @@ WRAP wraps around."
 	"s-," (lambda () (interactive)
 			(meow/ewm-switch-monitor-by-direction nil))
 	"s-." (lambda () (interactive)
-			(meow/ewm-switch-monitor-by-direction t))))
+			(meow/ewm-switch-monitor-by-direction t)))
+
+  ;; load local configuration
+  (let ((local-ewm-directory (expand-file-name "ewm" user-emacs-directory)))
+	(when (or (file-directory-p local-ewm-directory)
+			  (file-symlink-p local-ewm-directory))
+	  (mapc #'load-file
+			(directory-files local-ewm-directory t)))))
 
 (provide 'meow-ewm)

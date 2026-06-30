@@ -93,11 +93,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1782040805,
-        "narHash": "sha256-mOrAs8r1MpQuGDFbMRHUXg4AKbj9AgmVHShCR2/JeaA=",
+        "lastModified": 1782598697,
+        "narHash": "sha256-TU3ffNus42kRToXWcQxnqaXMlRBCkb0jjwQ8KNY6Iho=",
         "ref": "refs/heads/master",
-        "rev": "370b698320cdee06dbdeb243db6036d1a144a59e",
-        "revCount": 904,
+        "rev": "7ea1f63929ffcd90ac0146cc096df7b6c1103abc",
+        "revCount": 911,
         "type": "git",
         "url": "https://codeberg.org/ezemtsov/ewm.git"
       },
