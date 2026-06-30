@@ -1,42 +1,5 @@
 ;; -*- lexical-binding: t; -*-
 
-(defun meow/ewm-switch-monitor-by-direction (dir &optional wrap)
-  "Switch to monitor by horizontal direction.
-If DIR is truthy, switch one to the right, else go left.
-WRAP wraps around."
-  (let* ((frame-list
-		  (sort
-		   (mapcar (lambda (f)
-					 (frame-monitor-attributes f))
-				   (seq-filter
-					(lambda (f)
-					  ;; nil for non ewm
-					  (frame-parameter f 'ewm-home-output))
-					(frame-list)))
-		   :lessp
-		   (lambda (a b)
-			 (< (car (alist-get 'geometry a)) (car (alist-get 'geometry b))))))
-		 (current-frame (frame-monitor-attributes))
-		 (pos (cl-position (alist-get 'name current-frame) frame-list
-						   :key (lambda (f) (alist-get 'name f))
-						   :test #'string=))
-		 (len (length frame-list))
-		 (selection
-		  (cond
-		   ((= len 1) nil)
-		   ((and (not wrap) (not dir) (= pos 0)) nil)
-		   ((and wrap (not dir) (= pos 0)) (nth (1- len) frame-list))
-		   ((and (not wrap) dir (= pos (1- len))) nil)
-		   ((and wrap dir (= pos (1- len))) (car frame-list))
-		   
-		   ((not dir) (nth (1- pos) frame-list))
-		   (dir (nth (1+ pos) frame-list)))))
-	(when (listp selection) ;; frame-monitor-attributes returns a list
-	  (let ((target-frame (car (alist-get 'frames selection))))
-		(if (frame-live-p target-frame)
-			(select-frame-set-input-focus target-frame)
-		  (message "frame isn't alive"))))))
-
 (defun meow/ewm-screenshot ()
   "Take a screenshot to the clipboard using wayfreeze, grim, slurp and wl-copy."
   (interactive)
@@ -184,10 +147,8 @@ WRAP wraps around."
 	"s-j" #'windmove-down
 	"s-k" #'windmove-up
 	"s-l" #'windmove-right
-	"s-," (lambda () (interactive)
-			(meow/ewm-switch-monitor-by-direction nil))
-	"s-." (lambda () (interactive)
-			(meow/ewm-switch-monitor-by-direction t)))
+	"s-," #'ewm-output-focus-left
+	"s-." #'ewm-output-focus-right)
 
   ;; load local configuration
   (let ((local-ewm-directory (expand-file-name "ewm/post" user-emacs-directory)))
