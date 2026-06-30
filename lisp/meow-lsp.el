@@ -40,10 +40,5 @@
 		lsp-enable-relative-indentation nil
 		lsp-format-buffer-on-save nil))
 
-;; (use-package lsp-ui
-;;   :hook (lsp-mode . lsp-ui-mode)
-;;   :custom
-;;   )
-
 (provide 'meow-lsp)
 ;;; meow-lsp.el ends here
