@@ -53,6 +53,7 @@
 				  (".*\\.blade\\.php\\'" . bladephp-web-mode))
 				auto-mode-alist))
   (add-to-list 'apheleia-mode-alist '(vue-mode . eslint))
+  (evilmi-load-plugin-rules '(vue-mode) '(simple html))
   (add-to-list 'eglot-server-programs
 			   '(bladephp-web-mode
 				 "rass"
@@ -64,17 +65,6 @@
 (use-package emmet-mode
   :hook
   ((web-mode html-mode) . emmet-mode))
-
-;; (use-package vue-mode
-;;   :mode "\\.vue\\'"
-;;   :hook (vue-mode . eglot-ensure)
-;;   :config
-;;   (add-to-list 'eglot-server-programs
-;; 			   '(vue-mode
-;; 				 "rass"
-;; 				 "--" "vue-language-server" "--stdio"
-;; 				 ))
-;;   (set-face-background 'mmm-default-submode-face nil))
 
 (use-package typescript-ts-mode
   :demand t

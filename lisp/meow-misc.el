@@ -21,6 +21,8 @@
 
       confirm-kill-processes nil
 
+      completion-ignore-case t
+
       world-clock-list '(("Europe/Helsinki" "Finland")
 						 ("Europe/London" "UK")
 						 ("America/Chicago" "car")
