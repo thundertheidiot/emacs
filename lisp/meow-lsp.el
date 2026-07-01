@@ -38,7 +38,24 @@
 		lsp-enable-on-type-formatting nil
 		lsp-enable-indentation nil
 		lsp-enable-relative-indentation nil
-		lsp-format-buffer-on-save nil))
+		lsp-format-buffer-on-save nil)
+
+  ;; according to claude this may fix freezes 🤷‍♀️
+  (setq lsp-semantic-tokens-enable nil))
+
+(defun meow/lsp-supercomplete ()
+  "Set up fast autocompletion based on dabbrev and lsp completion."
+  (interactive)
+  (setq-local completion-at-point-functions
+			  (list
+			   #'cape-file
+			   (cape-capf-super
+				;; (cape-capf-prefix-length #'lsp-completion-at-point 3)
+				#'lsp-completion-at-point
+				#'cape-dabbrev)
+			   #'cape-keyword)
+			  corfu-auto-delay 0.01
+			  corfu-auto-prefix 1))
 
 (provide 'meow-lsp)
 ;;; meow-lsp.el ends here

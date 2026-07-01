@@ -53,7 +53,9 @@
 				  (".*\\.blade\\.php\\'" . bladephp-web-mode))
 				auto-mode-alist))
   (add-to-list 'apheleia-mode-alist '(vue-mode . eslint))
+  (add-to-list 'cape-keyword-list '(vue-mode javascript-mode) t)
   (evilmi-load-plugin-rules '(vue-mode) '(simple html))
+  (add-hook 'vue-mode #'meow/lsp-supercomplete)
   (add-to-list 'eglot-server-programs
 			   '(bladephp-web-mode
 				 "rass"

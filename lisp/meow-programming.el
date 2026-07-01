@@ -73,7 +73,9 @@
 (use-package cape
   :demand t
   :config
-  (require 'cape-keyword))
+  (require 'cape-keyword)
+  (setq cape-dabbrev-buffer-function
+		(lambda () (list (current-buffer)))))
 
 ;; automatic formatting
 (use-package apheleia
