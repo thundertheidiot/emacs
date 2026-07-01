@@ -16,7 +16,7 @@
 (use-package catppuccin-theme
   :after solaire-mode
   :custom
-  (catppuccin-flavor 'mocha)
+  (catppuccin-flavor 'latte)
   :config
   ;; https://github.com/catppuccin/emacs/issues/121
   (meow/runonce
