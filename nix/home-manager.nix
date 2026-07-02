@@ -56,6 +56,10 @@ in {
       startWithUserSession = "graphical";
     };
 
+    # i have super+e as emacsclient -c -a '', which starts a new daemon
+    # if the service crashes and i start a new one fast enough, this causes an issue where it starts over and over again in a loop
+    systemd.user.services.emacs.Service.Restart = lib.mkForce "no";
+
     # package in flake.nix
     programs.emacs.enable = true;
     programs.man.generateCaches = true;
