@@ -52,20 +52,54 @@
       ];
 
       flake.homeModules = {
-        default = {pkgs, ...}: {
-          programs.emacs.package = inputs.self.packages.${pkgs.system}.default;
-
+        default = {
+          pkgs,
+          lib,
+          config,
+          ...
+        }: let
+          inherit (lib) mkDefault mkOption;
+          inherit (lib.types) enum;
+        in {
           imports = [./nix/home-manager.nix];
+
+          options = {
+            meowEmacs.package = mkOption {
+              type = enum ["default" "emacsCrazy"];
+              default = "default";
+            };
+          };
+
+          config = {
+            programs.emacs.package = mkDefault inputs.self.packages.${pkgs.system}.${config.meowEmacs.package};
+          };
         };
       };
 
       flake.nixosModules = {
-        ewm = {pkgs, ...}: {
+        default = {
+          pkgs,
+          lib,
+          config,
+          ...
+        }: let
+          inherit (lib) mkDefault mkOption;
+          inherit (lib.types) enum;
+        in {
           imports = [inputs.ewm.nixosModules.default];
 
-          environment.systemPackages = [pkgs.xwayland-satellite];
+          options = {
+            meowEmacs.package = mkOption {
+              type = enum ["default" "emacsCrazy"];
+              default = "default";
+            };
+          };
 
-          programs.ewm.emacsPackage = inputs.self.packages.${pkgs.system}.default;
+          config = {
+            environment.systemPackages = [pkgs.xwayland-satellite];
+
+            programs.ewm.emacsPackage = mkDefault inputs.self.packages.${pkgs.system}.${config.meowEmacs.package};
+          };
         };
       };
 
@@ -91,9 +125,23 @@
         packages.default = config.packages.emacs;
         packages.emacs = import ./nix/package.nix emacsArgs;
 
-        packages.emacsZen4 = import ./nix/package.nix (emacsArgs
+        packages.emacsCrazy = import ./nix/package.nix (emacsArgs
           // {
-            extraCFlags = "-march=znver4 -mtune=znver4";
+            package = pkgs.emacs-igc-pgtk;
+            extraConfigureFlags = ["--with-mps=yes"];
+            extraCFlags = [
+              "-march=znver4"
+              "-mtune=znver4"
+              "-mprefer-vector-width=512"
+              "-fno-semantic-interposition"
+              "-falign-functions=32"
+            ];
+            elispCFlags = [
+              "-march=znver4"
+              "-mtune=znver4"
+            ];
+            optLevel = "3";
+            elispOptLevel = "2";
           });
 
         packages.emacs-empty-init-test = pkgs.writeShellScriptBin "emacs-empty-init-test" ''

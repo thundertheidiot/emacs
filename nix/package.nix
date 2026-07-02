@@ -3,7 +3,12 @@
   inputs,
   lib,
   parse,
-  extraCFlags ? "",
+  extraCFlags ? [],
+  elispCFlags ? [],
+  extraConfigureFlags ? [],
+  optLevel ? "2",
+  elispOptLevel ? "2",
+  package ? pkgs.emacs-pgtk,
   ...
 }: let
   inherit (builtins) readDir;
@@ -76,22 +81,37 @@
     })
   ];
 
-  emacsPackages' = pkgs.emacsPackagesFor (pkgs.emacs-pgtk.overrideAttrs (prev: {
+  emacsPackages' = pkgs.emacsPackagesFor (package.overrideAttrs (prev: {
     env =
       prev.env
       // {
-        NIX_CFLAGS_COMPILE = "-O2 ${extraCFlags}";
+        NIX_CFLAGS_COMPILE = "-O${optLevel} ${concatStringsSep " " extraCFlags}";
       };
+
+    postPatch =
+      (prev.postPatch or "")
+      + (let
+        quote = map (s: ''\"${s}\"'');
+        flags = concatStringsSep " " (quote elispCFlags);
+      in ''
+        substituteInPlace lisp/emacs-lisp/comp.el \
+          --replace-warn "(defcustom native-comp-compiler-options nil" \
+                         "(defcustom native-comp-compiler-options '(${flags})" \
+          --replace-warn "(defcustom native-comp-speed 2" \
+                         "(defcustom native-comp-speed ${elispOptLevel}"
+
+        grep native-comp-compiler-options lisp/emacs-lisp/comp.el
+      '');
 
     configureFlags =
       prev.configureFlags
       ++ [
-        "--with-mps"
         "--with-native-compilation=aot"
         "--disable-gc-mark-trace"
         "--enable-link-time-optimization"
         "--with-tree-sitter"
-      ];
+      ]
+      ++ extraConfigureFlags;
   }));
   emacsPackages = emacsPackages'.overrideScope (import ./overrides.nix {inherit pkgs inputs;});
   emacsWithPackages = emacsPackages.emacsWithPackages;
