@@ -3,19 +3,6 @@
   inputs,
   ...
 }: final: prev: {
-  diff-hl = prev.diff-hl.overrideAttrs (_: {
-    src = pkgs.fetchFromGitHub {
-      owner = "dgutov";
-      repo = "diff-hl";
-      rev = "39f076efa85110c4bcc9b73994f30a7d52312c98";
-      hash = "sha256-XoiAj0AbOty1omfIptBnjU/uJyuWzGqGhILVrMEJgbk=";
-    };
-
-    packageRequires = [
-      final.package-build
-    ];
-  });
-
   ewm =
     (import "${inputs.ewm}/nix/default.nix" {
       inherit pkgs;
