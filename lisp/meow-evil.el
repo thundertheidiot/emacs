@@ -1,6 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-undo)
 (require 'undo-tree)
+(require 'evil-motion-trainer)
 
 (setq evil-want-keybinding nil)
 

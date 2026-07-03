@@ -52,6 +52,13 @@
     src = inputs.emsg-blame;
   };
 
+  evil-motion-trainer = final.trivialBuild {
+    pname = "evil-motion-trainer";
+    version = "1.0.0";
+
+    src = inputs.evil-motion-trainer;
+  };
+
   lsp-mode = prev.lsp-mode.overrideAttrs (prev: {
     buildPhase =
       ''

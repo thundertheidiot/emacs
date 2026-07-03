@@ -39,6 +39,11 @@
       url = "github:dgutov/diff-hl?rev=39f076efa85110c4bcc9b73994f30a7d52312c98";
       flake = false;
     };
+
+    evil-motion-trainer = {
+      url = "github:martinbaillie/evil-motion-trainer";
+      flake = false;
+    };
   };
 
   outputs = inputs:
