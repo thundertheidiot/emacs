@@ -15,7 +15,7 @@
   (meow/leader
 	"sd" '("flycheck" . consult-flycheck)))
 
-;; integrate flycheck with lsp
+;; integrate flycheck with eglot
 (use-package flycheck-eglot
   :demand t
   :after (flycheck eglot)
@@ -27,7 +27,7 @@
   :demand t
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0.18)
+  (corfu-auto-delay 0.1)
   (corfu-cycle t)
   :hook
   (after-init . global-corfu-mode)
@@ -117,15 +117,10 @@
 						   ("NOTE" . ,(face-attribute 'match :foreground))
 						   ("FIXME" . ,(face-attribute 'error :foreground))))
   :config
+  (add-hook 'ultra-scroll-hide-functions #'hl-todo-mode)
   (global-hl-todo-mode 1))
 
 (add-hook 'prog-mode-hook (lambda () (hl-line-mode 1)))
-
-;; (use-package yasnippet
-;;   :custom
-;;   (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
-;;   :config
-;;   (yas-global-mode 1))
 
 (use-package envrc
   :demand t

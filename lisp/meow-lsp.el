@@ -19,9 +19,35 @@
   :demand t
   :init
   (setq lsp-use-plists t)
+
+  (setq	lsp-enable-on-type-formatting nil
+		lsp-enable-indentation nil
+		lsp-enable-relative-indentation nil
+		lsp-format-buffer-on-save nil
+		)
   :custom
   (lsp-log-io nil)
+
+  ;; slowness according to doom emacs
+  (lsp-enable-folding nil)
+  (lsp-enable-text-document-color nil)
+
+  ;; formatting handled by apheleia
+  (lsp-enable-on-type-formatting nil)
+  (lsp-enable-indentation nil)
+  (lsp-enable-relative-indentation nil)
+  (lsp-format-buffer-on-save nil)
+
+  ;; disable headerline
   (lsp-headerline-breadcrumb-enable nil)
+
+  ;; remove warning when company doesn't exist
+  (lsp-completion-provider :none)
+  
+  ;; according to claude this may fix freezes 🤷‍♀️
+  (lsp-semantic-tokens-enable nil)
+  :hook
+  (lsp-mode . lsp-completion-mode)
   :config
   (require 'lsp-mode-autoloads)
   (require 'lsp-javascript)
@@ -30,18 +56,13 @@
 
   ;; allow filtering completions for lsp capf
   (add-to-list 'completion-category-overrides
-			   '(lsp-capf (styles hotfuzz orderless basic)))
+			   '(lsp-capf (styles hotfuzz orderless basic))))
 
-  ;; handled by apheleia
-  (setq lsp-typescript-format-enable nil
-		lsp-javascript-format-enable nil
-		lsp-enable-on-type-formatting nil
-		lsp-enable-indentation nil
-		lsp-enable-relative-indentation nil
-		lsp-format-buffer-on-save nil)
+(use-package yasnippet
+  :custom
+  (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
+  :hook ((lsp-mode . yas-minor-mode)))
 
-  ;; according to claude this may fix freezes 🤷‍♀️
-  (setq lsp-semantic-tokens-enable nil))
 
 (defun meow/lsp-supercomplete ()
   "Set up fast autocompletion based on dabbrev and lsp completion."

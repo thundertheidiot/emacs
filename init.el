@@ -32,6 +32,7 @@
 (require 'lang/meow-vue)
 (require 'meow-mode-line)
 (require 'meow-terminal)
+(require 'meow-scroll)
 (require 'meow-git)
 (require 'meow-ai)
 (require 'meow-org)

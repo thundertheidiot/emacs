@@ -12,9 +12,6 @@
 
 (add-hook 'emacs-lisp-mode-hook #'prettify-symbols-mode)
 
-
-(setq scroll-conservatively 10)
-
 (use-package vertico
   :demand t
   :custom

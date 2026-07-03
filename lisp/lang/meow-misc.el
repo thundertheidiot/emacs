@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 (use-package lua-mode
   :mode "\\.lua\\'"
-  :hook (lua-mode . eglot-ensure))
+  :hook (lua-mode . lsp-deferred))
 
 (use-package glsl-mode)
 
@@ -21,7 +21,7 @@
 
 (use-package php-mode
   :mode "\\.php\\'"
-  :hook (php-mode . eglot-ensure)
+  :hook (php-mode . lsp-deferred)
   :config
   (add-to-list 'eglot-server-programs
 			   '(php-mode
@@ -31,7 +31,7 @@
   :config
   (define-derived-mode astro-mode web-mode "astro")
   (define-derived-mode bladephp-web-mode web-mode "bladephp")
-  (add-hook 'bladephp-web-mode-hook #'eglot-ensure)
+  (add-hook 'bladephp-web-mode-hook #'lsp-deferred)
   (setq auto-mode-alist
 		(append '((".*\\.astro\\'" . astro-mode)
 				  (".*\\.blade\\.php\\'" . bladephp-web-mode))
@@ -48,13 +48,15 @@
   :hook
   ((web-mode html-mode) . emmet-mode))
 
+(add-hook 'js-mode-hook #'lsp-deferred)
+
 (use-package typescript-ts-mode
   :demand t
   :ensure nil
   :mode (("\\.ts\\'" . typescript-ts-mode)
 		 ("\\.tsx\\'" . tsx-ts-mode))
-  :hook (typescript-ts-mode . eglot-ensure)
-  :hook (tsx-ts-mode . eglot-ensure)
+  :hook (typescript-ts-mode . lsp-deferred)
+  :hook (tsx-ts-mode . lsp-deferred)
   :config
   (add-to-list 'eglot-server-programs
 			   '((typescript-mode tsx-ts-mode astro-mode)

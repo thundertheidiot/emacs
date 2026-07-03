@@ -137,9 +137,7 @@ NUM is passed from the ultra scroll hook."
 					;; 					    (setq meow/cached-git-info branch))))
 					;; 		   'face ',emphasize-face)))
 
-					(eglot--managed-mode eglot--mode-line-format "")
-					(eglot--managed-mode "   " "")
-
+					;; lsp status gets given to flycheck anyway
 					(meow/mode-line-flycheck (:eval meow/mode-line-flycheck))
 
 					(:eval

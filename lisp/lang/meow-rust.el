@@ -1,11 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 (use-package rustic
   :mode ("\\.rs\\'" . rustic-mode)
-  :hook (rustic-mode . eglot-ensure)
+  :hook (rustic-mode . lsp-deferred)
   :init
-  (setq rustic-lsp-client 'eglot
-	rustic-use-rust-save-some-buffers t
-	compilation-ask-about-save nil))
+  (setq rustic-lsp-client 'lsp-mode
+		rustic-use-rust-save-some-buffers t
+		compilation-ask-about-save nil))
 
 (provide 'lang/meow-rust)
 ;;; meow-rust.el ends here

@@ -2,7 +2,7 @@
 (defun meow/dotnet-run ()
   (interactive)
   (async-shell-command "dotnet run"
-		       (get-buffer-create "*dotnet run*")))
+					   (get-buffer-create "*dotnet run*")))
 
 (use-package csharp-mode
   :demand t
@@ -12,8 +12,9 @@
   ;; nixos executable is OmniSharp
   (setf
    (alist-get '(csharp-mode csharp-ts-mode)
-	      eglot-server-programs nil nil #'equal) '("OmniSharp" "-lsp"))
+			  eglot-server-programs nil nil #'equal) '("OmniSharp" "-lsp"))
   :hook
+  ;; used for uni stuff, small one off files
   (csharp-mode . eglot-ensure)
   (csharp-mode . apheleia-mode)
   :general-config

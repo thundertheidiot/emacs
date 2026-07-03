@@ -130,6 +130,27 @@
         packages.default = config.packages.emacs;
         packages.emacs = import ./nix/package.nix emacsArgs;
 
+        # https://www.jamescherti.com/compiling-emacs/
+        packages.emacsOpt = import ./nix/package.nix (emacsArgs
+          // {
+            extraCFlags = [
+              "-march=znver4"
+              "-mtune=znver4"
+              "-fno-omit-frame-pointer"
+              "-fno-plt"
+              "-flto=auto"
+            ];
+            elispCFlags = [
+              "-march=znver4"
+              "-mtune=znver4"
+              "-g0"
+              "-fno-omit-frame-pointer"
+              "-fno-finite-math-only"
+            ];
+            optLevel = "2";
+            elispOptLevel = "2";
+          });
+
         packages.emacsIgcOpt = import ./nix/package.nix (emacsArgs
           // {
             package = pkgs.emacs-igc-pgtk;

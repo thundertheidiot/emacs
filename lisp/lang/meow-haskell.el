@@ -51,7 +51,7 @@
 
 (use-package haskell-mode
   :mode "\\.hs\\'"
-  :hook (haskell-mode . eglot-ensure)
+  :hook (haskell-mode . lsp-deferred)
   :custom
   (haskell-process-args-ghci '("-ferror-spans"
 							   "-fdiagnostics-color=always"
