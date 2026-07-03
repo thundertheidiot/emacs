@@ -27,6 +27,8 @@
 			   '(php-mode
 				 "intelephense" "--stdio")))
 
+(defvar meow/vue-lsp-start t)
+
 (defun meow/vue-lsp-setup ()
   (setq lsp-tailwindcss-server-path (executable-find "tailwindcss-language-server"))
   (setf
@@ -43,9 +45,10 @@
   (define-derived-mode bladephp-web-mode web-mode "bladephp")
   (add-hook 'vue-mode-hook
 			(lambda ()
-			  (meow/vue-lsp-setup)
-			  (lsp-deferred)
-			  (meow/lsp-supercomplete)))
+              (when meow/vue-lsp-start
+				(meow/vue-lsp-setup)
+				(lsp-deferred)
+				(meow/lsp-supercomplete))))
 
   (add-hook 'bladephp-web-mode-hook #'eglot-ensure)
   (setq auto-mode-alist

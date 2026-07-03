@@ -132,15 +132,15 @@
             extraCFlags = [
               "-march=znver4"
               "-mtune=znver4"
-              "-mprefer-vector-width=512"
-              "-fno-semantic-interposition"
-              "-falign-functions=32"
+              # "-mprefer-vector-width=512"
+              # "-fno-semantic-interposition"
+              # "-falign-functions=32"
             ];
             elispCFlags = [
               "-march=znver4"
               "-mtune=znver4"
             ];
-            optLevel = "3";
+            optLevel = "2";
             elispOptLevel = "2";
           });
 
