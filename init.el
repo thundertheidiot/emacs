@@ -29,6 +29,7 @@
 (require 'lang/meow-nix)
 (require 'lang/meow-haskell)
 (require 'lang/meow-godot)
+(require 'lang/meow-vue)
 (require 'meow-mode-line)
 (require 'meow-terminal)
 (require 'meow-git)
