@@ -65,7 +65,7 @@
 
           options = {
             meowEmacs.package = mkOption {
-              type = enum ["default" "emacsCrazy"];
+              type = enum ["default" "emacsIgcOpt"];
               default = "default";
             };
           };
@@ -90,7 +90,7 @@
 
           options = {
             meowEmacs.package = mkOption {
-              type = enum ["default" "emacsCrazy"];
+              type = enum ["default" "emacsIgcOpt"];
               default = "default";
             };
           };
@@ -125,16 +125,13 @@
         packages.default = config.packages.emacs;
         packages.emacs = import ./nix/package.nix emacsArgs;
 
-        packages.emacsCrazy = import ./nix/package.nix (emacsArgs
+        packages.emacsIgcOpt = import ./nix/package.nix (emacsArgs
           // {
             package = pkgs.emacs-igc-pgtk;
             extraConfigureFlags = ["--with-mps=yes"];
             extraCFlags = [
               "-march=znver4"
               "-mtune=znver4"
-              # "-mprefer-vector-width=512"
-              # "-fno-semantic-interposition"
-              # "-falign-functions=32"
             ];
             elispCFlags = [
               "-march=znver4"
