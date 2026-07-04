@@ -20,20 +20,6 @@
   :hook (magit-mode . magit-todos-mode)
   :config (magit-todos-mode 1))
 
-(defun meow/last-diff-hl-hunk (&optional backward)
-  "Go to the last hunk in the file, first if BACKWARD is t."
-  (while-let ((pos (diff-hl-search-next-hunk backward)))
-    (goto-char (overlay-start pos))))
-
-(defun advice!diff-hl-next-hunk-loop-around (orig-fun &rest args)
-  (let ((backward (if (car args)
-					  nil
-					t)) ;; flip
-		(return (ignore-errors (funcall orig-fun args))))
-    (unless return
-      (meow/last-diff-hl-hunk backward)
-      (message "Looped around"))))
-
 (use-package diff-hl
   :demand t
   :custom
@@ -45,18 +31,16 @@
   (require 'diff-hl-autoloads)
   (require 'diff-hl-dired)
   (require 'diff-hl-margin)
-  ;; (require 'diff-hl-flydiff) ;; breaks on igc
-  (advice-add 'diff-hl-next-hunk :around #'advice!diff-hl-next-hunk-loop-around)
   (global-diff-hl-mode +1)
   :hook
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh)
-  ;; (dired-mode . diff-hl-dired-mode)
-  ;; (diff-hl-mode . diff-hl-flydiff-mode) ;; breaks on igc right now
+  (dired-mode . diff-hl-dired-mode)
+  (diff-hl-mode . diff-hl-flydiff-mode) ;; breaks on igc right now
   (diff-hl-mode . diff-hl-margin-mode) ;; to simultaniously support flycheck symbols in fringe
   :general
   (meow/leader
-	"ga" '("stage hunk" . diff-hl-stage-current-hunk)
+	"ga" '("stage" . diff-hl-stage-dwim)
 	"gr" '("revert hunk" . diff-hl-revert-hunk)
 	"gn" '("next hunk" . diff-hl-next-hunk)
 	"gN" '("previous hunk" . diff-hl-previous-hunk)))
