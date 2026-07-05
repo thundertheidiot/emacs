@@ -170,7 +170,7 @@
 						  (file-relative-name default-directory meow/tmc-dir)
 						  "/" t))))
 		(meow/--tmc-open-exercise course))
-    (meow/async-shell-command-string
+    (meow/async-shell-command-buffer
      "tmc courses"
      (lambda (_proc buf)
        (let* ((string (with-current-buffer buf
