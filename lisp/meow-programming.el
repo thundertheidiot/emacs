@@ -139,7 +139,7 @@
 
 (defun meow/--tmc-pick-exercise (course callback)
   "Pick exercise from COURSE, call CALLBACK with the string."
-  (meow/async-shell-command-string
+  (meow/async-shell-command-buffer
    (format "tmc exercises %s" course)
    (lambda (proc buf)
      (let* ((string (with-current-buffer buf
@@ -150,11 +150,9 @@
 			(exercise (completing-read "Pick exercise: "
 									   (seq-filter (lambda (s) (not (string-empty-p s)))
 												   (mapcar #'s-trim
-														   (split-string string "\n")))
-									   )))
+														   (split-string string "\n"))))))
        (when exercise
-		 (funcall callback (cadr (split-string exercise ": ")))))
-     )))
+		 (funcall callback (cadr (split-string exercise ": "))))))))
 
 (defun meow/--tmc-open-exercise (course)
   "Open exercise from COURSE with `find-file'."
