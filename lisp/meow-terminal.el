@@ -41,9 +41,9 @@
 			   'default)))
 
 ;; eat is a "full terminal emulator" implemented in native emacs lisp
-;; this allows for better extensibility and integration than vterm
+;; this allows for better extensibility and integration than ghostel
 ;; `eat-eshell-mode' is the main purpose, it lets you run most commands inside the eshell buffer with no extra annoyances
-;; some commands like pulsemixer break down and spam weird errors, vterm is set up below for "emergency" cases
+;; some commands like pulsemixer break down and spam weird errors, ghostel is set up below for "emergency" cases
 (use-package eat
   :demand t
   :hook
@@ -71,6 +71,8 @@
   :hook
   (eshell-mode . meow/turn-off-line-numbers)
   (eshell-mode . fish-completion-mode)
+  (eshell-mode . (lambda ()
+				   (setq-local corfu-auto-prefix 1)))
   :general-config
   (meow/leader
 	"oe" '("eshell" . (lambda () (interactive)
