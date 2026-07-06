@@ -128,6 +128,22 @@
   :config
   (require 'info))
 
+(use-package lispy
+  :hook (emacs-lisp-mode . lispy-mode)
+  :hook (common-lisp-mode . lispy-mode)
+  :config
+  (setq lispy-close-quotes-at-end-p t)
+  (lispy-set-key-theme '(lispy c-digits)))
+
+(use-package lispyville
+  :hook (lispy-mode . lispyville-mode)
+  :config
+  (lispyville-set-key-theme
+   '((operators normal)
+	 prettify
+	 commentary
+	 (slurp/barf-lispy normal))))
+
 (defvar meow/tmc-dir (expand-file-name "~/.local/share/tmc/tmc_cli_rust"))
 
 (defun meow/tmc (args)
