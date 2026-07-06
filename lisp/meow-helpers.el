@@ -82,7 +82,7 @@ If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
 						  "epkgs = flake.packages.\"${builtins.currentSystem}\".emacs.epkgs;"
 						  "get = attrs: name: getAttr name attrs;"
 						  "pkgs' = map (get epkgs) [%s];"
-						  "pkgs = flatten (map f pkgs');"
+						  "pkgs = flatten (pkgs' ++ (map f pkgs'));"
 						  "in pkgs")
 						 path
 						 (mapconcat (lambda (n)
