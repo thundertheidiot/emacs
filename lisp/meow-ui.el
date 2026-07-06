@@ -137,7 +137,11 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
 
+(use-package fzf-native)
+
 (use-package fussy
+  :config
+  (fussy-setup-fzf)
   :custom
   (completion-styles '(orderless fussy basic)))
 
