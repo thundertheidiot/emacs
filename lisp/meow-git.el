@@ -20,30 +20,30 @@
   :hook (magit-mode . magit-todos-mode)
   :config (magit-todos-mode 1))
 
-(use-package diff-hl
-  :demand t
-  :custom
-  (diff-hl-show-staged-changes nil)
-  (diff-hl-global-modes '(not image-mode pdf-view-mode))
-  (diff-hl-update-async t)
-  (vc-git-diff-switches '("--histogram"))
-  :config
-  (require 'diff-hl-autoloads)
-  (require 'diff-hl-dired)
-  (require 'diff-hl-margin)
-  (global-diff-hl-mode +1)
-  :hook
-  (magit-pre-refresh . diff-hl-magit-pre-refresh)
-  (magit-post-refresh . diff-hl-magit-post-refresh)
-  (dired-mode . diff-hl-dired-mode)
-  (diff-hl-mode . diff-hl-flydiff-mode) ;; breaks on igc right now
-  (diff-hl-mode . diff-hl-margin-mode) ;; to simultaniously support flycheck symbols in fringe
-  :general
-  (meow/leader
-	"ga" '("stage" . diff-hl-stage-dwim)
-	"gr" '("revert hunk" . diff-hl-revert-hunk)
-	"gn" '("next hunk" . diff-hl-next-hunk)
-	"gN" '("previous hunk" . diff-hl-previous-hunk)))
+;; (use-package diff-hl
+;;   :demand t
+;;   :custom
+;;   (diff-hl-show-staged-changes nil)
+;;   (diff-hl-global-modes '(not image-mode pdf-view-mode))
+;;   (diff-hl-update-async t)
+;;   (vc-git-diff-switches '("--histogram"))
+;;   :config
+;;   (require 'diff-hl-autoloads)
+;;   (require 'diff-hl-dired)
+;;   (require 'diff-hl-margin)
+;;   (global-diff-hl-mode +1)
+;;   :hook
+;;   (magit-pre-refresh . diff-hl-magit-pre-refresh)
+;;   (magit-post-refresh . diff-hl-magit-post-refresh)
+;;   (dired-mode . diff-hl-dired-mode)
+;;   (diff-hl-mode . diff-hl-flydiff-mode) ;; breaks on igc right now
+;;   (diff-hl-mode . diff-hl-margin-mode) ;; to simultaniously support flycheck symbols in fringe
+;;   :general
+;;   (meow/leader
+;; 	"ga" '("stage" . diff-hl-stage-dwim)
+;; 	"gr" '("revert hunk" . diff-hl-revert-hunk)
+;; 	"gn" '("next hunk" . diff-hl-next-hunk)
+;; 	"gN" '("previous hunk" . diff-hl-previous-hunk)))
 
 (use-package git-timemachine
   :general-config

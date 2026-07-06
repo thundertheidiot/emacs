@@ -2,7 +2,6 @@
 (require 'meow-helpers)
 (require 'meow-mode-line)
 
-(require 'diff-hl)
 (require 'olivetti)
 
 ;; different background color for "unimportant" frames
@@ -26,27 +25,27 @@
   (load-theme 'catppuccin :no-confirm)
   (meow/mode-line))
 
-(let ((green (face-attribute 'success :foreground))
-      (purple (face-attribute 'font-lock-keyword-face :foreground))
-      (red (face-attribute 'error :foreground)))
-  (mapc
-   (lambda (f)
-     (set-face-attribute f nil
-						 :background green
-						 :foreground green))
-   '(diff-hl-insert diff-hl-dired-insert diff-hl-margin-insert))
-  (mapc
-   (lambda (f)
-     (set-face-attribute f nil
-						 :background purple
-						 :foreground purple))
-   '(diff-hl-change diff-hl-dired-change diff-hl-margin-change))
-  (mapc
-   (lambda (f)
-     (set-face-attribute f nil
-						 :background red
-						 :foreground red))
-   '(diff-hl-delete diff-hl-dired-delete diff-hl-margin-delete)))
+;; (let ((green (face-attribute 'success :foreground))
+;;       (purple (face-attribute 'font-lock-keyword-face :foreground))
+;;       (red (face-attribute 'error :foreground)))
+;;   (mapc
+;;    (lambda (f)
+;;      (set-face-attribute f nil
+;; 						 :background green
+;; 						 :foreground green))
+;;    '(diff-hl-insert diff-hl-dired-insert diff-hl-margin-insert))
+;;   (mapc
+;;    (lambda (f)
+;;      (set-face-attribute f nil
+;; 						 :background purple
+;; 						 :foreground purple))
+;;    '(diff-hl-change diff-hl-dired-change diff-hl-margin-change))
+;;   (mapc
+;;    (lambda (f)
+;;      (set-face-attribute f nil
+;; 						 :background red
+;; 						 :foreground red))
+;;    '(diff-hl-delete diff-hl-dired-delete diff-hl-margin-delete)))
 
 (set-face-attribute 'olivetti-fringe nil :inherit 'solaire-fringe-face)
 

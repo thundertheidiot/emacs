@@ -27,6 +27,8 @@
 			   '(php-mode
 				 "intelephense" "--stdio")))
 
+(require 'web-mode-tagedit)
+
 (use-package web-mode
   :config
   (define-derived-mode astro-mode web-mode "astro")
@@ -42,7 +44,12 @@
 				 "--"
 				 "intelephense" "--stdio"
 				 "--"
-				 "tailwindcss-language-server" "--stdio")))
+				 "tailwindcss-language-server" "--stdio"))
+  :general-config
+  (meow/local
+	"t" '(:ignore t :wk "tag")
+	"ts" '("set" . tagedit-set-attribute)
+	"td" '("delete" . tagedit-delete-attribute)))
 
 (use-package emmet-mode
   :hook

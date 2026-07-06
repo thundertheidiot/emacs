@@ -307,7 +307,7 @@ Doubles up as a generic playlist selector, which you can embark with."
      :transient t)]
    ["Settings"
     ("y" "Toggle single" meow/mpd-toggle-single :transient t)
-    ("r" "Toggle repeat" meow/mpd-toggle-single :transient t)
+    ("r" "Toggle repeat" meow/mpd-toggle-repeat :transient t)
 
     ("-" "Volume down" meow/mpd-volume-down :transient t)
     ("=" "Volume up" meow/mpd-volume-up :transient t)]])
