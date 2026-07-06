@@ -7,7 +7,7 @@
 
 (require 'use-package)
 (require 'use-package-ensure)
-(setq use-package-always-ensure t)
+(setq use-package-always-ensure nil)
 
 ;; libraries that are useful for elisp programming
 (use-package dash)

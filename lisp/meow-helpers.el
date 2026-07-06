@@ -58,39 +58,70 @@ If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
   "Turn off line numbers 🤯."
   (display-line-numbers-mode 0))
 
-(defun add-to-load-path (package)
-  "Add PACKAGE from the Emacs flake to `load-path'."
-  (interactive "sPackage: ")
+(defun add-to-load-path (packages)
+  "Add PACKAGES from the Emacs flake to `load-path'."
+  (interactive "sPackage(s): ")
   (message "Starting build, please be patient...")
-  (let ((path "github:thundertheidiot/emacs"))
-    (with-temp-buffer
-      (let ((exit-code (call-process "nix" nil (list t nil) nil
-									 "build"
-									 "--print-out-paths"
-									 "--no-link"
-									 "--impure"
-									 "--expr"
-									 (format
-									  (concat
-									   "let "
-									   "flake = builtins.getFlake \"%s\";"
-									   "epkgs = flake.packages.\"${builtins.currentSystem}\".emacs.epkgs;"
-									   "in epkgs.\"%s\"")
-									  path
-									  package))))
-		(if (eq exit-code 0)
-			(let* ((store-path (substring (buffer-string) 0 -1))
-				   (path (concat store-path "/share/emacs/site-lisp"))
-				   (files (directory-files-recursively path "\\.elc?$"))
-				   (directories (mapcar
-								 (lambda (file) (file-name-directory file))
-								 files))
-				   (final-list (delete-dups directories)))
-			  (mapc (lambda (path)
-					  (add-to-list 'load-path path))
-					final-list)
-			  (message (format "Added %s to load path" final-list)))
-		  (message "Nix process failed"))))))
+  (let ((path "github:thundertheidiot/emacs")
+		(buffer (generate-new-buffer (format "*nix build add-to-load-path %s*" packages)))
+		(package-list (split-string packages " ")))
+	(make-process
+	 :name "nix build add-to-load-path"
+	 :buffer buffer
+	 :command `("nix" "build"
+				"--print-out-paths" "--no-link" "--impure" "--show-trace"
+				"--expr"
+				,(format (concat
+						  "let "
+						  "inherit (builtins) filter concatMap isList getAttr;"
+						  "isDerivation = v: v.type or null == \"derivation\";"
+						  "f = drv: (filter isDerivation drv.propagatedBuildInputs)"
+						  " ++ (map f (filter isDerivation drv.propagatedBuildInputs));"
+						  "flatten = x: if isList x then concatMap flatten x else [ x ];"
+						  "flake = builtins.getFlake \"%s\";"
+						  "epkgs = flake.packages.\"${builtins.currentSystem}\".emacs.epkgs;"
+						  "get = attrs: name: getAttr name attrs;"
+						  "pkgs' = map (get epkgs) [%s];"
+						  "pkgs = flatten (map f pkgs');"
+						  "in pkgs")
+						 path
+						 (mapconcat (lambda (n)
+									  (concat "\"" n "\" "))
+									package-list)))
+	 :sentinel (lambda (proc _event)
+				 (when (eq (process-status proc) 'exit)
+				   (funcall
+					(lambda ()
+					  (let* ((paths- (with-current-buffer buffer
+									   (string-lines (buffer-string))))
+							 (paths (seq-filter
+									 (lambda (p)
+									   (file-directory-p p))
+									 paths-))
+							 (lisp (flatten-list
+									(mapcar (lambda (p)
+											  (directory-files-recursively p
+																		   (rx ".el" (? ?c) eol)))
+											paths)))
+							 (native-lisp (flatten-list
+										   (mapcar (lambda (p)
+													 (directory-files-recursively p
+																				  (rx ".eln" eol)))
+												   paths)))
+							 (lisp-directories (delete-dups
+												(mapcar (lambda (f) (file-name-directory f)) lisp)))
+							 (native-lisp-directories (delete-dups
+													   (mapcar (lambda (f) (file-name-directory f)) native-lisp))))
+						(mapc (lambda (p)
+								(add-to-list 'load-path p)
+								(message "added %s to load-path" p))
+							  lisp-directories)
+						(mapc (lambda (p)
+								(add-to-list 'native-comp-eln-load-path p))
+							  native-lisp-directories)
+						(mapc (lambda (package)
+								(require (intern package)))
+							  package-list)))))))))
 
 (defun meow/async-shell-command-buffer (command callback &optional buffer)
   "Start process for shell COMMAND, call CALLBACK with the process and buffer after exit."
@@ -100,7 +131,8 @@ If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
     (set-process-sentinel
      proc
      (lambda (process _event)
-       (when (eq (process-status process) 'exit)
-		 (funcall callback process buf))))))
+	   (when (eq (process-status process) 'exit)
+		 (funcall callback process buf))))
+	buf))
 
 (provide 'meow-helpers)
