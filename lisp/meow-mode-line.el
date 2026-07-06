@@ -69,6 +69,48 @@ NUM is passed from the ultra scroll hook."
     (setq-local meow/mode-line-nyan-cat t)))
 
 (defvar meow/mode-line-org-agenda nil)
+(put 'meow/mode-line-org-agenda 'risky-local-variable t) ;; so modeline applies properties
+
+(defun date-within-days (time n)
+  (when time
+	(let ((due (time-add (current-time) (* 86400 n))))
+	  (time-less-p time due))))
+
+(defun meow/mode-line-get-agenda-format ()
+  "Org agenda string for modeline."
+  (let ((today 0)
+		(three-days 0)
+		(week 0))
+	(mapc (lambda (file)
+			(with-current-buffer (find-file-noselect file)
+			  (org-map-entries
+			   (lambda ()
+				 (unless (org-entry-is-done-p)
+				   (let ((scheduled (org-get-scheduled-time (point)))
+						 (deadline (org-get-deadline-time (point))))
+					 (cond
+					  ((or (date-within-days scheduled 1) (date-within-days deadline 1))
+					   (setq today (1+ today)))
+					  ((or (date-within-days scheduled 3) (date-within-days deadline 3))
+					   (setq three-days (1+ three-days)))
+					  ((or (date-within-days scheduled 7) (date-within-days deadline 7))
+					   (setq week (1+ week))))))))))
+		  (delete-dups (mapcar #'expand-file-name org-agenda-files)))
+	(concat "  "
+			(when (> today 0)
+			  (propertize (format "%d  " today) 'face
+						  'meow/mode-line-error-face))
+			(when (> three-days 0)
+			  (propertize (format "%d  " three-days) 'face
+						  'meow/mode-line-warning-face))
+			(when (> week 0)
+			  (propertize (format "%d  " week) 'face
+						  'meow/mode-line-okay-face)))))
+
+(defun meow/mode-line-update-agenda (&rest _)
+  "Update the agenda string."
+  (interactive)
+  (setq meow/mode-line-org-agenda (meow/mode-line-get-agenda-format)))
 
 (defun meow/mode-line-tramp-format ()
   "Tramp string for mode line."
@@ -143,8 +185,8 @@ NUM is passed from the ultra scroll hook."
 					(:eval
 					 (meow/mode-line-org-clock))
 
-					"%="
-					(meow/mode-line-nyan-cat (:eval (nyan-create)))))))
+					(meow/mode-line-nyan-cat (:eval (nyan-create)))
+					meow/mode-line-org-agenda))))
 
 ;; load on a new theme
 (add-hook 'enable-theme-functions
@@ -161,6 +203,11 @@ NUM is passed from the ultra scroll hook."
 (add-hook 'flycheck-status-changed-functions #'meow/mode-line-flycheck-update)
 (add-hook 'flycheck-mode-hook #'meow/mode-line-flycheck-update)
 (add-hook 'ultra-scroll-hide-functions #'meow/mode-line-nyan-cat-scroll)
+
+(advice-add 'org-todo :after #'meow/mode-line-update-agenda)
+(advice-add 'meow/org-add-todo :after #'meow/mode-line-update-agenda)
+(advice-add 'meow/org-mark-todo-as-done :after #'meow/mode-line-update-agenda)
+(advice-add 'meow/org-update-agenda-files :after #'meow/model-line-update-agenda)
 
 ;; (run-with-idle-timer 2 t
 ;; 		     (lambda ()
