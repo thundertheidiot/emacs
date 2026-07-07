@@ -12,17 +12,10 @@
    (when (display-graphic-p)
      (solaire-global-mode 1))))
 
-(use-package catppuccin-theme
-  :after solaire-mode
-  :custom
-  (catppuccin-flavor 'latte)
+(use-package batppuccin
   :config
-  ;; https://github.com/catppuccin/emacs/issues/121
-  (meow/runonce
-   "catppuccin-121" t
-   (catppuccin-reload))
-
-  (load-theme 'catppuccin :no-confirm)
+  (require 'batppuccin-autoloads)
+  (load-theme 'batppuccin-mocha t)
   (meow/mode-line))
 
 ;; (let ((green (face-attribute 'success :foreground))
