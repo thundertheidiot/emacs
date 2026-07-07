@@ -207,7 +207,7 @@ NUM is passed from the ultra scroll hook."
 (advice-add 'org-todo :after #'meow/mode-line-update-agenda)
 (advice-add 'meow/org-add-todo :after #'meow/mode-line-update-agenda)
 (advice-add 'meow/org-mark-todo-as-done :after #'meow/mode-line-update-agenda)
-(advice-add 'meow/org-update-agenda-files :after #'meow/model-line-update-agenda)
+(advice-add 'meow/org-update-agenda-files :after #'meow/mode-line-update-agenda)
 
 ;; (run-with-idle-timer 2 t
 ;; 		     (lambda ()
