@@ -142,6 +142,7 @@ NUM is passed from the ultra scroll hook."
   (mapc (lambda (face)
 		  (set-face-attribute face nil
 							  :box `(:line-width (1 . 10) :color ,(face-background face nil t) :style nil)
+							  :overline (face-attribute 'shadow :foreground nil t)
 							  :height 110))
 		'(mode-line-active mode-line-inactive))
 

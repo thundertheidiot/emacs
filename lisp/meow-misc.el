@@ -23,6 +23,9 @@
 
       completion-ignore-case t
 
+	  resize-mini-windows t
+	  max-mini-window-height 0.5
+
       world-clock-list '(("Europe/Helsinki" "Finland")
 						 ("Europe/London" "UK")
 						 ("America/Chicago" "car")
