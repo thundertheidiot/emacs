@@ -146,6 +146,16 @@ Preserve window configuration when pressing ESC."
   :config
   (evil-collection-pdf-setup))
 
+(use-package helpful
+  :init
+  (setq apropos-do-all t)
+  :config
+  (global-set-key (kbd "C-h f") #'helpful-callable)
+  (global-set-key (kbd "C-h v") #'helpful-variable)
+  (global-set-key (kbd "C-h k") #'helpful-key)
+  (global-set-key (kbd "C-h x") #'helpful-command)
+  (global-set-key (kbd "C-h s") #'helpful-symbol))
+
 ;; editor as new buffer
 (setenv "EDITOR" "emacsclient")
 

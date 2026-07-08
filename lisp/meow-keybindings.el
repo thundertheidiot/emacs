@@ -79,12 +79,7 @@
   
   "h" '(:ignore t :wk "help")
   "hb" '("describe binding" . describe-bindings)
-  "hf" '("describe function" . describe-function)
   "hs" '("find source" . find-function)
-  "hv" '("describe variable" . describe-variable)
-  "hF" '("describe face" . describe-face)
-  "hk" '("describe key" . describe-key)
-  "ha" '("describe" . apropos)
   
   "b" '(:ignore t :wk "buffer")
   "bi" '("ibuffer" . ibuffer)
@@ -143,6 +138,8 @@
 
 (general-def :keymaps 'override
   "M-x" 'execute-extended-command
+  "C-c w" 'subword-mode
+  "C-c W" 'superword-mode
   "M-r" (lambda () (interactive)
 		  (if (eglot-managed-p)
 			  (call-interactively #'eglot-rename)
