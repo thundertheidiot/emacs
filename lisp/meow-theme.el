@@ -5,6 +5,14 @@
 (require 'olivetti)
 (require 'lsp-mode)
 
+(defmacro meow/setfaces (&rest args)
+  (let ((forms))
+	(while args
+	  (let ((face (pop args))
+			(attrs (pop args)))
+		(push `(apply #'set-face-attribute ,face nil ,attrs) forms)))
+	`(progn ,@(nreverse forms))))
+
 ;; different background color for "unimportant" frames
 (use-package solaire-mode
   :config
@@ -19,7 +27,13 @@
   (load-theme 'batppuccin-mocha t)
   (meow/mode-line)
 
-  (set-face-attribute 'web-mode-block-delimiter-face nil :foreground (batppuccin-get-color "bat-yellow")))
+  (meow/setfaces
+   ;; take height from default so decrease/increase font size works
+   'line-number `(:inherit default)
+   'line-number-current-line `(:inherit default)
+
+   'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-yellow"))
+   'rainbow-delimiters-unmatched-face `(:box nil)))
 
 ;; (let ((green (face-attribute 'success :foreground))
 ;;       (purple (face-attribute 'font-lock-keyword-face :foreground))

@@ -193,11 +193,6 @@ NUM is passed from the ultra scroll hook."
 (add-hook 'enable-theme-functions
 		  (lambda (_theme) (meow/mode-line)))
 
-;; refresh mode line colors for flavor load
-(advice-add 'catppuccin-load-flavor :after
-			(lambda (&rest _)
-			  (meow/mode-line)))
-
 ;; (advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
 ;; (add-hook 'find-file-hook #'meow/invalidate-git-cache)
 
