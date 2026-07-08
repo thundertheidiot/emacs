@@ -161,5 +161,14 @@ Preserve window configuration when pressing ESC."
 
 (use-package elfeed)
 
+(use-package elfeed-protocol
+  :custom
+  (elfeed-use-curl t)
+  (elfeed-feeds `(("fever+https://thunder@rss.meowcloud.net"
+				   :api-url "https://rss.meowcloud.net/api/fever.php"
+				   :password-file ,(expand-file-name "elfeed-password" user-emacs-directory))))
+  :config
+  (elfeed-protocol-enable))
+
 (provide 'meow-misc)
 ;;; meow-misc.el ends here
