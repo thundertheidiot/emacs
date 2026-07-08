@@ -3,6 +3,7 @@
 (require 'meow-mode-line)
 
 (require 'olivetti)
+(require 'lsp-mode)
 
 ;; different background color for "unimportant" frames
 (use-package solaire-mode
@@ -16,7 +17,9 @@
   :config
   (require 'batppuccin-autoloads)
   (load-theme 'batppuccin-mocha t)
-  (meow/mode-line))
+  (meow/mode-line)
+
+  (set-face-attribute 'web-mode-block-delimiter-face nil :foreground (batppuccin-get-color "bat-yellow")))
 
 ;; (let ((green (face-attribute 'success :foreground))
 ;;       (purple (face-attribute 'font-lock-keyword-face :foreground))
