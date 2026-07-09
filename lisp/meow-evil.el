@@ -69,6 +69,10 @@
   :config
   (global-evil-surround-mode 1))
 
+(use-package evil-commentary
+  :config
+  (evil-commentary-mode))
+
 (use-package evil-matchit
   :config
   (global-evil-matchit-mode 1))

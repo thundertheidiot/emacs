@@ -110,7 +110,6 @@
 
 (general-define-key
  :states '(normal visual)
- "gc" 'meow/comment-or-uncomment-region-or-line
  "<up>" 'enlarge-window
  "<left>" 'shrink-window-horizontally
  "<right>" 'enlarge-window-horizontally

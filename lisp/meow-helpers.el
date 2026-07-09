@@ -39,13 +39,6 @@ If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
     (ignore-errors (balance-windows (window-parent)))
     window))
 
-(defun meow/comment-or-uncomment-region-or-line ()
-  "If a region is selected, either uncomment or comment it, if not, uncomment or comment the current line."
-  (interactive)
-  (if (region-active-p)
-      (comment-or-uncomment-region (region-beginning) (region-end))
-    (comment-or-uncomment-region (line-beginning-position) (line-end-position))))
-
 (defun meow/eval-region-and-go-to-normal-mode ()
   "Evaluate elisp in the selected region and go back to normal mode."
   (interactive)
