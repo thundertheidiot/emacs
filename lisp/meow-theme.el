@@ -32,6 +32,12 @@
    'line-number `(:inherit default)
    'line-number-current-line `(:inherit default)
 
+   'consult-highlight-match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background nil)
+   'match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background nil)
+   
+   'evil-ex-substitute-matches `(:foreground ,(batppuccin-get-color "bat-red") :underline t :weight bold :background nil)
+   'evil-ex-substitute-replacement `(:foreground ,(batppuccin-get-color "bat-green") :underline t)
+
    'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-yellow"))
    'rainbow-delimiters-unmatched-face `(:box nil)))
 
