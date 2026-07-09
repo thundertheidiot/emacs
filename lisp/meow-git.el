@@ -8,6 +8,7 @@
   (meow/leader
 	"g" '(:ignore t :wk "git")
 	"gg" '("open magit" . magit-status)
+	"gb" '("blame" . magit-blame)
 	"gd" '(:ignore t :wk "diff")
 	"gdu" '("diff unstaged" . magit-diff-unstaged)
 	"gds" '("diff staged" . magit-diff-staged)

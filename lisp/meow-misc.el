@@ -121,7 +121,9 @@ Preserve window configuration when pressing ESC."
   (unless (display-graphic-p)
     (general-def dired-mode-map "DEL" 'dired-up-directory)))
 
-(use-package dired-du)
+(use-package diredfl
+  :config
+  (diredfl-global-mode))
 
 ;; open media files in mpv
 (use-package openwith
@@ -154,7 +156,9 @@ Preserve window configuration when pressing ESC."
   (global-set-key (kbd "C-h v") #'helpful-variable)
   (global-set-key (kbd "C-h k") #'helpful-key)
   (global-set-key (kbd "C-h x") #'helpful-command)
-  (global-set-key (kbd "C-h s") #'helpful-symbol))
+  (global-set-key (kbd "C-h s") #'helpful-symbol)
+
+  (define-key embark-symbol-map "h" #'helpful-symbol))
 
 ;; editor as new buffer
 (setenv "EDITOR" "emacsclient")

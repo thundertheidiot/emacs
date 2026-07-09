@@ -110,6 +110,7 @@
   ;; :after wgrep
   :demand t
   :general-config
+  ("C-;" #'embark-act)
   (:keymaps 'vertico-map :states '(normal visual insert)
 			"C-;" (lambda () (interactive)
 					(if embark--selection
@@ -171,11 +172,6 @@
   (which-key-setup-side-window-bottom)
   (which-key-mode))
 
-;; icons for corfu
-(use-package kind-icon
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package ligature
   :config
@@ -190,21 +186,38 @@
 
 
 ;; icons
-(use-package all-the-icons)
+(use-package nerd-icons)
 
-;; icons for dired
-(use-package all-the-icons-dired
-  :after all-the-icons
-  :hook (dired-mode . (lambda ()
-						(when (display-graphic-p)
-						  (all-the-icons-dired-mode)))))
+(use-package nerd-icons-dired
+  :config
+  (when (display-graphic-p)
+	(nerd-icons-dired-mode)))
 
-;; icons for ibuffer
-(use-package all-the-icons-ibuffer
-  :after all-the-icons
-  :hook (ibuffer-mode . (lambda ()
-						  (when (display-graphic-p)
-							(all-the-icons-ibuffer-mode)))))
+(use-package nerd-icons-ibuffer
+  :config
+  (when (display-graphic-p)
+	(nerd-icons-ibuffer-mode)))
+
+(use-package nerd-icons-completion
+  :config
+  (setf (alist-get 'function nerd-icons-completion-category-icons)
+		'(nerd-icons-mdicon "nf-md-function" nerd-icons-blue)
+		(alist-get 'symbol nerd-icons-completion-category-icons)
+		'(nerd-icons-mdicon "nf-md-symbol" nerd-icons-blue))
+  (when (display-graphic-p)
+	(nerd-icons-completion-mode)))
+
+(use-package nerd-icons-corfu
+  :config
+  (setf (alist-get 'function nerd-icons-corfu-mapping)
+		'(:style "md" :icon "function" :face font-lock-function-name-face))
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+;; icons for corfu
+(use-package kind-icon
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 ;; actually parse colors for everything
 (use-package xterm-color

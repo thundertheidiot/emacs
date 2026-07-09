@@ -4,8 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkOption mkEnableOption mkIf;
-  inherit (lib.types) bool;
+  inherit (lib) mkEnableOption mkIf;
 
   cfg = config.meowEmacs;
 in {
@@ -16,7 +15,6 @@ in {
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
       emacs-lsp-booster
-      emacs-all-the-icons-fonts
       python314Packages.trafilatura
 
       # screenshot
