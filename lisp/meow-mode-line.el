@@ -205,6 +205,8 @@ NUM is passed from the ultra scroll hook."
 (advice-add 'meow/org-mark-todo-as-done :after #'meow/mode-line-update-agenda)
 (advice-add 'meow/org-update-agenda-files :after #'meow/mode-line-update-agenda)
 
+(run-with-idle-timer 10 t #'meow/mode-line-update-agenda)
+
 ;; (run-with-idle-timer 2 t
 ;; 		     (lambda ()
 ;; 		       (when (and buffer-file-name (not (file-remote-p default-directory)))

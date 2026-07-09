@@ -159,7 +159,22 @@ Preserve window configuration when pressing ESC."
 ;; editor as new buffer
 (setenv "EDITOR" "emacsclient")
 
-(use-package elfeed)
+(use-package async
+  :config
+  (require 'dired-async)
+  (dired-async-mode 1))
+
+(use-package elfeed
+  :general-config
+  (meow/leader
+	"of" '("elfeed" . elfeed))
+  (:keymaps 'elfeed-show-mode-map :states '(normal visual)
+			"o" (lambda () (interactive)
+				  (unless (eww-suggested-uris)
+					(re-search-forward browse-url-button-regexp))
+				  (call-interactively #'eww-open-in-new-buffer)))
+  (:keymaps 'eww-mode-map :states '(normal visual)
+			"q" #'quit-window))
 
 (use-package elfeed-protocol
   :custom
