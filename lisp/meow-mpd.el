@@ -142,7 +142,7 @@ TYPE is a `libmpdel-search-criteria' type."
    "listallinfo"
    (lambda (data)
      (let ((consult-async-split-style 'none)
-		   (vertico-sort-override-function nil)
+		   (vertico-sort-override-function #'identity)
 		   (completion-ignore-case t))
        (consult--multi
 		(list `(:name "Any"
@@ -157,6 +157,7 @@ TYPE is a `libmpdel-search-criteria' type."
 					  :category mpd
 					  :narrow ?a
 					  :hidden t
+					  :sort nil
 					  :annotate ,#'meow/--mpd-annotate
 					  :action ,#'meow/mpd-add-song
 					  :async ,(consult--async-pipeline
@@ -166,6 +167,7 @@ TYPE is a `libmpdel-search-criteria' type."
 					  :category mpd
 					  :narrow ?A
 					  :hidden t
+					  :sort nil
 					  :annotate ,#'meow/--mpd-annotate
 					  :action ,#'meow/mpd-add-song
 					  :async ,(consult--async-pipeline
@@ -175,6 +177,7 @@ TYPE is a `libmpdel-search-criteria' type."
 					  :category mpd
 					  :narrow ?f
 					  :hidden t
+					  :sort nil
 					  :annotate ,#'meow/--mpd-annotate
 					  :action ,#'meow/mpd-add-song
 					  :async ,(consult--async-pipeline
