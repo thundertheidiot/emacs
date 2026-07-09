@@ -193,7 +193,7 @@ TYPE is a `libmpdel-search-criteria' type."
   (libmpdel-list-songs
    'current-playlist
    (lambda (songs)
-     (let* ((vertico-sort-override-function nil)
+     (let* ((vertico-sort-override-function #'identity)
 			(candidate
 			 (consult--read
 			  (if-let* ((cur (libmpdel-current-song))
@@ -216,16 +216,15 @@ Doubles up as a generic playlist selector, which you can embark with."
   (libmpdel-list
    'stored-playlists
    (lambda (playlists)
-     (let* ((vertico-sort-override-function nil)
-			(candidate
-			 (consult--read (mapcar (lambda (p)
-									  (propertize
-									   (libmpdel--stored-playlist-name p)
-									   'consult--candidate p))
-									playlists)
-							:category 'mpd-playlist
-							:lookup #'consult--lookup-candidate
-							:require-match t)))
+     (let ((candidate
+			(consult--read (mapcar (lambda (p)
+									 (propertize
+									  (libmpdel--stored-playlist-name p)
+									  'consult--candidate p))
+								   playlists)
+						   :category 'mpd-playlist
+						   :lookup #'consult--lookup-candidate
+						   :require-match t)))
        (meow/mpd-replace-playlist candidate)
        (libmpdel-play)))))
 
@@ -236,8 +235,7 @@ Doubles up as a generic playlist selector, which you can embark with."
   (libmpdel-list
    'stored-playlists
    (lambda (playlists)
-     (let* ((vertico-sort-override-function nil)
-			(playlist (consult--read
+     (let* ((playlist (consult--read
 					   (mapcar (lambda (p)
 								 (propertize (libmpdel--stored-playlist-name p)
 											 'consult--candidate p))
