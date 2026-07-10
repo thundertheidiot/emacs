@@ -16,7 +16,7 @@
 
   (org-agenda-span 7)
   (org-agenda-start-day "+0d")
-  (org-agenda-category-icon-alist `(("school" ,(list (nerd-icons-faicon "graduation-cap")) nil nil :ascent center)
+  (org-agenda-category-icon-alist `(("school" ,(list (nerd-icons-faicon "graduation_cap")) nil nil :ascent center)
 									("project" ,(list (nerd-icons-faicon "certificate")) nil nil :ascent center)
 									("game" ,(list (nerd-icons-faicon "gamepad")) nil nil :ascent center)))
   (org-agenda-prefix-format
