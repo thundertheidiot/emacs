@@ -24,7 +24,10 @@ The function is named `meow/mpd-NAME', FORMS are executed with entity bound."
 
 (meow/mpd-wrapper
  "add-song"
- (libmpdel-current-playlist-add entity))
+ (let ((length-before (libmpdel-playlist-length)))
+   (libmpdel-current-playlist-add entity)
+   (when (= length-before 0)
+	 (libmpdel-play))))
 
 (meow/mpd-wrapper
  "play-song"
@@ -119,18 +122,26 @@ Highlight the song with CUR-ID."
 
 (defun meow/--async-mpd-search (type)
   "Create asynchoronus consult search for mpd.
-TYPE is a `libmpdel-search-criteria' type."
+TYPE is a list of mpd filter tags."
   (lambda (sink)
     (lambda (action)
       (pcase action
 		((pred stringp)
 
 		 (funcall sink 'flush)
-		 (libmpdel-list-songs
-		  (libmpdel-search-criteria-create :type type :what action)
-		  (lambda (songs)
-			(funcall sink (mapcar #'meow/--format-mpd-song songs))
-			(funcall sink 'refresh))))
+
+		 (let ((callback
+				(lambda (data)
+				  (funcall sink (mapcar #'meow/--format-mpd-song (libmpdel--create-songs-from-data data)))
+				  (funcall sink 'refresh))))
+		   (if (listp type)
+			   (libmpdel-send-commands
+				(mapcar (lambda (tag)
+						  (format "search \"(%s contains '%s')\"" tag action))
+						type)
+				callback)
+			 (libmpdel-send-command (format "search \"(%s contains '%s')\"" type action)
+									callback))))
 		(_ (funcall sink action))))))
 
 (defun meow/mpd-search ()
@@ -145,45 +156,57 @@ TYPE is a `libmpdel-search-criteria' type."
 		   (vertico-sort-override-function #'identity)
 		   (completion-ignore-case t))
        (consult--multi
-		(list `(:name "Any"
-					  :category mpd
-					  :enabled ,(lambda () (not consult--narrow))
-					  :annotate ,#'meow/--mpd-annotate
-					  :action ,#'meow/mpd-add-song
-					  :items ,(mapcar #'meow/--format-mpd-song
-									  (libmpdel--create-songs-from-data data))
-					  :sort nil)
-			  `(:name "Album"
-					  :category mpd
-					  :narrow ?a
-					  :hidden t
-					  :sort nil
-					  :annotate ,#'meow/--mpd-annotate
-					  :action ,#'meow/mpd-add-song
-					  :async ,(consult--async-pipeline
-							   (consult--async-throttle)
-							   (meow/--async-mpd-search "album")))
-			  `(:name "Artist"
-					  :category mpd
-					  :narrow ?A
-					  :hidden t
-					  :sort nil
-					  :annotate ,#'meow/--mpd-annotate
-					  :action ,#'meow/mpd-add-song
-					  :async ,(consult--async-pipeline
-							   (consult--async-throttle)
-							   (meow/--async-mpd-search "artist")))
-			  `(:name "Filename"
-					  :category mpd
-					  :narrow ?f
-					  :hidden t
-					  :sort nil
-					  :annotate ,#'meow/--mpd-annotate
-					  :action ,#'meow/mpd-add-song
-					  :async ,(consult--async-pipeline
-							   (consult--async-throttle)
-							   (meow/--async-mpd-search "filename"))))
-		:prompt "Search MPD (a/A/f): "
+		(list
+		 `(:name "All"
+				 :category mpd
+				 :narrow ?q
+				 :sort nil
+				 :annotate ,#'meow/--mpd-annotate
+				 :action ,#'meow/mpd-add-song
+				 :async ,(consult--async-pipeline
+						  (consult--async-throttle)
+						  (meow/--async-mpd-search '("name" "album" "artist" "filename"))))
+		 `(:name "Name"
+				 :category mpd
+				 :narrow ?n
+				 :hidden t
+				 :sort nil
+				 :annotate ,#'meow/--mpd-annotate
+				 :action ,#'meow/mpd-add-song
+				 :async ,(consult--async-pipeline
+						  (consult--async-throttle)
+						  (meow/--async-mpd-search "name")))
+		 `(:name "Album"
+				 :category mpd
+				 :narrow ?a
+				 :hidden t
+				 :sort nil
+				 :annotate ,#'meow/--mpd-annotate
+				 :action ,#'meow/mpd-add-song
+				 :async ,(consult--async-pipeline
+						  (consult--async-throttle)
+						  (meow/--async-mpd-search "album")))
+		 `(:name "Artist"
+				 :category mpd
+				 :narrow ?A
+				 :hidden t
+				 :sort nil
+				 :annotate ,#'meow/--mpd-annotate
+				 :action ,#'meow/mpd-add-song
+				 :async ,(consult--async-pipeline
+						  (consult--async-throttle)
+						  (meow/--async-mpd-search "artist")))
+		 `(:name "Filename"
+				 :category mpd
+				 :narrow ?f
+				 :hidden t
+				 :sort nil
+				 :annotate ,#'meow/--mpd-annotate
+				 :action ,#'meow/mpd-add-song
+				 :async ,(consult--async-pipeline
+						  (consult--async-throttle)
+						  (meow/--async-mpd-search "filename"))))
+		:prompt "Search MPD (q/n/a/A/f): "
 		:require-match t)))))
 
 (defun meow/mpd-queue ()
@@ -273,6 +296,12 @@ Doubles up as a generic playlist selector, which you can embark with."
       (libmpdel-playback-set-repeat)
       (message "Repeat on"))))
 
+(defun meow/mpd-database-update ()
+  "Update database."
+  (interactive)
+  (libmpdel-database-update)
+  (message "Updating database"))
+
 (defvar meow/mpd-volume-step 3)
 (defun meow/mpd-volume-down ()
   "Move volume down by volume step."
@@ -309,6 +338,7 @@ Doubles up as a generic playlist selector, which you can embark with."
    ["Settings"
     ("y" "Toggle single" meow/mpd-toggle-single :transient t)
     ("r" "Toggle repeat" meow/mpd-toggle-repeat :transient t)
+    ("u" "update" meow/mpd-database-update :transient t)
 
     ("-" "Volume down" meow/mpd-volume-down :transient t)
     ("=" "Volume up" meow/mpd-volume-up :transient t)]])
