@@ -133,7 +133,11 @@
   :hook (common-lisp-mode . lispy-mode)
   :config
   (setq lispy-close-quotes-at-end-p t)
-  (lispy-set-key-theme '(lispy c-digits)))
+  (lispy-set-key-theme '(lispy c-digits))
+  (general-def :keymaps '(lispy-mode-map evil-collection-lispy-mode-map) :states '(normal visual motion)
+	";" nil)
+  (general-def :keymaps '(lispy-mode-map-base lispy-mode-map-evilcp lispy-mode-map-lispy lispy-mode-map-paredit lispy-mode-map-parinfer)
+	";" nil))
 
 (use-package lispyville
   :hook (lispy-mode . lispyville-mode)

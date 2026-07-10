@@ -190,15 +190,15 @@
 
 (use-package nerd-icons-dired
   :config
-  :hook (after-init . (lambda ()
+  :hook (dired-mode . (lambda ()
 						(when (display-graphic-p)
 						  (nerd-icons-dired-mode)))))
 
 (use-package nerd-icons-ibuffer
   :config
-  :hook (after-init . (lambda ()
-						(when (display-graphic-p)
-						  (nerd-icons-ibuffer-mode)))))
+  :hook (ibuffer-mode . (lambda ()
+						  (when (display-graphic-p)
+							(nerd-icons-ibuffer-mode)))))
 
 (use-package nerd-icons-completion
   :config
@@ -206,9 +206,8 @@
 		'(nerd-icons-mdicon "nf-md-function" nerd-icons-blue)
 		(alist-get 'symbol nerd-icons-completion-category-icons)
 		'(nerd-icons-mdicon "nf-md-symbol" nerd-icons-blue))
-  :hook (after-init . (lambda ()
-						(when (display-graphic-p)
-						  (nerd-icons-completion-mode)))))
+  (when (display-graphic-p)
+	(nerd-icons-completion-mode)))
 
 (use-package nerd-icons-corfu
   :after corfu
