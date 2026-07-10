@@ -41,7 +41,7 @@
 		   "C-j" nil
 		   "C-k" nil
 		   "C-i" nil)
-  (:keymaps 'corfu-map
+  (:keymaps 'corfu-map :states '(normal visual insert motion)
 			"RET" nil
 			"<up>" nil
 			"<down>" nil
