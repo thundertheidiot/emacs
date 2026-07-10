@@ -31,6 +31,7 @@
 						  (not (eq map-sym 'eshell-mode-map))))
 		  (repl-force-newline :enabled nil)))
   (evil-collection-init '(apropos
+						  arc-mode
 						  calc
 						  compile
 						  comint
