@@ -201,6 +201,8 @@
 							(nerd-icons-ibuffer-mode)))))
 
 (use-package nerd-icons-completion
+  :hook
+  (marginalia-mode . nerd-icons-completion-marginalia-setup)
   :config
   (setf (alist-get 'function nerd-icons-completion-category-icons)
 		'(nerd-icons-mdicon "nf-md-function" nerd-icons-blue)
