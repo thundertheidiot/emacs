@@ -211,14 +211,6 @@
   (when (display-graphic-p)
 	(nerd-icons-completion-mode)))
 
-(use-package nerd-icons-corfu
-  :after corfu
-  :config
-  (setf (alist-get 'function nerd-icons-corfu-mapping)
-		'(:style "md" :icon "function" :face font-lock-function-name-face))
-  
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-
 ;; icons for corfu
 ;; (use-package kind-icon
 ;;   :after corfu

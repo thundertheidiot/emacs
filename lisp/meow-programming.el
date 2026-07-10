@@ -41,7 +41,7 @@
 		   "C-j" nil
 		   "C-k" nil
 		   "C-i" nil)
-  (:keymaps 'corfu-map :states '(normal visual insert motion)
+  (:keymaps 'corfu-map
 			"RET" nil
 			"<up>" nil
 			"<down>" nil
@@ -56,6 +56,13 @@
 			"S-<return>" #'corfu-complete
 			"C-RET" #'corfu-complete
 			"C-<return>" #'corfu-complete))
+
+(use-package nerd-icons-corfu
+  :config
+  (setf (alist-get 'function nerd-icons-corfu-mapping)
+		'(:style "md" :icon "function" :face font-lock-function-name-face))
+
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (defun meow/complete-with-consult ()
   "Start `completion-at-point' with `consult-completion-in-region'."
