@@ -209,15 +209,17 @@
 
 (use-package nerd-icons-corfu
   :config
+  :after corfu
   (setf (alist-get 'function nerd-icons-corfu-mapping)
 		'(:style "md" :icon "function" :face font-lock-function-name-face))
+  
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 ;; icons for corfu
-(use-package kind-icon
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+;; (use-package kind-icon
+;;   :after corfu
+;;   :config
+;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 ;; actually parse colors for everything
 (use-package xterm-color
