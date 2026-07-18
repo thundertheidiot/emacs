@@ -33,7 +33,7 @@
    'line-number-current-line `(:inherit default)
 
    'consult-highlight-match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background nil)
-   'match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background nil)
+   'match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background ,(batppuccin-get-color "bat-surface1"))
    
    'evil-ex-substitute-matches `(:foreground ,(batppuccin-get-color "bat-red") :underline t :weight bold :background nil)
    'evil-ex-substitute-replacement `(:foreground ,(batppuccin-get-color "bat-green") :underline t)

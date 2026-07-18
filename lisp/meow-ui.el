@@ -105,7 +105,10 @@
     ret))
 (advice-add 'consult-line :filter-return #'advice!-consult-line-evil-search-history)
 
-(use-package wgrep)
+(use-package wgrep
+  :custom
+  (wgrep-auto-save-buffer t))
+
 (use-package embark
   ;; :after wgrep
   :demand t

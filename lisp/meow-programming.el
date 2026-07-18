@@ -119,7 +119,7 @@
 (use-package hl-todo
   :demand t
   :custom
-  (hl-todo-keyword-faces '(("TODO" . ,(face-attribute 'error :foreground))
+  (hl-todo-keyword-faces `(("TODO" . ,(face-attribute 'error :foreground))
 						   ("HACK" . ,(face-attribute 'warning :foreground))
 						   ("NOTE" . ,(face-attribute 'match :foreground))
 						   ("FIXME" . ,(face-attribute 'error :foreground))))
