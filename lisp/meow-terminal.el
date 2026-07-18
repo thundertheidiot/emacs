@@ -40,6 +40,11 @@
    (propertize " " 'face
 			   'default)))
 
+(defun meow/eshell-sync-history ()
+  "Save and load eshell history."
+  (eshell-write-history nil t)
+  (eshell-read-history nil t))
+
 ;; eat is a "full terminal emulator" implemented in native emacs lisp
 ;; this allows for better extensibility and integration than ghostel
 ;; `eat-eshell-mode' is the main purpose, it lets you run most commands inside the eshell buffer with no extra annoyances
@@ -75,6 +80,7 @@
   (eshell-mode . fish-completion-mode)
   (eshell-mode . (lambda ()
 				   (setq-local corfu-auto-prefix 1)))
+  (eshell-post-command . meow/eshell-sync-history)
   :general-config
   (meow/leader
 	"oe" '("eshell" . (lambda () (interactive)
@@ -92,13 +98,6 @@
 				   (insert (format " > #<buffer %s>" (get-buffer-create (read-buffer "Send to: ")))))
 		   "C-p" (lambda () (interactive)
 				   (insert (read-file-name "Insert path: ")))))
-
-;; save eshell history on close maybe
-(add-hook 'kill-emacs-hook (lambda ()
-							 (dolist (buf (buffer-list))
-							   (with-current-buffer buf
-								 (when (eq major-mode 'eshell-mode)
-								   (eshell-write-history))))))
 
 (defun eshell/v (&rest args)
   "Exec visual command ARGS in a new window."

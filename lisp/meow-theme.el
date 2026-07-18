@@ -21,25 +21,39 @@
    (when (display-graphic-p)
      (solaire-global-mode 1))))
 
+(defun meow/theme-setup (_theme)
+  "Customize faces dependent on the current theme colors.
+Currently dependent on batppuccin."
+  (unless (minibufferp (current-buffer))
+	(meow/setfaces
+	 ;; take height from default so decrease/increase font size works
+	 'line-number `(:inherit default)
+	 'line-number-current-line `(:inherit default)
+
+	 'consult-highlight-match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background nil)
+	 'match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background ,(batppuccin-get-color "bat-surface1"))
+
+	 'evil-ex-substitute-matches `(:foreground ,(batppuccin-get-color "bat-red") :underline t :weight bold :background nil)
+	 'evil-ex-substitute-replacement `(:foreground ,(batppuccin-get-color "bat-green") :underline t)
+
+	 'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-yellow"))
+	 'rainbow-delimiters-unmatched-face `(:box nil)))
+  
+
+  (setopt hl-todo-keyword-faces `(("TODO" . ,(face-attribute 'error :foreground))
+								  ("HACK" . ,(face-attribute 'warning :foreground))
+								  ("NOTE" . ,(face-attribute 'match :foreground))
+								  ("FIXME" . ,(face-attribute 'error :foreground)))))
+
 (use-package batppuccin
   :config
   (require 'batppuccin-autoloads)
-  (load-theme 'batppuccin-mocha t)
-  (meow/mode-line)
+  (load-theme 'batppuccin-latte t)
 
-  (meow/setfaces
-   ;; take height from default so decrease/increase font size works
-   'line-number `(:inherit default)
-   'line-number-current-line `(:inherit default)
+  (meow/theme-setup nil)
 
-   'consult-highlight-match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background nil)
-   'match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background ,(batppuccin-get-color "bat-surface1"))
-   
-   'evil-ex-substitute-matches `(:foreground ,(batppuccin-get-color "bat-red") :underline t :weight bold :background nil)
-   'evil-ex-substitute-replacement `(:foreground ,(batppuccin-get-color "bat-green") :underline t)
-
-   'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-yellow"))
-   'rainbow-delimiters-unmatched-face `(:box nil)))
+  (add-hook 'enable-theme-functions #'meow/theme-setup)
+  (meow/mode-line))
 
 ;; (let ((green (face-attribute 'success :foreground))
 ;;       (purple (face-attribute 'font-lock-keyword-face :foreground))

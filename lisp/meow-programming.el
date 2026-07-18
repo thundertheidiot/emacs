@@ -118,11 +118,6 @@
 
 (use-package hl-todo
   :demand t
-  :custom
-  (hl-todo-keyword-faces `(("TODO" . ,(face-attribute 'error :foreground))
-						   ("HACK" . ,(face-attribute 'warning :foreground))
-						   ("NOTE" . ,(face-attribute 'match :foreground))
-						   ("FIXME" . ,(face-attribute 'error :foreground))))
   :config
   (add-hook 'ultra-scroll-hide-functions #'hl-todo-mode)
   (global-hl-todo-mode 1))

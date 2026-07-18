@@ -18,7 +18,6 @@
 
 (use-package magit-todos
   :after magit
-  :hook (magit-mode . magit-todos-mode)
   :config (magit-todos-mode 1))
 
 ;; (use-package diff-hl
