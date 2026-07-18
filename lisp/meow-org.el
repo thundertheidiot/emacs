@@ -124,6 +124,10 @@ ORIG-FUN is called with ARGS."
 	"ri" '("insert node" . org-roam-node-insert)))
 
 ;; https://www.d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5
+(defun meow/org-roam-has-tag-p (tag)
+  "Does the current org roam node have the tag TAG?"
+  (member tag (org-roam-node-tags (org-roam-node-at-point))))
+
 (defun meow/org-set-agenda-tag ()
   "Set the agenda tag for the current org document, if TODOs exist."
   (if (org-element-map
@@ -133,9 +137,11 @@ ORIG-FUN is called with ARGS."
 		  (eq (org-element-property :todo-type h)
 			  'todo))
 		nil 'first-match)
-      (org-roam-tag-add '("agenda"))
-    (ignore-errors
-      (org-roam-tag-remove '("agenda")))))
+	  (unless (meow/org-roam-has-tag-p "agenda")
+		(org-roam-tag-add '("agenda")))
+	(when (meow/org-roam-has-tag-p "agenda")
+	  (ignore-errors
+		(org-roam-tag-remove '("agenda"))))))
 
 (defun meow/org-roam-update-all-agenda-tags ()
   (dolist (file (org-roam-list-files))
