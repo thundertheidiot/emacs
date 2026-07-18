@@ -123,7 +123,18 @@
         };
 
         packages.default = config.packages.emacs;
-        packages.emacs = import ./nix/package.nix emacsArgs;
+        packages.emacs = import ./nix/package.nix (emacsArgs
+          // {
+            extraCFlags = [
+              "-fno-omit-frame-pointer"
+              "-fno-plt"
+            ];
+            elispCFlags = [
+              "-g0"
+              "-fno-omit-frame-pointer"
+              "-fno-finite-math-only"
+            ];
+          });
 
         # https://www.jamescherti.com/compiling-emacs/
         packages.emacsOpt = import ./nix/package.nix (emacsArgs
@@ -153,6 +164,10 @@
             extraCFlags = [
               "-march=znver4"
               "-mtune=znver4"
+              "-fno-omit-frame-pointer"
+              "-fno-finite-math-only"
+              "-fno-plt"
+              "-flto=auto"
             ];
             elispCFlags = [
               "-march=znver4"

@@ -41,7 +41,7 @@
 	"oa" '("org agenda" . org-agenda))
   (:keymaps 'org-mode-map
 			"C-j" nil)
-  (meow/local
+  (meow/local :keymaps 'org-mode-map
 	"l" '(:ignore t :wk "org link")
 	"li" '("insert org link" . org-insert-link)
 	"lo" '("open org link" . org-open-at-point)
@@ -324,13 +324,15 @@ ORIG-FUN is called with ARGS."
 		(let ((heading (org-get-heading t t t t))
 			  (title (org-get-title)))
 		  (message "Clocked out of %s in document %s." heading title))
-		(org-clock-out))
+		(org-clock-out)
+		(basic-save-buffer))
 	(save-window-excursion
 	  (org-clock-goto)
 	  (let ((heading (org-get-heading t t t t))
 			(title (org-get-title)))
 		(message "Clocked into %s in document %s." heading title))
-	  (org-clock-in))))
+	  (org-clock-in)
+	  (basic-save-buffer))))
 
 (meow/leader
   "t" '(:ignore t :wk "todo")

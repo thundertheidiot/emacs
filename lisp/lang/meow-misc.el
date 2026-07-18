@@ -46,7 +46,7 @@
 				 "--"
 				 "tailwindcss-language-server" "--stdio"))
   :general-config
-  (meow/local
+  (meow/local :keymaps '(web-mode-map vue-mode-map)
 	"t" '(:ignore t :wk "tag")
 	"ts" '("set" . tagedit-set-attribute)
 	"td" '("delete" . tagedit-delete-attribute)))
