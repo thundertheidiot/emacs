@@ -39,11 +39,10 @@
     src = inputs.emsg-blame;
   };
 
-  evil-motion-trainer = final.trivialBuild {
-    pname = "evil-motion-trainer";
-    version = "1.0.0";
-
-    src = inputs.evil-motion-trainer;
+  ghostel = final.callPackage ./ghostel.nix {
+    src = inputs.ghostel;
+    version = "0.45.0";
+    zigHash = "sha256-yrVgiofdmVjTGJ+PGPGRCc8gb/JcEca1uAzIoPgHHqU=";
   };
 
   lsp-mode = prev.lsp-mode.overrideAttrs (prev: {

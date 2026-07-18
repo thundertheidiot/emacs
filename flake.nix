@@ -35,8 +35,8 @@
       flake = false;
     };
 
-    evil-motion-trainer = {
-      url = "github:martinbaillie/evil-motion-trainer";
+    ghostel = {
+      url = "github:dakra/ghostel";
       flake = false;
     };
   };

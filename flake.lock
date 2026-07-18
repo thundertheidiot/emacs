@@ -71,22 +71,6 @@
         "type": "github"
       }
     },
-    "evil-motion-trainer": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1628339295,
-        "narHash": "sha256-FsbSS+WdtjqjDIYRY0f/45OTVDFuZRswp29yfw/1O58=",
-        "owner": "martinbaillie",
-        "repo": "evil-motion-trainer",
-        "rev": "32472acace6be6d99af1ab16cecaaea4344471ec",
-        "type": "github"
-      },
-      "original": {
-        "owner": "martinbaillie",
-        "repo": "evil-motion-trainer",
-        "type": "github"
-      }
-    },
     "ewm": {
       "inputs": {
         "nixpkgs": "nixpkgs_3"
@@ -157,6 +141,22 @@
       "original": {
         "owner": "hercules-ci",
         "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "ghostel": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784066329,
+        "narHash": "sha256-Bjp6xSAm2x4Soqk4CkKf18vyB6xhpM24ux3iQIjrUwQ=",
+        "owner": "dakra",
+        "repo": "ghostel",
+        "rev": "f00d73563524dec28c458b1b22eb1b7ae721e822",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dakra",
+        "repo": "ghostel",
         "type": "github"
       }
     },
@@ -326,9 +326,9 @@
         "eglot-booster": "eglot-booster",
         "emacs-overlay": "emacs-overlay",
         "emsg-blame": "emsg-blame",
-        "evil-motion-trainer": "evil-motion-trainer",
         "ewm": "ewm",
         "flake-parts": "flake-parts_2",
+        "ghostel": "ghostel",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs_4"
       }

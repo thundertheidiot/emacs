@@ -51,11 +51,12 @@
   :config
   (eat-eshell-mode))
 
+;; eshell is a shell and elisp interpreter in one, allowing you to mix paradigms on the fly
+;; it's a dumb terminal, doesn't support any fancy rendering tricks, and is slow
 (use-package eshell
   :ensure nil
   :demand t ;; force instant load
   :after (magit fish-completion)
-  :commands (eshell projectile-run-eshell)
   :custom
   (eshell-history-size 10000000)
   (eshell-prompt-function #'meow/eshell-prompt)
@@ -64,7 +65,8 @@
        (*?
 		nonl)
        "λ "))
-  (eshell-visual-commands '())
+  (eshell-visual-commands '("btop"))
+  (eshell-history-append t)
   :config
   (add-to-list 'eshell-modules-list 'eshell-elecslash)
   (add-to-list 'eshell-modules-list 'eshell-tramp)
