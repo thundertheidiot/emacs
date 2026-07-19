@@ -15,7 +15,7 @@
 
 (defun meow/save-window-configuration ()
   "Add the current window configuration to saved window configurations."
-  (interactive "P")
+  (interactive)
   (add-to-list 'meow/saved-window-configurations
 			   (cons
 				(concat
