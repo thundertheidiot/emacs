@@ -57,6 +57,9 @@
 
 (add-hook 'js-mode-hook #'lsp-deferred)
 
+(setq treesit-load-name-override-list
+	  '((tsx "libtree-sitter-tsx" "tree_sitter_typescript")))
+
 (use-package typescript-ts-mode
   :demand t
   :ensure nil

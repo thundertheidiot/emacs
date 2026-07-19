@@ -88,27 +88,27 @@
         NIX_CFLAGS_COMPILE = "-O${optLevel} ${concatStringsSep " " extraCFlags}";
       };
 
-    postPatch =
-      (prev.postPatch or "")
-      + (let
-        quote = map (s: ''\"${s}\"'');
-        flags = concatStringsSep " " (quote elispCFlags);
-      in ''
-        substituteInPlace lisp/emacs-lisp/comp.el \
-          --replace-warn "(defcustom native-comp-compiler-options nil" \
-                         "(defcustom native-comp-compiler-options '(${flags})" \
-          --replace-warn "(defcustom native-comp-speed 2" \
-                         "(defcustom native-comp-speed ${elispOptLevel}"
+    # postPatch =
+    #   (prev.postPatch or "")
+    #   + (let
+    #     quote = map (s: ''\"${s}\"'');
+    #     flags = concatStringsSep " " (quote elispCFlags);
+    #   in ''
+    #     substituteInPlace lisp/emacs-lisp/comp.el \
+    #       --replace-warn "(defcustom native-comp-compiler-options nil" \
+    #                      "(defcustom native-comp-compiler-options '(${flags})" \
+    #       --replace-warn "(defcustom native-comp-speed 2" \
+    #                      "(defcustom native-comp-speed ${elispOptLevel}"
 
-        grep native-comp-compiler-options lisp/emacs-lisp/comp.el
-      '');
+    #     grep native-comp-compiler-options lisp/emacs-lisp/comp.el
+    #   '');
 
     configureFlags =
       prev.configureFlags
       ++ [
         "--with-native-compilation=aot"
         "--disable-gc-mark-trace"
-        "--enable-link-time-optimization"
+        # "--enable-link-time-optimization"
         "--with-tree-sitter"
       ]
       ++ extraConfigureFlags;

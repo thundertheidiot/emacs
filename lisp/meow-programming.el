@@ -27,7 +27,7 @@
   :demand t
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0.1)
+  (corfu-auto-delay 0.25)
   (corfu-cycle t)
   :hook
   (after-init . global-corfu-mode)

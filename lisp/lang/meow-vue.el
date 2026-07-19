@@ -14,7 +14,8 @@
   (mapc #'lsp-ensure-server '(ts-ls vue-semantic-server eslint))
 
   (lsp-deferred)
-  (meow/lsp-supercomplete))
+  ;; (meow/lsp-supercomplete)
+  )
 
 (setq auto-mode-alist
 	  (append  '((".*\\.vue\\'" . vue-mode))
