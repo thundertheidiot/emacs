@@ -248,8 +248,6 @@
 
 (use-package dashboard
   :custom
-  (dashboard-projects-backend 'projectile)
-  (dashboard-projects-switch-function #'projectile-switch-project-by-name)
   (dashboard-items '((agenda . 20)))
   (dashboard-filter-agenda-entry
    (lambda ()

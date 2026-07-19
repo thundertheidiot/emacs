@@ -1,17 +1,20 @@
 ;; -*- lexical-binding: t; -*-
 (require 'meow-helpers)
 (require 's)
-(require 'projectile)
 (require 'evil)
 
 (use-package fish-completion)
 
-(defun meow/eshell (&optional projectile &rest args)
-  (if projectile
-      (projectile-run-eshell t)
-    (eshell t))
-  (goto-char (point-max))
-  (evil-append-line 1))
+(defun meow/eshell (&optional project)
+  "Run eshell in a new buffer.
+If PROJECT is non nil, launch it in the project root."
+  (let ((default-directory
+		 (if project
+			 (project-root (project-current))
+		   default-directory)))
+	(eshell t)
+	(goto-char (point-max))
+	(evil-append-line 1)))
 
 (defvar-local meow/eshell-nix-shell-environment nil
   "Store environment for nix shell.")
@@ -189,9 +192,9 @@ Otherwise exit eshell and close the window with `evil-quit'."
 
 (defalias 'eshell/e 'eshell/exit)
 
-(defun meow/ghostel-projectile ()
+(defun meow/ghostel-project ()
   (let ((default-directory
-		 (projectile-project-root)))
+		 (project-root (project-current))))
 	(ghostel t)))
 
 ;; ghostel
@@ -213,9 +216,9 @@ Otherwise exit eshell and close the window with `evil-quit'."
 						 (ghostel t)))
 	"pot" '("ghostel" . (lambda () (interactive)
 						  (select-window (meow/intelligent-split t))
-						  (meow/ghostel-projectile)))
+						  (meow/ghostel-project)))
 	"poT" '("ghostel" . (lambda () (interactive)
-						  (meow/ghostel-projectile)))))
+						  (meow/ghostel-project)))))
 
 (defun meow/ghostel-kill-buffer-properly (orig-fun &rest args)
   "Also close the window ghostel created.

@@ -80,6 +80,7 @@
 
   (require 'time)
   (display-time-mode 1)
+  (tab-bar-mode 1)
 
   (setq display-time-format " %H:%M ")
   (setq display-time-interval 30)

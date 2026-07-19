@@ -16,8 +16,20 @@
       inhibit-startup-screen t
       inhibit-splash-screen t
 
-      split-width-threshold 180
-      split-height-threshold 80
+      split-width-threshold 120
+      split-height-threshold 40
+
+	  display-buffer-alist '(((or (major-mode . Info-mode)
+								  (major-mode . help-mode)
+								  (major-mode . helpful-mode))
+							  (display-buffer-reuse-window
+							   display-buffer-in-side-window)
+							  (reusable-frames . visitble)
+							  (side . bottom)
+							  (window-height . 0.45))
+							 ((major-mode . grep-mode)
+							  display-buffer-reuse-window
+							  (inhibit-same-window . nil)))
 
       confirm-kill-processes nil
 
@@ -158,7 +170,10 @@ Preserve window configuration when pressing ESC."
   (global-set-key (kbd "C-h x") #'helpful-command)
   (global-set-key (kbd "C-h s") #'helpful-symbol)
 
-  (define-key embark-symbol-map "h" #'helpful-symbol))
+  (define-key embark-symbol-map "h" #'helpful-symbol)
+  :general-config
+  (:keymaps 'helpful-mode-map :states '(normal visual motion)
+			"q" 'evil-quit))
 
 ;; editor as new buffer
 (setenv "EDITOR" "emacsclient")

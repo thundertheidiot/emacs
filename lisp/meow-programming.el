@@ -93,28 +93,26 @@
   (apheleia-global-mode +1))
 
 ;; project management
-(use-package projectile
-  :commands (projectile-run-eshell projectile-run-vterm)
+(use-package project
+  :ensure nil ;; built in
   :custom
-  (projectile-switch-project-action #'projectile-dired)
-  :config
-  (projectile-mode)
-  :general
+  (project-switch-commands 'project-dired)
+  :general-config
   (meow/leader
-	"P" '(:keymap projectile-command-map :package projectile)
-	"p" '(:ignore t :package projectile :wk "project")
-	"pp" '("switch project" . projectile-switch-project)
-	"ps" '("search project" . (lambda () (interactive) (consult-ripgrep (projectile-project-root))))
-	"p." '("find project file" . projectile-find-file)
-	"po" '(:ignore t :wk "open")
-	"pog" '("project version control (git)" . projectile-vc)
-	"pb" '("switch buffer in project" . projectile-switch-to-buffer)))
+	"p" '(:ignore t :wk "project")
+	"pp" '("switch project" . project-switch-project)
+	"ps" '("search" . (lambda () (interactive)
+						(consult-ripgrep (project-root (project-current)))))
+	"p." '("find file" . project-find-file)
+	"pb" '("switch to buffer" . consult-project-buffer)
+	"po" '(:ignore t :wk "open")))
 
-(use-package ibuffer-projectile
+(use-package ibuffer-project
   :hook
-  (ibuffer-mode . (lambda () (ibuffer-projectile-set-filter-groups)
-					(unless (eq ibuffer-sorting-mode 'alphabetic)
-					  (ibuffer-do-sort-by-alphabetic)))))
+  (ibuffer . (lambda ()
+			   (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
+			   (unless (eq ibuffer-sorting-mode 'project-file-relative)
+				 (ibuffer-do-sort-by-project-file-relative)))))
 
 (use-package hl-todo
   :demand t

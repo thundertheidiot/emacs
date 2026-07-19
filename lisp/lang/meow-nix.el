@@ -31,8 +31,7 @@
 			   (format
 				"with import <nixpkgs> {}; callPackage \"%s\" %s"
 				buffer-file-name
-				meow/nix-build-callpackage-expression)
-			   ))
+				meow/nix-build-callpackage-expression)))
    (or buffer
        (get-buffer-create "*nix build*"))))
 
@@ -82,10 +81,10 @@
     "oN" '("nix repl" . (lambda () (interactive)
 						  (meow/nix-repl t)))
     "pon" '("nix repl" . (lambda () (interactive)
-						   (let ((default-directory (projectile-project-root)))
+						   (let ((default-directory (project-root (project-current))))
 							 (meow/nix-repl))))
     "poN" '("nix repl" . (lambda () (interactive)
-						   (let ((default-directory (projectile-project-root)))
+						   (let ((default-directory (project-root (project-current))))
 							 (meow/nix-repl t)))))
   (meow/local :keymaps 'nix-mode-map
     "r" '("nix build&run" . meow/nix-build-and-run)

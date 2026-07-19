@@ -139,6 +139,7 @@
   "M-x" 'execute-extended-command
   "C-c w" 'subword-mode
   "C-c W" 'superword-mode
+  "C-c n" 'meow/new-window-configuration
   "M-r" (lambda () (interactive)
 		  (if (eglot-managed-p)
 			  (call-interactively #'eglot-rename)
