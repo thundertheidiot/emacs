@@ -14,7 +14,6 @@
 (setq eglot-booster-io-only t)
 (eglot-booster-mode)
 
-;; lsp mode for the couple things that need it, vue rn
 (use-package lsp-mode
   :demand t
   :init

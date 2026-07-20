@@ -19,17 +19,6 @@
       split-width-threshold 120
       split-height-threshold 40
 
-	  display-buffer-alist '(((or (major-mode . Info-mode)
-								  (major-mode . help-mode)
-								  (major-mode . helpful-mode))
-							  (display-buffer-reuse-window
-							   display-buffer-in-side-window)
-							  (reusable-frames . visitble)
-							  (side . bottom)
-							  (window-height . 0.45))
-							 ((major-mode . grep-mode)
-							  display-buffer-reuse-window
-							  (inhibit-same-window . nil)))
 
       confirm-kill-processes nil
 
@@ -45,6 +34,21 @@
 						 ("America/Buenos_Aires" "Diza"))
 
       backward-delete-char-untabify-method nil)
+
+;; display buffer alist
+
+(setq display-buffer-alist
+	  '(((or (major-mode . Info-mode)
+			 (major-mode . help-mode)
+			 (major-mode . helpful-mode))
+		 (display-buffer-reuse-window
+		  display-buffer-in-side-window)
+		 (reusable-frames . visible)
+		 (side . bottom)
+		 (window-height . 0.4))
+		((major-mode . grep-mode)
+		 display-buffer-reuse-window
+		 (inhibit-same-window . nil))))
 
 (electric-indent-mode)
 (electric-pair-mode)

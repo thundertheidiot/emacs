@@ -342,7 +342,8 @@ ORIG-FUN is called with ARGS."
 
 (meow/leader
   "t" '(:ignore t :wk "todo")
-  "tj" '("jump" . meow/org-goto-todo)
+  "tj" '("jump" . consult-org-agenda)
+  "tl" '("list" . org-todo-list)
   "ta" '("create" . meow/org-add-todo)
   "tA" '("create for node" . (lambda () (interactive) (meow/org-add-todo current-prefix-arg t)))
   "td" '("mark done" . meow/org-mark-todo-as-done)

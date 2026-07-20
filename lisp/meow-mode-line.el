@@ -80,7 +80,8 @@ NUM is passed from the ultra scroll hook."
   "Org agenda string for modeline."
   (let ((today 0)
 		(three-days 0)
-		(week 0))
+		(week 0)
+		(no-date 0))
 	(mapc (lambda (file)
 			(with-current-buffer (find-file-noselect file)
 			  (org-map-entries
@@ -89,6 +90,8 @@ NUM is passed from the ultra scroll hook."
 				   (let ((scheduled (org-get-scheduled-time (point)))
 						 (deadline (org-get-deadline-time (point))))
 					 (cond
+					  ((and (not scheduled) (not deadline))
+					   (setq no-date (1+ no-date)))
 					  ((or (date-within-days scheduled 1) (date-within-days deadline 1))
 					   (setq today (1+ today)))
 					  ((or (date-within-days scheduled 3) (date-within-days deadline 3))
@@ -105,7 +108,9 @@ NUM is passed from the ultra scroll hook."
 						  'meow/mode-line-warning-face))
 			(when (> week 0)
 			  (propertize (format "%d  " week) 'face
-						  'meow/mode-line-okay-face)))))
+						  'meow/mode-line-okay-face))
+			(when (> no-date 0)
+			  (format "%d 󱡦 " no-date)))))
 
 (defun meow/mode-line-update-agenda (&rest _)
   "Update the agenda string."

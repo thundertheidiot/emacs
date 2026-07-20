@@ -1,13 +1,24 @@
 ;; -*- lexical-binding: t; -*-
 (use-package flycheck
+  :demand t
   :hook
   (prog-mode . flycheck-mode)
   (eglot-managed-mode . flycheck-mode)
   (flycheck-mode . (lambda () (flycheck-set-indication-mode 'left-fringe)))
+  :config
+  (add-to-list 'display-buffer-alist
+			   '((major-mode . flycheck-error-list-mode)
+				 (display-buffer-reuse-window
+				  display-buffer-in-side-window)
+				 (reusable-frames . visitble)
+				 (side . bottom)
+				 (window-height . 0.15)
+				 (preserve-size . (nil . nil))))
   :general-config
   (meow/leader
     "cn" '("next error" . flycheck-next-error)
-    "cN" '("previous error" . flycheck-previous-error)))
+    "cN" '("previous error" . flycheck-previous-error)
+	"ce" '("show errors" . flycheck-list-errors)))
 
 ;; consult menu for flycheck errors
 (use-package consult-flycheck
