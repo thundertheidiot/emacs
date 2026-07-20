@@ -7,7 +7,7 @@
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
   # inputs.ewm.url = "git+https://codeberg.org/thundertheidiot/ewm.git?ref=dev";
-  inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git";
+  inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git?ref=crash-robustness";
 
   # not sure if aly's fork does much, but it was apparently important for her
   # https://github.com/nialov/actions.nix/compare/master...alyraffauf:actions.nix:master
@@ -59,13 +59,13 @@
           ...
         }: let
           inherit (lib) mkDefault mkOption;
-          inherit (lib.types) enum;
+          inherit (lib.types) str;
         in {
           imports = [./nix/home-manager.nix];
 
           options = {
             meowEmacs.package = mkOption {
-              type = enum ["default" "emacsIgcOpt"];
+              type = str;
               default = "default";
             };
           };
@@ -84,13 +84,13 @@
           ...
         }: let
           inherit (lib) mkDefault mkOption;
-          inherit (lib.types) enum;
+          inherit (lib.types) str;
         in {
           imports = [inputs.ewm.nixosModules.default];
 
           options = {
             meowEmacs.package = mkOption {
-              type = enum ["default" "emacsIgcOpt"];
+              type = str;
               default = "default";
             };
           };
@@ -134,6 +134,25 @@
               "-fno-omit-frame-pointer"
               "-fno-finite-math-only"
             ];
+          });
+
+        packages.emacsDebug = import ./nix/package.nix (emacsArgs
+          // {
+            extraCFlags = [
+              "-g3"
+              "-fno-omit-frame-pointer"
+              "-fno-inline"
+              "-ggdb"
+            ];
+            elispCFlags = [
+              "-g3"
+              "-fno-omit-frame-pointer"
+            ];
+
+            optLevel = "g";
+            elispOptLevel = "0";
+
+            dontStrip = true;
           });
 
         # https://www.jamescherti.com/compiling-emacs/

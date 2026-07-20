@@ -8,6 +8,7 @@
   extraConfigureFlags ? [],
   optLevel ? "2",
   elispOptLevel ? "2",
+  dontStrip ? false,
   package ? pkgs.emacs-pgtk,
   ...
 }: let
@@ -82,26 +83,28 @@
   ];
 
   emacsPackages' = pkgs.emacsPackagesFor (package.overrideAttrs (prev: {
+    inherit dontStrip;
+
     env =
       prev.env
       // {
         NIX_CFLAGS_COMPILE = "-O${optLevel} ${concatStringsSep " " extraCFlags}";
       };
 
-    # postPatch =
-    #   (prev.postPatch or "")
-    #   + (let
-    #     quote = map (s: ''\"${s}\"'');
-    #     flags = concatStringsSep " " (quote elispCFlags);
-    #   in ''
-    #     substituteInPlace lisp/emacs-lisp/comp.el \
-    #       --replace-warn "(defcustom native-comp-compiler-options nil" \
-    #                      "(defcustom native-comp-compiler-options '(${flags})" \
-    #       --replace-warn "(defcustom native-comp-speed 2" \
-    #                      "(defcustom native-comp-speed ${elispOptLevel}"
+    postPatch =
+      (prev.postPatch or "")
+      + (let
+        quote = map (s: ''\"${s}\"'');
+        flags = concatStringsSep " " (quote elispCFlags);
+      in ''
+        substituteInPlace lisp/emacs-lisp/comp.el \
+          --replace-warn "(defcustom native-comp-compiler-options nil" \
+                         "(defcustom native-comp-compiler-options '(${flags})" \
+          --replace-warn "(defcustom native-comp-speed 2" \
+                         "(defcustom native-comp-speed ${elispOptLevel}"
 
-    #     grep native-comp-compiler-options lisp/emacs-lisp/comp.el
-    #   '');
+        grep native-comp-compiler-options lisp/emacs-lisp/comp.el
+      '');
 
     configureFlags =
       prev.configureFlags
