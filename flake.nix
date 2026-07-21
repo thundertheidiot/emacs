@@ -149,7 +149,12 @@
               "-fno-omit-frame-pointer"
             ];
 
-            optLevel = "g";
+            extraConfigureFlags = [
+              # "--enable-checking='yes,glyphs'"
+              "--enable-check-list-object-type"
+            ];
+
+            optLevel = "0";
             elispOptLevel = "0";
 
             dontStrip = true;

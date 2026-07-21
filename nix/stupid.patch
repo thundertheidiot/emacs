@@ -1,0 +1,16 @@
+diff --git a/src/eval.c b/src/eval.c
+index 9d47f04f92a..7c247d71f89 100644
+--- a/src/eval.c
++++ b/src/eval.c
+@@ -1958,7 +1958,10 @@ signal_or_quit (Lisp_Object error_symbol, Lisp_Object data, bool continuable)
+   struct handler *h;
+   int skip;
+ 
+-  if (gc_in_progress || waiting_for_input)
++  if (waiting_for_input)
++    clear_waiting_for_input();
++
++  if (gc_in_progress)
+     emacs_abort ();
+ 
+   /* This hook is used by edebug.  */

@@ -91,6 +91,11 @@
         NIX_CFLAGS_COMPILE = "-O${optLevel} ${concatStringsSep " " extraCFlags}";
       };
 
+    # i kept running into this weird crash
+    # probably a pgtk + native comp edgecase no one else has found
+    # doing this manually in a gdb instance hooked up to emacs seemed to fix it so 🤷‍♀️
+    patches = prev.patches ++ [./stupid.patch];
+
     postPatch =
       (prev.postPatch or "")
       + (let
@@ -111,7 +116,7 @@
       ++ [
         "--with-native-compilation=aot"
         "--disable-gc-mark-trace"
-        # "--enable-link-time-optimization"
+        "--enable-link-time-optimization"
         "--with-tree-sitter"
       ]
       ++ extraConfigureFlags;
@@ -121,4 +126,5 @@
 in
   (emacsWithPackages defaultInit).overrideAttrs (prev: {
     passthru.epkgs = emacsPackages;
+    inherit dontStrip;
   })
