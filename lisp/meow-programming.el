@@ -8,12 +8,11 @@
   :config
   (add-to-list 'display-buffer-alist
 			   '((major-mode . flycheck-error-list-mode)
-				 (display-buffer-reuse-window
-				  display-buffer-in-side-window)
-				 (reusable-frames . visitble)
+				 meow/display-buffer-in-side-window-fixed
+				 (reusable-frames . visible)
 				 (side . bottom)
 				 (window-height . 0.15)
-				 (preserve-size . (nil . nil))))
+				 (preserve-size . (nil . t))))
   :general-config
   (meow/leader
     "cn" '("next error" . flycheck-next-error)

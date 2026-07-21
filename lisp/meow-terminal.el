@@ -208,6 +208,9 @@ Otherwise exit eshell and close the window with `evil-quit'."
 					  :inherit 'solaire-default-face
 					  :background (face-attribute 'solaire-default-face :background))
   :general-config
+  (:keymaps '(ghostel-mode-map) :states '(normal visual)
+			"gk" (lambda () (interactive) (ghostel--navigate-previous-prompt))
+			"gj" (lambda () (interactive) (ghostel--navigate-next-prompt)))
   (meow/leader
 	"ot" '("ghostel" . (lambda () (interactive)
 						 (select-window (meow/intelligent-split t))

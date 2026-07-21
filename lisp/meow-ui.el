@@ -20,7 +20,6 @@
   :config
   (require 'vertico-autoloads)
   (vertico-mode)
-  (vertico-buffer-mode)
   :general-config
   (:keymaps 'vertico-map :states '(normal visual)
 			"j" #'vertico-next

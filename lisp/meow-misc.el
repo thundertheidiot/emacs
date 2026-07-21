@@ -35,20 +35,49 @@
 
       backward-delete-char-untabify-method nil)
 
-;; display buffer alist
+(use-package eldoc
+  :ensure nil
+  :config
+  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly))
 
+(defun meow/display-buffer-in-side-window-fixed (buffer alist)
+  "Like `display-buffer-in-side-window' but enforces WINDOW-HEIGHT/WIDTH
+even when an existing window is reused. Claudeslop."
+  (let ((window (display-buffer-in-side-window buffer alist)))
+    (when window
+      (let ((height (cdr (assq 'window-height alist)))
+            (width (cdr (assq 'window-width alist))))
+        (when height
+          (let ((target (if (floatp height)
+							(round (* (frame-height) height))
+						  height)))
+            (window-resize window (- target (window-height window)) nil t)))
+        (when width
+          (let ((target (if (floatp width)
+							(round (* (frame-width) width))
+						  width)))
+            (window-resize window (- target (window-width window)) nil t)))))
+    window))
+
+;; display buffer alist
 (setq display-buffer-alist
 	  '(((or (major-mode . Info-mode)
 			 (major-mode . help-mode)
 			 (major-mode . helpful-mode))
-		 (display-buffer-reuse-window
-		  display-buffer-in-side-window)
+		 meow/display-buffer-in-side-window-fixed
 		 (reusable-frames . visible)
 		 (side . bottom)
-		 (window-height . 0.4))
-		((major-mode . grep-mode)
+		 (window-height . 0.4)
+		 (preserve-size . (nil . t)))
+		((or (major-mode . grep-mode)
+			 "^\\*Embark Export")
 		 display-buffer-reuse-window
-		 (inhibit-same-window . nil))))
+		 (inhibit-same-window . nil))
+		("^\\*eldoc"
+		 meow/display-buffer-in-side-window-fixed
+		 (side . bottom)
+		 (window-height . 4)
+		 (preserve-size . (nil . t)))))
 
 (electric-indent-mode)
 (electric-pair-mode)

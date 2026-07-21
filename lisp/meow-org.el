@@ -1,56 +1,5 @@
 ;; -*- lexical-binding: t; -*-
-(use-package org
-  :demand t
-  :mode ("\\.org\\'" . org-mode)
-  :custom
-  (org-src-preserve-indentation t)
-  (org-src-tab-acts-natively t)
-  (org-startup-with-inline-images t)
-  (org-log-done 'time)
-  (org-tags-exclude-from-inheritance '("agenda"))
-  (calendar-week-start-day 1)
-  (org-babel-load-languages '((emacs-lisp . t)
-							  (shell . t)
-							  (eshell . t)
-							  (lisp . t)))
 
-  (org-agenda-span 7)
-  (org-agenda-start-day "+0d")
-  (org-agenda-category-icon-alist `(("school" ,(list (nerd-icons-faicon "nf-fa-graduation_cap")) nil nil :ascent center)
-									("project" ,(list (nerd-icons-faicon "nf-fa-certificate")) nil nil :ascent center)
-									("work" ,(list (nerd-icons-faicon "nf-fa-suitcase")) nil nil :ascent center)
-									("game" ,(list (nerd-icons-faicon "nf-fa-gamepad")) nil nil :ascent center)))
-  (org-agenda-prefix-format
-   `((agenda . " %i %?-12t% s")
-     (todo . " %i %-12:c")
-     (tags . " %i %-12:c")
-     (search . " %i %-12:c")))
-  (org-format-latex-options
-   '(:foreground default
-				 :background default
-				 :scale 2.0
-				 :html-foreground "Black"
-				 :html-background "Transparent"
-				 :html-scale 2.0
-				 :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
-  :init
-  (add-hook 'org-mode-hook #'org-indent-mode)
-  (add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
-  :general-config
-  (meow/leader
-	"oa" '("org agenda" . org-agenda))
-  (:keymaps 'org-mode-map
-			"C-j" nil)
-  (meow/local :keymaps 'org-mode-map
-	"l" '(:ignore t :wk "org link")
-	"li" '("insert org link" . org-insert-link)
-	"lo" '("open org link" . org-open-at-point)
-	"le" '("open org link" . org-edit-special)
-	"lt" '("toggle link display" . org-toggle-link-display))
-  (:keymaps 'org-mode-map :states '(normal visual motion)
-			"RET" (lambda () (interactive)
-					(unless (ignore-errors (org-open-at-point))
-					  (evil-ret)))))
 
 (defun meow/org-dpi-advice (orig-fun &rest args)
   "Advice for `org--get-display-dpi', call ORIG-FUN with ARGS.

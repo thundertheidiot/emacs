@@ -13,9 +13,10 @@
 
   (mapc #'lsp-ensure-server '(ts-ls vue-semantic-server eslint))
 
-  (lsp-deferred)
-  ;; (meow/lsp-supercomplete)
-  )
+  (setq-local electric-pair-pairs
+			  (append electric-pair-pairs '((?' . ?'))))
+
+  (lsp-deferred))
 
 (setq auto-mode-alist
 	  (append  '((".*\\.vue\\'" . vue-mode))

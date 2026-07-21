@@ -22,8 +22,7 @@
   (setq	lsp-enable-on-type-formatting nil
 		lsp-enable-indentation nil
 		lsp-enable-relative-indentation nil
-		lsp-format-buffer-on-save nil
-		)
+		lsp-format-buffer-on-save nil)
   :custom
   (lsp-log-io nil)
 
@@ -45,6 +44,12 @@
   
   ;; according to claude this may fix freezes 🤷‍♀️
   (lsp-semantic-tokens-enable nil)
+
+  ;; use eldoc for info
+  (lsp-eldoc-render-all t)
+
+  ;; guess root
+  (lsp-auto-guess-root t)
   :hook
   (lsp-mode . lsp-completion-mode)
   :config
@@ -52,6 +57,9 @@
   (require 'lsp-javascript)
   (require 'lsp-volar)
   (require 'lsp-tailwindcss)
+
+  (setq lsp-typescript-preferences-import-module-specifier "non-relative"
+		lsp-typescript-update-imports-on-file-move-enabled "prompt")
 
   ;; allow filtering completions for lsp capf
   (add-to-list 'completion-category-overrides

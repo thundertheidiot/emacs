@@ -19,6 +19,19 @@
 (use-package qml-mode
   :mode "\\.qml\\'")
 
+(setq auto-mode-alist
+	  (append '((".*\\.bash\\'" . bash-ts-mode))
+			  auto-mode-alist))
+
+(use-package python-ts-mode
+  :ensure nil
+  :mode "\\.py\\'"
+  :hook (python-ts-mode . lsp-deferred))
+
+(use-package json-ts-mode
+  :ensure nil
+  :mode "\\.json\\'")
+
 (use-package php-mode
   :mode "\\.php\\'"
   :hook (php-mode . lsp-deferred)
@@ -27,6 +40,7 @@
 			   '(php-mode
 				 "intelephense" "--stdio")))
 
+;; custom package
 (require 'web-mode-tagedit)
 
 (use-package web-mode
