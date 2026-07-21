@@ -8,7 +8,7 @@
   (:keymaps 'embark-file-map
 			"p" #'empv-play-file)
   :custom
-  (empv-invidious-instance "https://inv.zoomerville.com/api/v1")
+  (empv-invidious-instance "https://iv.catgirl.cloud/api/v1")
   (empv-volume-step 3)
   :config
   (defun eshell/yt (&rest args)

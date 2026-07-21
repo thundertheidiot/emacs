@@ -90,7 +90,7 @@ NUM is passed from the ultra scroll hook."
 				   (let ((scheduled (org-get-scheduled-time (point)))
 						 (deadline (org-get-deadline-time (point))))
 					 (cond
-					  ((and (not scheduled) (not deadline))
+					  ((and (not scheduled) (not deadline) (org-entry-is-todo-p))
 					   (setq no-date (1+ no-date)))
 					  ((or (date-within-days scheduled 1) (date-within-days deadline 1))
 					   (setq today (1+ today)))
