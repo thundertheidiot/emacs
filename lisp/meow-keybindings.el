@@ -149,5 +149,9 @@
   "<return>" 'Info-follow-nearest-node
   "RET" 'Info-follow-nearest-node)
 
+(general-def :keymaps 'profiler-report-mode-map
+  "<tab>" 'profiler-report-expand-entry
+  "TAB" 'profiler-report-expand-entry)
+
 (provide 'meow-keybindings)
 ;;; meow-keybindings.el ends here

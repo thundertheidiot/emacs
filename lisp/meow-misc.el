@@ -119,6 +119,8 @@ Preserve window configuration when pressing ESC."
   :config
   ;; https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
 
+  (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)
+
   (connection-local-set-profile-variables
    'remote-direct-async-process
    '((tramp-direct-async-process . t)))
