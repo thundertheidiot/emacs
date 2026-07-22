@@ -57,6 +57,7 @@
           epkgs.ewm
           epkgs.eglot-booster
           epkgs.emsg-blame
+          epkgs.org-defblock
         ];
     })
   ];
