@@ -17,8 +17,12 @@
   (setq-local electric-pair-pairs
 			  (append electric-pair-pairs '((?' . ?')))
 			  tab-width 2
-			  emmet-indentation 2)
-
+			  emmet-indentation 2
+			  web-mode-indent-style 1
+			  web-mode-code-indent-offset 2
+			  web-mode-css-indent-offset 2
+			  web-mode-markup-indent-offset 2)
+  
   (lsp-deferred))
 
 (setq auto-mode-alist
