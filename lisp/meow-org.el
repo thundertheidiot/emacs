@@ -229,6 +229,7 @@ ORIG-FUN is called with ARGS."
   (org-superstar-special-todo-items t)
   :hook (org-mode . org-superstar-mode))
 
+(require 'ox-latex)
 (add-to-list 'org-latex-classes
 			 '("math"
 			   "\\documentclass{article}
