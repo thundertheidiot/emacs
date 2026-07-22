@@ -19,14 +19,13 @@
 (use-package qml-mode
   :mode "\\.qml\\'")
 
+(require 'python)
 (setq auto-mode-alist
-	  (append '((".*\\.bash\\'" . bash-ts-mode))
+	  (append '((".*\\.bash\\'" . bash-ts-mode)
+				(".*\\.py\\'" . python-ts-mode))
 			  auto-mode-alist))
 
-(use-package python-ts-mode
-  :ensure nil
-  :mode "\\.py\\'"
-  :hook (python-ts-mode . lsp-deferred))
+(add-hook 'python-ts-mode-hook #'lsp-deferred)
 
 (use-package json-ts-mode
   :ensure nil
