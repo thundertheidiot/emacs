@@ -39,6 +39,11 @@
       url = "github:dakra/ghostel";
       flake = false;
     };
+
+    org-defblock = {
+      url = "github:cashpw/org-defblock";
+      flake = false;
+    };
   };
 
   outputs = inputs:

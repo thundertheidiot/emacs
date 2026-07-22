@@ -7,6 +7,7 @@
 
 (defun meow/vue-mode-setup ()
   "Setup for vue mode, run as a hook."
+  (interactive)
   (setq lsp-tailwindcss-server-path (executable-find "tailwindcss-language-server"))
   (setf (lsp--client-priority (gethash 'ts-ls lsp-clients)) 1)
   (setf (lsp--client-priority (gethash 'vue-semantic-server lsp-clients)) 1)
@@ -14,7 +15,9 @@
   (mapc #'lsp-ensure-server '(ts-ls vue-semantic-server eslint))
 
   (setq-local electric-pair-pairs
-			  (append electric-pair-pairs '((?' . ?'))))
+			  (append electric-pair-pairs '((?' . ?')))
+			  tab-width 2
+			  emmet-indentation 2)
 
   (lsp-deferred))
 

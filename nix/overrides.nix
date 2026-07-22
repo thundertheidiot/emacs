@@ -39,6 +39,21 @@
     src = inputs.emsg-blame;
   };
 
+  org-defblock = final.trivialBuild {
+    pname = "org-defblock";
+    version = "1.0.0";
+
+    packageRequires = [
+      final.dash
+      final.lf
+      final.org
+      final.s
+      final.seq
+    ];
+
+    src = inputs.org-defblock;
+  };
+
   ghostel = final.callPackage ./ghostel.nix {
     src = inputs.ghostel;
     version = "0.45.0";

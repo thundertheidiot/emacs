@@ -19,6 +19,7 @@
       split-width-threshold 120
       split-height-threshold 40
 
+	  initial-scratch-message ";; -*- lexical-binding: t; -*-\n\n"
 
       confirm-kill-processes nil
 
@@ -198,13 +199,13 @@ Preserve window configuration when pressing ESC."
 (use-package helpful
   :init
   (setq apropos-do-all t)
+  :bind
+  (([remap describe-function] . helpful-callable)
+   ([remap describe-command]  . helpful-command)
+   ([remap describe-variable] . helpful-variable)
+   ([remap describe-key]      . helpful-key)
+   ([remap describe-symbol]   . helpful-symbol))
   :config
-  (global-set-key (kbd "C-h f") #'helpful-callable)
-  (global-set-key (kbd "C-h v") #'helpful-variable)
-  (global-set-key (kbd "C-h k") #'helpful-key)
-  (global-set-key (kbd "C-h x") #'helpful-command)
-  (global-set-key (kbd "C-h s") #'helpful-symbol)
-
   (define-key embark-symbol-map "h" #'helpful-symbol)
   :general-config
   (:keymaps 'helpful-mode-map :states '(normal visual motion)

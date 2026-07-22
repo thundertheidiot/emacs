@@ -115,9 +115,7 @@ ORIG-FUN is called with ARGS."
 										  "%<%Y%m%d%H%M%S>-${slug}.org"
 										  "#+title: ${title}
 #+OPTIONS: \\n:t toc:nil date:nil
-#+LATEX_HEADER: \\pagestyle{empty}
-#+LATEX_HEADER: \\setlength{\\parindent}{0pt}
-#+LATEX_HEADER: \\usepackage[margin=0.3in]{geometry}\n\n")
+#+LATEX_CLASS: math\n\n")
 								 :unnarrowed t)))
   :config
   (unless (file-directory-p org-roam-directory)
@@ -230,6 +228,31 @@ ORIG-FUN is called with ARGS."
   :custom
   (org-superstar-special-todo-items t)
   :hook (org-mode . org-superstar-mode))
+
+(add-to-list 'org-latex-classes
+			 '("math"
+			   "\\documentclass{article}
+\\pagestyle{empty}
+\\setlength{\\parindent}{0pt}
+\\usepackage[margin=0.3in]{geometry}
+\\usepackage{tcolorbox}"
+			   ("\\section{%s}" . "\\section*{%s}")))
+
+(require 'org-defblock)
+(org-defblock lbox (title "")
+			  "Latex box for answers."
+			  (when (eq backend 'latex)
+				(apply #'concat
+					   `("\\begin{tcolorbox}[title={" , title "}"
+						 ",colback=white"
+						 ",colframe=black"
+						 ",coltitle=black, fonttitle=\\bfseries"
+						 ",colbacktitle=yellow"
+						 ",boxrule=1pt"
+						 ",top=6pt, bottom=0pt, left=3mm, right=3mm, boxsep=0pt"
+						 "]"
+						 ,contents
+						 "\\end{tcolorbox}"))))
 
 (use-package olivetti
   :custom 
