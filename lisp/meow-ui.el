@@ -140,13 +140,11 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
 
-(use-package fzf-native)
-
-(use-package fussy
+(use-package hotfuzz
   :config
-  (fussy-setup-fzf)
-  :custom
-  (completion-styles '(orderless fussy basic)))
+  (setq completion-styles '(hotfuzz orderless basic)
+		consult--tofu-char #x100000
+		consult--tofu-range #x00fffe))
 
 (use-package marginalia
   :demand t

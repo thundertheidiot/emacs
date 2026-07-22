@@ -63,7 +63,7 @@
 
   ;; allow filtering completions for lsp capf
   (add-to-list 'completion-category-overrides
-			   '(lsp-capf (styles fussy orderless basic))))
+			   '(lsp-capf (styles hotfuzz orderless basic))))
 
 (use-package yasnippet
   :custom
