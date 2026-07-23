@@ -82,8 +82,7 @@ even when an existing window is reused. Claudeslop."
 		 (preserve-size . (nil . t)))
 		("\\*compilation\\*"
 		 display-buffer-reuse-window
-		 (inhibit-same-window . t))
-		))
+		 (inhibit-same-window . t))))
 
 (electric-indent-mode)
 (electric-pair-mode)
