@@ -25,6 +25,8 @@
 
       completion-ignore-case t
 
+	  switch-to-buffer-obey-display-actions t
+
 	  resize-mini-windows t
 	  max-mini-window-height 0.5
 
@@ -62,8 +64,7 @@ even when an existing window is reused. Claudeslop."
 
 ;; display buffer alist
 (setq display-buffer-alist
-	  '(((or (major-mode . Info-mode)
-			 (major-mode . help-mode)
+	  '(((or (major-mode . help-mode)
 			 (major-mode . helpful-mode))
 		 meow/display-buffer-in-side-window-fixed
 		 (reusable-frames . visible)
@@ -73,12 +74,16 @@ even when an existing window is reused. Claudeslop."
 		((or (major-mode . grep-mode)
 			 "^\\*Embark Export")
 		 display-buffer-reuse-window
-		 (inhibit-same-window . nil))
+		 (inhibit-same-window . t))
 		("^\\*eldoc"
 		 meow/display-buffer-in-side-window-fixed
 		 (side . bottom)
 		 (window-height . 4)
-		 (preserve-size . (nil . t)))))
+		 (preserve-size . (nil . t)))
+		("\\*compilation\\*"
+		 display-buffer-reuse-window
+		 (inhibit-same-window . t))
+		))
 
 (electric-indent-mode)
 (electric-pair-mode)
@@ -204,9 +209,14 @@ Preserve window configuration when pressing ESC."
    ([remap describe-command]  . helpful-command)
    ([remap describe-variable] . helpful-variable)
    ([remap describe-key]      . helpful-key)
-   ([remap describe-symbol]   . helpful-symbol))
-  :config
-  (define-key embark-symbol-map "h" #'helpful-symbol)
+   ([remap describe-symbol]   . helpful-symbol)
+   :map embark-become-help-map
+   ([remap describe-function] . helpful-callable)
+   ([remap describe-command]  . helpful-command)
+   ([remap describe-variable] . helpful-variable)
+   ([remap describe-symbol]   . helpful-symbol)
+   :map embark-symbol-map
+   ("h" . helpful-symbol))
   :general-config
   (:keymaps 'helpful-mode-map :states '(normal visual motion)
 			"q" 'evil-quit))
@@ -239,6 +249,24 @@ Preserve window configuration when pressing ESC."
 				   :password-file ,(expand-file-name "elfeed-password" user-emacs-directory))))
   :config
   (elfeed-protocol-enable))
+
+(defun meow/view-url ()
+  "View url in the clipboard.
+Guess the mode using `auto-mode-alist' with the url."
+  (interactive)
+  (when (seq-contains-p (gui-get-selection 'CLIPBOARD 'TARGETS) 'text/plain)
+	(let* ((clipboard (gui-get-selection 'CLIPBOARD 'text/plain))
+		   (buf (get-buffer-create (generate-new-buffer (format "*meow/url %s" clipboard)))))
+	  (plz 'get clipboard
+		:then (lambda (res)
+				(with-current-buffer buf
+				  (insert res)
+				  (let* ((case-fold-search nil)
+						 (mode (assoc-default clipboard auto-mode-alist 'string-match)))
+					(when mode
+					  (set-auto-mode-0 mode nil))))
+				(switch-to-buffer buf)
+				(goto-char (point-min)))))))
 
 (provide 'meow-misc)
 ;;; meow-misc.el ends here

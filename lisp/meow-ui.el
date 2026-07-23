@@ -111,6 +111,14 @@
 (use-package embark
   ;; :after wgrep
   :demand t
+  :bind
+  (:map embark-become-file+buffer-map
+		("b" . consult-buffer)
+		("l" . nil)
+		("f" . find-file)
+		("F" . consult-fd)
+		("g" . consult-ripgrep)
+		("p" . project-find-file))
   :general-config
   ("C-;" #'embark-act)
   (:keymaps 'vertico-map :states '(normal visual insert)

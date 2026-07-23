@@ -51,6 +51,13 @@ If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
   "Turn off line numbers 🤯."
   (display-line-numbers-mode 0))
 
+(add-to-list 'display-buffer-alist
+			 '("add-to-load-path"
+			   meow/display-buffer-in-side-window-fixed
+			   (side . bottom)
+			   (window-height . 15)
+			   (preserve-size . (nil . t ))))
+
 (defun add-to-load-path (packages)
   "Add PACKAGES from the Emacs flake to `load-path'."
   (interactive "sPackage(s): ")
@@ -114,7 +121,8 @@ If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
 							  native-lisp-directories)
 						(mapc (lambda (package)
 								(require (intern package)))
-							  package-list)))))))))
+							  package-list)))))))
+	(display-buffer buffer)))
 
 (defun meow/async-shell-command-buffer (command callback &optional buffer)
   "Start process for shell COMMAND, call CALLBACK with the process and buffer after exit."
