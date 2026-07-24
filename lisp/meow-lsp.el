@@ -70,7 +70,6 @@
   (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
   :hook ((lsp-mode . yas-minor-mode)))
 
-
 (defun meow/lsp-supercomplete ()
   "Set up fast autocompletion based on dabbrev and lsp completion."
   (interactive)

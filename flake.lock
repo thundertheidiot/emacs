@@ -321,6 +321,22 @@
         "type": "github"
       }
     },
+    "org-defblock": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1766240506,
+        "narHash": "sha256-VlQMjncIXBce4v7MNmRy0PCgSL3JpYb5MwgbMnPaVyo=",
+        "owner": "cashpw",
+        "repo": "org-defblock",
+        "rev": "45f0e9c734d350022ea1aad9db41e0441c4a26ea",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cashpw",
+        "repo": "org-defblock",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "actions": "actions",
@@ -331,7 +347,8 @@
         "flake-parts": "flake-parts_2",
         "ghostel": "ghostel",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_4",
+        "org-defblock": "org-defblock"
       }
     }
   },

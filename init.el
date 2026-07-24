@@ -34,7 +34,6 @@
 (require 'meow-terminal)
 (require 'meow-scroll)
 (require 'meow-git)
-(require 'meow-ai)
 (require 'meow-org)
 (require 'meow-mpd)
 (require 'meow-media)
