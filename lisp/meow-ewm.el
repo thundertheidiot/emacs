@@ -38,6 +38,18 @@
   (setq focus-follows-mouse t)
   (setq mouse-autoselect-window t)
 
+  (add-hook 'minibuffer-setup-hook ;; make it more difficult to accidentally leave the minibuffer
+			(lambda ()
+			  (setopt mouse-autoselect-window nil
+					  focus-follows-mouse nil
+					  ewm-focus-follows-mouse nil)))
+
+  (add-hook 'minibuffer-exit-hook
+			(lambda ()
+			  (setopt mouse-autoselect-window t
+					  focus-follows-mouse t
+					  ewm-focus-follows-mouse t)))
+
   (setopt ewm-animations-enabled nil)
 
   (setopt ewm-input-config
