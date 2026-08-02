@@ -68,6 +68,7 @@ The function is named `meow/mpd-NAME', FORMS are executed with entity bound."
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "a") #'meow/mpd-add-song)
     (define-key map (kbd "A") #'embark-act-all)
+	(define-key map (kbd "B") #'embark-become)
     map))
 
 (defvar meow/embark-mpd-queue-map
@@ -75,6 +76,7 @@ The function is named `meow/mpd-NAME', FORMS are executed with entity bound."
     (define-key map (kbd "p") #'meow/mpd-play-song)
     (define-key map (kbd "d") #'meow/mpd-delete-song)
     (define-key map (kbd "A") #'embark-act-all)
+	(define-key map (kbd "B") #'embark-become)
     map))
 
 (defvar meow/embark-mpd-playlist-map
@@ -84,11 +86,20 @@ The function is named `meow/mpd-NAME', FORMS are executed with entity bound."
     (define-key map (kbd "d") #'meow/mpd-delete-playlist)
     (define-key map (kbd "s") #'meow/mpd-save-playlist)
     (define-key map (kbd "A") #'embark-act-all)
+	(define-key map (kbd "B") #'embark-become)
     map))
+
+(defvar embark-become-mpd-map
+  (let ((map (make-sparse-keymap)))
+	(define-key map (kbd "s") #'meow/mpd-search)
+	(define-key map (kbd "c") #'meow/mpd-queue)
+	(define-key map (kbd "p") #'meow/mpd-load-playlist)
+	map))
 
 (add-to-list 'embark-keymap-alist '(mpd . meow/embark-mpd-map))
 (add-to-list 'embark-keymap-alist '(mpd-queue . meow/embark-mpd-queue-map))
 (add-to-list 'embark-keymap-alist '(mpd-playlist . meow/embark-mpd-playlist-map))
+(add-to-list 'embark-become-keymaps 'embark-become-mpd-map)
 
 ;; claudeslop but it makes sense
 (defun meow/--group-mpd-song-data (data)

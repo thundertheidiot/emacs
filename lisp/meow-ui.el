@@ -16,6 +16,7 @@
   :demand t
   :custom
   (vertico-resize t)
+  (vertico-count 20)
   (vertico-cycle nil)
   :config
   (require 'vertico-autoloads)

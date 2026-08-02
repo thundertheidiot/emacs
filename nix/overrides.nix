@@ -54,12 +54,6 @@
     src = inputs.org-defblock;
   };
 
-  ghostel = final.callPackage ./ghostel.nix {
-    src = inputs.ghostel;
-    version = "0.45.0";
-    zigHash = "sha256-yrVgiofdmVjTGJ+PGPGRCc8gb/JcEca1uAzIoPgHHqU=";
-  };
-
   lsp-mode = prev.lsp-mode.overrideAttrs (prev: {
     buildPhase =
       ''
