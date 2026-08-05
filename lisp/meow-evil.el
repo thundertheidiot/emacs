@@ -32,32 +32,33 @@
   (evil-collection-init '(apropos
 						  arc-mode
 						  calc
-						  compile
 						  comint
+						  compile
 						  dashboard
 						  debug
+						  diff-hl
+						  dired
+						  eat
 						  ediff
+						  elfeed
 						  emoji
 						  eshell
-						  woman
-						  pdf
-						  org
-						  proced
-						  dired
-						  elfeed
-						  wdired
-						  image
 						  ibuffer
-						  simple-mpc
+						  image
 						  magit
 						  magit-todos
-						  vdiff
+						  org
+						  pdf
+						  proced
+						  replace
+						  simple-mpc
 						  sly
-						  wgrep
-						  yaml-mode
-						  diff-hl
+						  vdiff
 						  vterm
-						  eat)))
+						  wdired
+						  wgrep
+						  woman
+						  yaml-mode)))
 
 (use-package evil-better-visual-line
   :demand t
