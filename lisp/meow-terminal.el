@@ -192,6 +192,9 @@ Otherwise exit eshell and close the window with `evil-quit'."
 
 (defalias 'eshell/e 'eshell/exit)
 
+(defun eshell/comint (&rest args)
+  (comint-run (car args) (cdr args)))
+
 (defun meow/ghostel-project ()
   (let ((default-directory
 		 (project-root (project-current))))
