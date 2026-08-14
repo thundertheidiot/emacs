@@ -67,6 +67,8 @@
   (setq xref-show-xrefs-function #'consult-xref
 		xref-show-definitions-function #'consult-xref)
   :general-config
+  (:keymaps 'override
+			"C-c h" #'consult-history)
   (meow/leader
     "/" '("line search" . consult-line)
     "sg" '("grep" . (lambda () (interactive)

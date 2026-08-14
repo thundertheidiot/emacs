@@ -138,19 +138,9 @@
   :config
   (require 'info))
 
-(use-package lispy
-  :hook (emacs-lisp-mode . lispy-mode)
-  :hook (common-lisp-mode . lispy-mode)
-  :config
-  (setq lispy-close-quotes-at-end-p t)
-  (lispy-set-key-theme '(lispy c-digits))
-  (general-def :keymaps '(lispy-mode-map evil-collection-lispy-mode-map) :states '(normal visual motion)
-	";" nil)
-  (general-def :keymaps '(lispy-mode-map-base lispy-mode-map-evilcp lispy-mode-map-lispy lispy-mode-map-paredit lispy-mode-map-parinfer)
-	";" nil))
-
 (use-package lispyville
-  :hook (lispy-mode . lispyville-mode)
+  :hook (emacs-lisp-mode . lispyville-mode)
+  :hook (common-lisp-mode . lispyville-mode)
   :config
   (lispyville-set-key-theme
    '((operators normal)
