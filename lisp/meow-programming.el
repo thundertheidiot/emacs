@@ -98,8 +98,6 @@
 (use-package apheleia
   :demand t
   :config
-  (setf (alist-get 'nixfmt apheleia-formatters)
-		'("alejandra"))
   (apheleia-global-mode +1))
 
 ;; project management

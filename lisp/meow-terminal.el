@@ -193,7 +193,16 @@ Otherwise exit eshell and close the window with `evil-quit'."
 (defalias 'eshell/e 'eshell/exit)
 
 (defun eshell/comint (&rest args)
-  (comint-run (car args) (cdr args)))
+  "Like `comint-run' but create a new buffer each time.
+Called with 'comint echo any normal command' in eshell.
+First argument in ARGS is the program name, the rest are switches."
+  (let* ((program (car args))
+		 (name (file-name-nondirectory program))
+		 (switches (cdr args))
+		 (buffer (generate-new-buffer (concat "*" name "*"))))
+	(apply #'make-comint-in-buffer name buffer program nil switches)
+	(switch-to-buffer buffer)
+	(run-hooks (intern-soft (concat "comint-" name "-hook")))))
 
 (defun meow/ghostel-project ()
   (let ((default-directory
