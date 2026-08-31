@@ -39,9 +39,7 @@
       backward-delete-char-untabify-method nil)
 
 (use-package eldoc
-  :ensure nil
-  :config
-  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly))
+  :ensure nil)
 
 (defun meow/display-buffer-in-side-window-fixed (buffer alist)
   "Like `display-buffer-in-side-window' but enforces WINDOW-HEIGHT/WIDTH

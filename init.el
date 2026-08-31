@@ -37,6 +37,7 @@
 (require 'meow-org)
 (require 'meow-mpd)
 (require 'meow-media)
+(require 'meow-ai)
 (require 'meow-mommy)
 (require 'meow-ewm)
 
