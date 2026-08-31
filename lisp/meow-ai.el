@@ -12,7 +12,8 @@
 	:then (lambda (data)
 			(let* ((models (mapcar
 							(lambda (entry)
-							  (let ((pricing (alist-get 'pricing entry)))
+							  (let ((pricing (alist-get 'pricing entry))
+									(parameters (alist-get 'supported_parameters entry)))
 								`(,(intern (alist-get 'id entry))
 								  :description ,(alist-get 'description entry)
 								  :input-cost ,(* 1000000 (string-to-number
@@ -20,6 +21,9 @@
 								  :output-cost ,(* 1000000 (string-to-number
 															(alist-get 'completion pricing)))
 								  :context-window ,(/ (alist-get 'context_length entry) 1000)
+								  :capabilities ,(seq-keep #'identity `(,(when (seq-find (lambda (e) (string= "tools" e)) parameters) 'tool-use)
+																		,(when (seq-find (lambda (e) (string= "reasoning" e)) parameters) 'reasoning)
+																		,(when (seq-find (lambda (e) (string= "structured_outputs" e)) parameters) 'json))) 
 								  )))
 							(alist-get 'data data))))
 			  (setq meow/openrouter-data data)
@@ -42,23 +46,27 @@
 	  (display-buffer buffer gptel-display-buffer-action)))
   (goto-char (point-max))
   (olivetti-mode -1)
-  (visual-line-mode 1))
+  (visual-line-mode 1)
+  (gptel-send))
 
 (defun meow/gptel-openrouter-set-reasoning ()
-  "Set reasoning effort for openrouter models."
-  (let* ((models (alist-get 'data meow/openrouter-data))
-		 (model (seq-find (lambda (m)
-							(equal (alist-get 'id m) (symbol-name gptel-model)))
-						  models)))
-	(when model
-	  (let* ((reasoning (alist-get 'reasoning model))
-			 (supported-reasoning-efforts (alist-get 'supported_efforts reasoning))
-			 (effort (completing-read "Effort level: " (append (mapcar #'identity supported-reasoning-efforts)
-															   (when (equal (alist-get 'mandatory reasoning) :json-false)
-																 '("none")))  nil t)))
-		(when (and effort (> (length effort ) 0))
-		  (setq gptel--request-params
-				`(:reasoning_effort ,effort)))))))
+  "Set reasoning effort for openrouter models.
+Called as an advice after selecting a model from the menu."
+  (if-let* ((_check (string= "OpenRouter" (gptel-backend-name gptel-backend)))
+			(models (alist-get 'data meow/openrouter-data))
+			(model (seq-find (lambda (m)
+							   (equal (alist-get 'id m) (symbol-name gptel-model)))
+							 models))
+			(reasoning (alist-get 'reasoning model))
+			(supported-reasoning-efforts (alist-get 'supported_efforts reasoning))
+			(effort (completing-read "Effort level: " (append (mapcar #'identity supported-reasoning-efforts)
+															  (when (equal (alist-get 'mandatory reasoning) :json-false)
+																'("none")))
+									 nil 'require-match))
+			(_check (> (length effort) 0)))
+	  (setq gptel--request-params
+			`(:reasoning_effort ,effort))
+	(setq gptel--request-params '())))
 
 (advice-add 'gptel--infix-provider :after #'meow/gptel-openrouter-set-reasoning)
 
@@ -70,8 +78,9 @@
    (with-temp-buffer
 	 (insert-file-contents (expand-file-name "openrouterkey" user-emacs-directory))
 	 (buffer-string)))
-  (setq gptel-model 'deepseek/deepseek-v4-flash-0731
-		gptel-default-mode 'org-mode)
+  (setq gptel-default-mode 'org-mode
+		gptel-model 'deepseek/deepseek-v4-flash-0731
+		gptel--request-params '(:reasoning_effort "low"))
   :general-config
   (meow/leader
 	"a" '(:ignore t :wk "ai")
@@ -83,6 +92,64 @@
 	"aR" '("remove all context" . gptel-context-remove-all))
   (:keymaps 'gptel-mode-map :states '(normal)
 			"RET" #'gptel-send))
+
+;; tools
+
+(defvar meow/gptel-tool-search
+  (gptel-make-tool
+   :function (lambda (callback query)
+			   (let ((url (format "http://127.0.0.1:8080/search?q=%s&format=json"
+								  (url-hexify-string query))))
+				 (url-retrieve url
+							   (lambda (_status)
+								 (goto-char (point-min))
+								 (search-forward "\n\n") ;; end of http headers
+								 (let ((json-response (json-read)))
+								   (funcall callback
+											(mapconcat (lambda (result)
+														 (format "%s - %s\n%s"
+																 (cdr (assoc 'title result))
+																 (cdr (assoc 'url result))
+																 (cdr (assoc 'content result))))
+													   (cdr (assoc 'results json-response))
+													   "\n\n")))))))
+   :async t
+   :name "search_web"
+   :description "Searches the web and returns formatted results including titles, URLs, and content excerpts."
+   :args (list
+		  '(:name "query"
+				  :type string
+				  :description "The search query to execute against the search engine."))
+   :category "web"
+   :include t))
+
+(defvar meow/gptel-tool-fetch-url
+  (gptel-make-tool
+   :function (lambda (callback url)
+			   (let* ((output-buffer (generate-new-buffer (format " *trafilatura-%s* " url)))
+					  (proc (start-process "trafilatura-process"
+										   output-buffer
+										   "trafilatura" "-u" url)))
+				 (set-process-sentinel
+				  proc
+				  (lambda (process _event)
+					(when (eq (process-status process) 'exit)
+					  (let ((content (with-current-buffer output-buffer
+									   (buffer-string))))
+						(funcall callback content)))))))
+   :async t
+   :name "fetch_url"
+   :description "Get the content of a url in a readable form."
+   :args (list
+		  '(:name "url"
+				  :type string
+				  :description "The url to fetch."))
+   :category "web"
+   :include t))
+
+(setq gptel-tools (list
+				   meow/gptel-tool-search
+				   meow/gptel-tool-fetch-url))
 
 (provide 'meow-ai)
 ;;; meow-ai.el ends here
