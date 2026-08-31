@@ -93,6 +93,8 @@ Called as an advice after selecting a model from the menu."
   (:keymaps 'gptel-mode-map :states '(normal)
 			"RET" #'gptel-send))
 
+(use-package gptel-zai)
+
 ;; tools
 
 (defvar meow/gptel-tool-search

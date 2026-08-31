@@ -2,7 +2,8 @@
   pkgs,
   inputs,
   ...
-}: final: prev: {
+}:
+final: prev: {
   ewm =
     (import "${inputs.ewm}/nix/default.nix" {
       inherit pkgs;
@@ -39,6 +40,17 @@
     src = inputs.emsg-blame;
   };
 
+  gptel-zai = final.trivialBuild {
+    pname = "gptel-zai";
+    version = "1.0.0";
+
+    packageRequires = [
+      final.gptel
+    ];
+
+    src = inputs.gptel-zai;
+  };
+
   org-defblock = final.trivialBuild {
     pname = "org-defblock";
     version = "1.0.0";
@@ -55,11 +67,10 @@
   };
 
   lsp-mode = prev.lsp-mode.overrideAttrs (prev: {
-    buildPhase =
-      ''
-        export LSP_USE_PLISTS=true
-      ''
-      + prev.buildPhase;
+    buildPhase = ''
+      export LSP_USE_PLISTS=true
+    ''
+    + prev.buildPhase;
   });
 
   # weird problem
