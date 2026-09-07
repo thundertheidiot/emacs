@@ -34,7 +34,8 @@
 						 ("Europe/London" "UK")
 						 ("America/Chicago" "car")
 						 ("Europe/Rome" "emax")
-						 ("America/Buenos_Aires" "Diza"))
+						 ("America/Buenos_Aires" "Diza")
+						 ("Asia/Singapore" "Z.AI"))
 
       backward-delete-char-untabify-method nil)
 

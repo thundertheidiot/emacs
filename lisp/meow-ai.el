@@ -1,6 +1,30 @@
 ;; -*- lexical-binding: t; -*-
 (require 'plz)
 
+(defvar meow/gptel-directory "~/Documents/gptel/")
+
+(defun meow/gptel-screenshot ()
+  "On niri, add screenshot to buffer."
+  (interactive)
+  (let* ((media-dir (expand-file-name "media" meow/gptel-directory))
+		 (filename (expand-file-name (format-time-string "%Y-%m-%d-%H-%M-%S.png") media-dir)))
+    (unless (file-directory-p media-dir)
+      (make-directory media-dir t))
+    (when (= 0 (shell-command "niri msg action screenshot"))
+      (with-timeout
+		  (30 (error "Timeout waiting for clipboard"))
+		(while (not (or
+					 (seq-contains-p (gui-get-selection 'CLIPBOARD 'TARGETS) 'image/png)
+					 (seq-contains-p (gui-get-selection 'PRIMARY 'TARGETS) 'image/png)))
+		  (sit-for 0.05)))
+      (with-temp-buffer
+		(insert (gui-get-selection 'CLIPBOARD 'image/png))
+		(write-file filename))
+      (insert (format (cond
+					   ((eq major-mode 'org-mode) "[[%s]]")
+					   (t "![screenshot](%s)"))
+					  filename)))))
+
 (defvar meow/openrouter-data nil
   "Cached data from the openrouter models endpoint.")
 
@@ -12,8 +36,10 @@
 	:then (lambda (data)
 			(let* ((models (mapcar
 							(lambda (entry)
-							  (let ((pricing (alist-get 'pricing entry))
-									(parameters (alist-get 'supported_parameters entry)))
+							  (let* ((pricing (alist-get 'pricing entry))
+									 (parameters (alist-get 'supported_parameters entry))
+									 (input-modalities (alist-get 'input_modalities (alist-get 'architecture entry)))
+									 (images (seq-find (lambda (e) (string= "image" e)) input-modalities )))
 								`(,(intern (alist-get 'id entry))
 								  :description ,(alist-get 'description entry)
 								  :input-cost ,(* 1000000 (string-to-number
@@ -23,7 +49,9 @@
 								  :context-window ,(/ (alist-get 'context_length entry) 1000)
 								  :capabilities ,(seq-keep #'identity `(,(when (seq-find (lambda (e) (string= "tools" e)) parameters) 'tool-use)
 																		,(when (seq-find (lambda (e) (string= "reasoning" e)) parameters) 'reasoning)
-																		,(when (seq-find (lambda (e) (string= "structured_outputs" e)) parameters) 'json))) 
+																		,(when (seq-find (lambda (e) (string= "structured_outputs" e)) parameters) 'json)
+																		,(when images 'media)))
+								  :mime-types ,(when images '("image/jpeg" "image/png" "image/gif" "image/webp"))
 								  )))
 							(alist-get 'data data))))
 			  (setq meow/openrouter-data data)
@@ -93,7 +121,41 @@ Called as an advice after selecting a model from the menu."
   (:keymaps 'gptel-mode-map :states '(normal)
 			"RET" #'gptel-send))
 
-(use-package gptel-zai)
+(use-package gptel-zai
+  :config
+  (gptel-zai-make-backend))
+
+(defun slop/message-zai-limit (response)
+  "Show usage percentage and time-until-reset from RESPONSE."
+  (let* ((data      (cdr (assq 'data response)))
+         (level     (cdr (assq 'level data)))
+         (limits    (cdr (assq 'limits data)))
+         (msgs      '()))
+    (dotimes (i (length limits))
+      (let* ((limit      (aref limits i))
+             (type       (cdr (assq 'type limit)))
+             (percentage (cdr (assq 'percentage limit)))
+             (next-reset (cdr (assq 'nextResetTime limit)))
+             (remaining  (cdr (assq 'remaining limit)))
+             (secs       (when (and next-reset (> next-reset 0))
+                           (/ (- next-reset (* 1000.0 (float-time))) 1000.0)))
+             (human      (when secs (format-seconds "%dd %Hh %Mm %Ss" secs))))
+        (push (format "%s: %s%% used%s, resets in %s"
+                      type percentage
+                      (if remaining (format " (%s left)" remaining) "")
+                      (or human "unknown"))
+              msgs)))
+    (message "%s [level: %s]"
+             (string-join (reverse msgs) " | ")
+             level)))
+
+(defun meow/show-zai-limits ()
+  "Fetch and show the current zai limits for the api key."
+  (interactive)
+  (plz 'get "https://api.z.ai/api/monitor/usage/quota/limit"
+	:headers `(("Authorization" . ,(format "Bearer %s" (gptel-zai-api-key))))
+	:as #'json-read
+	:then #'slop/message-zai-limit))
 
 ;; tools
 
