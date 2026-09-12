@@ -79,6 +79,17 @@ final: prev: {
     __structuredAttrs = false;
   };
 
+  lispy = prev.lispy.overrideAttrs {
+    packageRequires = with final; [
+      avy
+      hydra
+      swiper
+      indium
+      zoutline
+      iedit
+    ];
+  };
+
   empv = prev.empv.overrideAttrs {
     packageRequires = with final; [
       hydra

@@ -9,6 +9,8 @@
   # inputs.ewm.url = "git+https://codeberg.org/thundertheidiot/ewm.git?ref=dev";
   # inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git?ref=crash-robustness";
   inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git";
+  inputs.emacs-pwayl.url = "git+https://codeberg.org/ezemtsov/emacs.git?ref=wayland-31";
+  inputs.emacs-pwayl.flake = false;
 
   # not sure if aly's fork does much, but it was apparently important for her
   # https://github.com/nialov/actions.nix/compare/master...alyraffauf:actions.nix:master
@@ -142,9 +144,7 @@
             inherit system;
             overlays = [
               inputs.emacs-overlay.overlays.default
-              (final: prev: {
-                libdisplay-info = prev.libdisplay-info_0_3; # fix ewm
-              })
+              inputs.ewm.overlays.default
             ];
           };
 
@@ -161,6 +161,15 @@
                 "-fno-omit-frame-pointer"
                 "-fno-finite-math-only"
               ];
+            }
+          );
+
+          packages.emacs-pwayl = import ./nix/package.nix (
+            emacsArgs
+            // {
+              package = pkgs.emacs31-pwayl.overrideAttrs (prev: {
+                src = inputs.emacs-pwayl;
+              });
             }
           );
 
