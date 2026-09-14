@@ -9,8 +9,7 @@
   # inputs.ewm.url = "git+https://codeberg.org/thundertheidiot/ewm.git?ref=dev";
   # inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git?ref=crash-robustness";
   inputs.ewm.url = "git+https://codeberg.org/ezemtsov/ewm.git";
-  # inputs.emacs-pwayl.url = "git+https://codeberg.org/ezemtsov/emacs.git?ref=wayland-31";
-  inputs.emacs-pwayl.url = "git+https://codeberg.org/thundertheidiot/emacs-pwayl.git?ref=emacsclient-fix";
+  inputs.emacs-pwayl.url = "git+https://codeberg.org/ezemtsov/emacs.git?ref=wayland-31";
   inputs.emacs-pwayl.flake = false;
 
   # not sure if aly's fork does much, but it was apparently important for her
@@ -149,7 +148,7 @@
             ];
           };
 
-          packages.default = config.packages.emacs;
+          packages.default = config.packages.emacs-pwayl;
           packages.emacs = import ./nix/package.nix (
             emacsArgs
             // {
@@ -164,21 +163,6 @@
               ];
             }
           );
-
-          # packages.emacs-pwayl = pkgs.emacs31-pwayl.overrideAttrs (prev: {
-          #   src = inputs.emacs-pwayl;
-
-          #   env = prev.env // {
-          #     NIX_CFLAGS_COMPILE = "-O0 -g3 -fno-omit-frame-pointer -fno-inline -ggdb";
-          #   };
-
-          #   configureFlags = prev.configureFlags ++ [
-          #     "--enable-checking=yes,glyphs"
-          #     "--enable-check-list-object-type"
-          #   ];
-
-          #   dontStrip = true;
-          # });
 
           packages.emacs-pwayl = import ./nix/package.nix (
             emacsArgs
