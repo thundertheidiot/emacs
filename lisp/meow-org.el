@@ -265,6 +265,14 @@ ORIG-FUN is called with ARGS."
   (olivetti-mode-on . (lambda () (olivetti-set-width olivetti-body-width)))
   (org-mode . olivetti-mode))
 
+(use-package org-draw
+  :require t
+  :custom
+  (org-draw-open-browser t)
+  :bind (:map org-mode-map
+			  ("C-c d d" . org-draw)
+			  ("C-c d e" . org-draw-edit)))
+
 (defun meow/--org-create-todo (buffer &optional arg)
   "Create TODO entry in BUFFER."
   (with-current-buffer buffer
