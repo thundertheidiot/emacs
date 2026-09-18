@@ -266,7 +266,7 @@ ORIG-FUN is called with ARGS."
   (org-mode . olivetti-mode))
 
 (use-package org-draw
-  :require t
+  :demand t
   :custom
   (org-draw-open-browser t)
   :bind (:map org-mode-map
