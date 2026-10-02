@@ -215,5 +215,26 @@ Called as an advice after selecting a model from the menu."
 				   meow/gptel-tool-search
 				   meow/gptel-tool-fetch-url))
 
+(meow/leader
+  "oo" '("opencode" . (lambda () (interactive)
+						(select-window (meow/intelligent-split t))
+						(let ((buf (generate-new-buffer "*opencode*")))
+						  (ghostel-exec buf "opencode")
+						  (switch-to-buffer buf))))
+  "bo" '("switch to opencode" . (lambda () (interactive)
+								  (consult-buffer
+								   (list
+									`(:name "Opencode buffer"
+											:category buffer
+											:face consult-buffer
+											:history buffer-name-history
+											:state ,#'consult--buffer-state
+											:default t
+											:items ,(lambda ()
+													  (consult--buffer-query :sort 'visibility
+																			 :as #'consult--buffer-pair
+																			 :predicate (lambda (buf)
+																						  (string-prefix-p "*opencode" (buffer-name buf)))))))))))
+
 (provide 'meow-ai)
 ;;; meow-ai.el ends here
