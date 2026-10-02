@@ -148,7 +148,7 @@
             ];
           };
 
-          packages.default = config.packages.emacs;
+          packages.default = config.packages.emacs-pwayl;
           packages.emacs = import ./nix/package.nix (
             emacsArgs
             // {
