@@ -7,6 +7,7 @@
 (require 'libmpdel)
 (require 'transient)
 (require 'dash)
+(require 'cl-lib)
 
 ;; https://mpd.readthedocs.io/en/latest/protocol.html
 ;; the mpd documentation specifically recommends against this
@@ -14,6 +15,11 @@
 
 (defvar meow/mpd-song-cache '()
   "Cached list of the MPD library, preformatted for consult.")
+
+(defvar meow/mpd-page-size 3000
+  "Songs fetched per windowed `find' page.
+Must stay well under MPD 0.24's ~4MB per-client output buffer, or
+the server kills the connection with \"Output buffer is full\".")
 
 (defun meow/--libmpdel-guard (&optional skip-cache)
   (unless (libmpdel-connected-p)
@@ -25,10 +31,10 @@
   "Create a wrapper for a libmpdel function, supporting a string entity from consult.
 The function is named `meow/mpd-NAME', FORMS are executed with entity bound."
   `(defun ,(intern (format "meow/mpd-%s" name)) (entity)
-     (when-let ((entity
-				 (if (stringp entity)
-					 (get-text-property 0 'consult--candidate entity)
-				   entity)))
+     (when-let* ((entity
+				  (if (stringp entity)
+					  (get-text-property 0 'consult--candidate entity)
+					entity)))
        ,@forms)))
 
 (meow/mpd-wrapper
@@ -166,12 +172,32 @@ Highlight the song with CUR-ID."
 			(or (ignore-errors (libmpdel-album-name song)) "Unknown Album"))))
 
 
+(defun meow/--mpd-fetch-all-pages (callback)
+  "Fetch the whole library in windowed pages, call CALLBACK with the raw data.
+A single `listallinfo' response exceeds MPD 0.24's client output
+buffer for large libraries, so MPD closes the connection before
+the response is fully delivered.  Windowed `find' pages are
+bounded and stream fine."
+  (let ((offset 0)
+		(acc))
+	(cl-labels
+		((fetch ()
+		   (libmpdel-send-command
+			(format "find \"(base '')\" window %d:%d"
+					offset (+ offset meow/mpd-page-size))
+			(lambda (data)
+			  (setq acc (append acc data)
+					offset (+ offset meow/mpd-page-size))
+			  (if (>= (length (meow/--group-mpd-song-data data)) meow/mpd-page-size)
+				  (fetch)
+				(funcall callback acc))))))
+	  (fetch))))
+
 (defun meow/mpd-populate-cache (&optional types callback)
   "Populate a singular cache entry in the song cache.
 TYPES is a cons cell with the key as the car and the list of entries for `meow/--format-mpd-song'.
 CALLBACK is called when done."
-  (libmpdel-send-command
-   "listallinfo"
+  (meow/--mpd-fetch-all-pages
    (lambda (data)
 	 (let* ((meow/mpd-song-fields (or (cdr types) meow/mpd-song-fields))
 			(songs (mapcar #'meow/--format-mpd-song (meow/--create-songs-from-data data))))
@@ -182,11 +208,10 @@ CALLBACK is called when done."
 
 (defun meow/mpd-cache-all (&optional callback)
   "Cache all query types.  Call CALLBACK when done."
-  (libmpdel-send-command
-   "listallinfo"
+  (meow/--mpd-fetch-all-pages
    (lambda (data)
 	 (let ((songdata (meow/--create-songs-from-data data)))
-	   (dolist (types '((all . nil) (name . (title file)) (album . (album)) (artist . (artist)) (file . file)))
+	   (dolist (types '((all . nil) (name . (title file)) (album . (album)) (artist . (artist)) (file . (file))))
 		 (let* ((meow/mpd-song-fields (or (cdr types) meow/mpd-song-fields))
 				(songs (mapcar #'meow/--format-mpd-song songdata)))
 		   (if (assq (car types) meow/mpd-song-cache)

@@ -219,11 +219,11 @@ Called as an advice after selecting a model from the menu."
   "oo" '("opencode" . (lambda () (interactive)
 						(select-window (meow/intelligent-split t))
 						(let ((buf (generate-new-buffer "*opencode*")))
-						  (ghostel-exec buf "opencode")
+						  (ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" (expand-file-name default-directory)))
 						  (switch-to-buffer buf))))
   "oO" '("opencode same window" . (lambda () (interactive)
 									(let ((buf (generate-new-buffer "*opencode*")))
-									  (ghostel-exec buf "opencode")
+									  (ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" (expand-file-name default-directory)))
 									  (switch-to-buffer buf))))
   "bo" '("switch to opencode" . (lambda () (interactive)
 								  (consult-buffer
