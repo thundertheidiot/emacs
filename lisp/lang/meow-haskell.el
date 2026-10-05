@@ -17,7 +17,7 @@
 		(setq meow/ghci-files (append meow/ghci-files (list file-name))))
 	  (comint-send-string (get-buffer-process meow/ghci-buffer)
 						  (format ":load %s\n"
-								  (mapconcat #'identity meow/ghci-files " ")))))
+								  (mapconcat #'prin1-to-string meow/ghci-files " ")))))
   (add-hook 'after-save-hook (lambda ()
 							   (when meow/ghci-buffer
 								 (comint-send-string (get-buffer-process meow/ghci-buffer)

@@ -254,54 +254,56 @@ CALLBACK is called when done."
 (defun meow/mpd-search ()
   "Search through songs with consult."
   (interactive)
-  (meow/--libmpdel-guard)
-  ;; TODO is there a better way?
-  (let ((consult-async-split-style 'none)
-		(vertico-sort-override-function #'identity)
-		(completion-ignore-case t))
-    (consult--multi
-	 (list
-	  `(:name "All"
-			  :category mpd
-			  :narrow ?q
-			  :sort nil
-			  :annotate ,#'meow/--mpd-annotate
-			  :action ,#'meow/mpd-add-song
-			  :items ,(cdr (assoc 'all meow/mpd-song-cache)))
-	  `(:name "Name"
-			  :category mpd
-			  :narrow ?n
-			  :hidden t
-			  :sort nil
-			  :annotate ,#'meow/--mpd-annotate
-			  :action ,#'meow/mpd-add-song
-			  :items ,(cdr (assoc 'name meow/mpd-song-cache)))
-	  `(:name "Album"
-			  :category mpd
-			  :narrow ?a
-			  :hidden t
-			  :sort nil
-			  :annotate ,#'meow/--mpd-annotate
-			  :action ,#'meow/mpd-add-song
-			  :items ,(cdr (assoc 'album meow/mpd-song-cache)))
-	  `(:name "Artist"
-			  :category mpd
-			  :narrow ?A
-			  :hidden t
-			  :sort nil
-			  :annotate ,#'meow/--mpd-annotate
-			  :action ,#'meow/mpd-add-song
-			  :items ,(cdr (assoc 'artist meow/mpd-song-cache)))
-	  `(:name "Filename"
-			  :category mpd
-			  :narrow ?f
-			  :hidden t
-			  :sort nil
-			  :annotate ,#'meow/--mpd-annotate
-			  :action ,#'meow/mpd-add-song
-			  :items ,(cdr (assoc 'file meow/mpd-song-cache))))
-	 :prompt "Search MPD (q/n/a/A/f): "
-	 :require-match t)))
+  (meow/--libmpdel-guard t)
+  (if (not (assq 'all meow/mpd-song-cache))
+      (meow/mpd-cache-all #'meow/mpd-search)
+    ;; TODO is there a better way?
+    (let ((consult-async-split-style 'none)
+          (vertico-sort-override-function #'identity)
+          (completion-ignore-case t))
+      (consult--multi
+       (list
+        `(:name "All"
+                :category mpd
+                :narrow ?q
+                :sort nil
+                :annotate ,#'meow/--mpd-annotate
+                :action ,#'meow/mpd-add-song
+                :items ,(cdr (assoc 'all meow/mpd-song-cache)))
+        `(:name "Name"
+                :category mpd
+                :narrow ?n
+                :hidden t
+                :sort nil
+                :annotate ,#'meow/--mpd-annotate
+                :action ,#'meow/mpd-add-song
+                :items ,(cdr (assoc 'name meow/mpd-song-cache)))
+        `(:name "Album"
+                :category mpd
+                :narrow ?a
+                :hidden t
+                :sort nil
+                :annotate ,#'meow/--mpd-annotate
+                :action ,#'meow/mpd-add-song
+                :items ,(cdr (assoc 'album meow/mpd-song-cache)))
+        `(:name "Artist"
+                :category mpd
+                :narrow ?A
+                :hidden t
+                :sort nil
+                :annotate ,#'meow/--mpd-annotate
+                :action ,#'meow/mpd-add-song
+                :items ,(cdr (assoc 'artist meow/mpd-song-cache)))
+        `(:name "Filename"
+                :category mpd
+                :narrow ?f
+                :hidden t
+                :sort nil
+                :annotate ,#'meow/--mpd-annotate
+                :action ,#'meow/mpd-add-song
+                :items ,(cdr (assoc 'file meow/mpd-song-cache))))
+       :prompt "Search MPD (q/n/a/A/f): "
+       :require-match t))))
 
 (defun meow/mpd-queue ()
   "MPD Playlist view with consult."
@@ -391,27 +393,42 @@ Doubles up as a generic playlist selector, which you can embark with."
       (libmpdel-playback-set-repeat)
       (message "Repeat on"))))
 
+(defun meow/--mpd-database-changed (data)
+  "Refresh the song cache when idle DATA reports a database change."
+  (when (member '(changed . "database") data)
+    (meow/mpd-cache-all)))
+
+;; This libmpdel version has no database hook; observe its idle notifications.
+(advice-add 'libmpdel--msghandler-idle :after #'meow/--mpd-database-changed)
+
 (defun meow/mpd-database-update ()
   "Update database."
   (interactive)
   (libmpdel-database-update)
-  (message "Updating database...")
-  (meow/mpd-cache-all))
+  (message "Updating database..."))
 
 (defvar meow/mpd-volume-step 3)
 (defun meow/mpd-volume-down ()
   "Move volume down by volume step."
   (interactive)
-  (let ((volume (- (string-to-number (libmpdel-volume)) meow/mpd-volume-step)))
-    (libmpdel-playback-set-volume volume)
-    (message "Volume %d" volume)))
+  (libmpdel-get-state 'volume
+    (lambda (volume)
+      (if (and volume (>= (string-to-number volume) 0))
+          (let ((volume (max 0 (min 100 (- (string-to-number volume) meow/mpd-volume-step)))))
+            (libmpdel-playback-set-volume volume)
+            (message "Volume %d" volume))
+        (message "MPD volume unavailable")))))
 
 (defun meow/mpd-volume-up ()
   "Move volume up by volume step."
   (interactive)
-  (let ((volume (+ (string-to-number (libmpdel-volume)) meow/mpd-volume-step)))
-    (libmpdel-playback-set-volume volume)
-    (message "Volume %d" volume)))
+  (libmpdel-get-state 'volume
+    (lambda (volume)
+      (if (and volume (>= (string-to-number volume) 0))
+          (let ((volume (max 0 (min 100 (+ (string-to-number volume) meow/mpd-volume-step)))))
+            (libmpdel-playback-set-volume volume)
+            (message "Volume %d" volume))
+        (message "MPD volume unavailable")))))
 
 (transient-define-prefix meow/mpd-transient-menu ()
   [["Menu"

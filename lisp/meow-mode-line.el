@@ -43,21 +43,20 @@
 (defvar-local meow/mode-line-flycheck nil)
 (defun meow/mode-line-flycheck-update (&optional status)
   "Update flycheck text with STATUS."
-  (when-let* ((text
-			   (pcase status
-				 ('finished
-				  (if flycheck-current-errors
-					  (let* ((errors (flycheck-count-errors flycheck-current-errors))
-							 (c-error (alist-get 'error errors))
-							 (c-warning (alist-get 'warning errors)))
-						(concat
-						 (when c-error
-						   (propertize (format " %s   " c-error) 'face 'meow/mode-line-error-face))
-						 (when c-warning
-						   (propertize (format " %s   " c-warning) 'face 'meow/mode-line-warning-face))))
-					(propertize "   " 'face 'meow/mode-line-okay-face)))
-				 (_ nil))))
-    (setq meow/mode-line-flycheck text)))
+  (setq meow/mode-line-flycheck
+        (pcase status
+          ('finished
+           (if flycheck-current-errors
+               (let* ((errors (flycheck-count-errors flycheck-current-errors))
+                      (c-error (alist-get 'error errors))
+                      (c-warning (alist-get 'warning errors)))
+                 (concat
+                  (when c-error
+                    (propertize (format " %s   " c-error) 'face 'meow/mode-line-error-face))
+                  (when c-warning
+                    (propertize (format " %s   " c-warning) 'face 'meow/mode-line-warning-face))))
+             (propertize "   " 'face 'meow/mode-line-okay-face)))
+          (_ nil))))
 
 (defvar-local meow/mode-line-nyan-cat t)
 ;; ultra scroll hide functions
@@ -84,20 +83,23 @@ NUM is passed from the ultra scroll hook."
 		(no-date 0))
 	(mapc (lambda (file)
 			(with-current-buffer (find-file-noselect file)
-			  (org-map-entries
-			   (lambda ()
-				 (unless (org-entry-is-done-p)
-				   (let ((scheduled (org-get-scheduled-time (point)))
-						 (deadline (org-get-deadline-time (point))))
-					 (cond
-					  ((and (not scheduled) (not deadline) (org-entry-is-todo-p))
-					   (setq no-date (1+ no-date)))
-					  ((or (date-within-days scheduled 1) (date-within-days deadline 1))
-					   (setq today (1+ today)))
-					  ((or (date-within-days scheduled 3) (date-within-days deadline 3))
-					   (setq three-days (1+ three-days)))
-					  ((or (date-within-days scheduled 7) (date-within-days deadline 7))
-					   (setq week (1+ week))))))))))
+			  (save-excursion
+				(save-restriction
+				  (widen)
+				  (org-map-entries
+				   (lambda ()
+					 (unless (org-entry-is-done-p)
+					   (let ((scheduled (org-get-scheduled-time (point)))
+							 (deadline (org-get-deadline-time (point))))
+						 (cond
+						  ((and (not scheduled) (not deadline) (org-entry-is-todo-p))
+						   (setq no-date (1+ no-date)))
+						  ((or (date-within-days scheduled 1) (date-within-days deadline 1))
+						   (setq today (1+ today)))
+						  ((or (date-within-days scheduled 3) (date-within-days deadline 3))
+						   (setq three-days (1+ three-days)))
+						  ((or (date-within-days scheduled 7) (date-within-days deadline 7))
+						   (setq week (1+ week))))))))))))
 		  (delete-dups (mapcar #'expand-file-name org-agenda-files)))
 	(concat "  "
 			(when (> today 0)

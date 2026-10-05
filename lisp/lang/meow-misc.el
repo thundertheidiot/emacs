@@ -70,9 +70,6 @@
 
 (add-hook 'js-mode-hook #'lsp-deferred)
 
-(setq treesit-load-name-override-list
-	  '((tsx "libtree-sitter-tsx" "tree_sitter_typescript")))
-
 (use-package typescript-ts-mode
   :demand t
   :ensure nil
@@ -87,11 +84,11 @@
 				 "--" "typescript-language-server" "--stdio"
 				 "--" "vscode-eslint-language-server" "--stdio"))
   (add-to-list 'apheleia-formatters
-			   '(eslint . ("apheleia-npx" "eslint_d" "--fix-to-stdout" "--stdin" "--stdin-filename" file)))
+			   '(eslint . ("apheleia-npx" "eslint_d" "--fix-to-stdout" "--stdin" "--stdin-filename" filepath)))
   (setq apheleia-formatters-mode-extension-assoc
 		(append apheleia-formatters-mode-extension-assoc
 				'((tsx-ts-mode . ".tsx")
-				  (typescript-ts-mode ".ts"))))
+				  (typescript-ts-mode . ".ts"))))
   (setf
    (alist-get 'typescript-ts-mode apheleia-mode-alist)
    '(eslint))

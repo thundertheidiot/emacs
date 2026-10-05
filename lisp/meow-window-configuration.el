@@ -16,22 +16,25 @@
 (defun meow/save-window-configuration ()
   "Add the current window configuration to saved window configurations."
   (interactive)
-  (add-to-list 'meow/saved-window-configurations
-			   (cons
-				(concat
-				 (ignore-errors (project-name (project-current)))
-				 " "
-				 (format-time-string "%a %R")
-				 "("
-				 (wcs--format-window-list)
-				 ")")
-				(window-state-get (frame-root-window) t))))
+  (let* ((label (concat
+                 (ignore-errors (project-name (project-current)))
+                 " "
+                 (format-time-string "%a %R")
+                 "("
+                 (wcs--format-window-list)
+                 ")"))
+         (name label)
+         (suffix 2))
+    (while (assoc name meow/saved-window-configurations)
+      (setq name (format "%s <%d>" label suffix)
+            suffix (1+ suffix)))
+    (push (cons name (window-state-get (frame-root-window) t))
+          meow/saved-window-configurations)))
 
 (defun meow/new-window-configuration ()
   "Save the current window configuration close other buffers."
   (interactive)
   (meow/save-window-configuration)
-  (select-window (split-window))
   (delete-other-windows))
 
 (defun meow/load-window-configuration ()

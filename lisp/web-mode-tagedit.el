@@ -184,33 +184,17 @@ The range is used to detect whether the tag is split across multiple lines."
 				(goto-char name-end)
 				(insert (concat "=" value))))))
 	  ;; new attribute
-	  (let ((value (read-string (format "Value for %s (no delim): " attr))))
-		(if (<= (count-lines tag-beg tag-end) 1)
-			;; one line
-			(progn
-			  (goto-char tag-beg)
-			  (if-let* ((space (ignore-errors
-								 (search-forward " " tag-end))))
-				  (progn
-					(goto-char space)
-					(if (string= value "")
-						(insert (concat attr " "))
-					  (insert (concat attr "=" value " "))))
-				(progn
-				  (goto-char tag-beg)
-				  (re-search-forward (rx (or ?/ ?>)) (1+ tag-end))
-				  (goto-char (1- (point)))
-				  (if (string= value "")
-					  (insert (concat " " attr " "))
-					(insert (concat " " attr "=" value " "))))))
-		  ;; multiline
-		  (progn
-			(goto-char (1+ (pos-eol)))
-			(open-line 1)
-			(indent-for-tab-command)
-			(if (string= value "")
-				(insert attr)
-			  (insert (concat attr "=" value)))))))))
+      (let ((value (read-string (format "Value for %s (no delim): " attr)))
+            (multiline (> (count-lines tag-beg tag-end) 1)))
+        (goto-char tag-beg)
+        (re-search-forward (rx "<" (+ (not (any space "/>")))) tag-end)
+        (if multiline
+            (progn
+              (insert "\n")
+              (open-line 1)
+              (indent-for-tab-command))
+          (insert " "))
+        (insert (if (string-empty-p value) attr (concat attr "=" value)))))))
 
 (when (featurep 'embark)
   (defvar-keymap embark-tagedit-map

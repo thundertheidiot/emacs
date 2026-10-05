@@ -79,13 +79,17 @@
   (global-evil-matchit-mode 1))
 
 (defun meow/evil-replace-string (string)
+  "Start an Evil substitution for literal STRING, or the active region."
   (interactive
-   (when (region-active-p)
-	 (list (buffer-substring-no-properties (region-beginning) (region-end)))))
+   (progn
+     (unless (region-active-p)
+       (user-error "No active region"))
+     (list (buffer-substring-no-properties (region-beginning) (region-end)))))
   (run-at-time 0 nil ;; evil-ex blocks, this way we call `evil--ex-update' after the minibuffer is created
 			   (lambda ()
 				 (when (minibufferp)
 				   (evil--ex-update (point-min)))))
-  (evil-ex (format "%%s/%s" string)))
+  (evil-ex (format "%%s/%s"
+                   (replace-regexp-in-string "/" "\\/" (regexp-quote string) nil t))))
 
 (provide 'meow-evil)

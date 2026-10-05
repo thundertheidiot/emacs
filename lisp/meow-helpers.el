@@ -18,10 +18,12 @@ Called on `after-init-hook' and `server-after-make-frame-hook'.
 If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
   (let ((flag (intern (format "--meow/runonce-flag-%s" name))))
     `(progn
+       (defvar ,flag nil)
        ,(unless only-daemon
 		  `(add-hook 'after-init-hook (lambda ()
-										,@forms)))
-       (defvar ,flag nil)
+										(unless ,flag
+										  ,@forms
+										  (setq ,flag t)))))
        (add-hook 'server-after-make-frame-hook
 				 (lambda ()
 				   (unless ,flag

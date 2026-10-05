@@ -8,7 +8,8 @@
 (defun meow/vue-mode-setup ()
   "Setup for vue mode, run as a hook."
   (interactive)
-  (setq lsp-tailwindcss-server-path (executable-find "tailwindcss-language-server"))
+  (when-let* ((server (executable-find "tailwindcss-language-server")))
+    (setq-local lsp-tailwindcss-server-path server))
   (setf (lsp--client-priority (gethash 'ts-ls lsp-clients)) 1)
   (setf (lsp--client-priority (gethash 'vue-semantic-server lsp-clients)) 1)
 

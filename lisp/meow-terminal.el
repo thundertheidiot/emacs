@@ -117,8 +117,8 @@ If PROJECT is non nil, launch it in the project root."
   "Apply the set nix shell environment for eshell."
   (when (and meow/eshell-nix-shell-path meow/eshell-nix-shell-environment)
     (let ((path (eshell-get-path t)))
-      ;; other things (e.g. envrc.el) may alter the pathas well
-      (eshell-set-path (append path meow/eshell-nix-shell-path)))
+      ;; keep explicitly requested tools ahead of inherited executables.
+      (eshell-set-path (delete-dups (append meow/eshell-nix-shell-path path))))
     (mapcar (lambda (e) (ignore-errors (eshell-set-variable (car e) (cadr e))))
 			meow/eshell-nix-shell-environment))
   nil)

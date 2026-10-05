@@ -7,7 +7,6 @@
         scroll-margin 0
 		jit-lock-defer-time 0.05)  ; defer fontification
   :config
-  (add-hook 'ultra-scroll-hide-functions #'jit-lock-mode)
   (ultra-scroll-mode 1))
 
 (provide 'meow-scroll)

@@ -7,19 +7,14 @@
   "On niri, add screenshot to buffer."
   (interactive)
   (let* ((media-dir (expand-file-name "media" meow/gptel-directory))
-		 (filename (expand-file-name (format-time-string "%Y-%m-%d-%H-%M-%S.png") media-dir)))
+		 (filename (expand-file-name (format-time-string "%Y-%m-%d-%H-%M-%S-%N.png") media-dir)))
     (unless (file-directory-p media-dir)
       (make-directory media-dir t))
-    (when (= 0 (shell-command "niri msg action screenshot"))
+    (when (= 0 (call-process "niri" nil nil nil "msg" "action" "screenshot" "--path" filename))
       (with-timeout
-		  (30 (error "Timeout waiting for clipboard"))
-		(while (not (or
-					 (seq-contains-p (gui-get-selection 'CLIPBOARD 'TARGETS) 'image/png)
-					 (seq-contains-p (gui-get-selection 'PRIMARY 'TARGETS) 'image/png)))
+		  (30 (user-error "Timeout waiting for screenshot"))
+		(while (not (file-exists-p filename))
 		  (sit-for 0.05)))
-      (with-temp-buffer
-		(insert (gui-get-selection 'CLIPBOARD 'image/png))
-		(write-file filename))
       (insert (format (cond
 					   ((eq major-mode 'org-mode) "[[%s]]")
 					   (t "![screenshot](%s)"))
@@ -46,7 +41,8 @@
 														   (alist-get 'prompt pricing)))
 								  :output-cost ,(* 1000000 (string-to-number
 															(alist-get 'completion pricing)))
-								  :context-window ,(/ (alist-get 'context_length entry) 1000)
+								  :context-window ,(when-let* ((length (alist-get 'context_length entry)))
+                                                     (/ length 1000))
 								  :capabilities ,(seq-keep #'identity `(,(when (seq-find (lambda (e) (string= "tools" e)) parameters) 'tool-use)
 																		,(when (seq-find (lambda (e) (string= "reasoning" e)) parameters) 'reasoning)
 																		,(when (seq-find (lambda (e) (string= "structured_outputs" e)) parameters) 'json)
@@ -69,13 +65,13 @@
   (let ((buffer (gptel (format-time-string "gptel-%Y%m%d-%H:%M:%S.org")
 					   t
 					   (format "*** %s" prompt))))
-	(if (bound-and-true-p gptel-mode)
-		(display-buffer buffer '(display-buffer-same-window))
-	  (display-buffer buffer gptel-display-buffer-action)))
-  (goto-char (point-max))
-  (olivetti-mode -1)
-  (visual-line-mode 1)
-  (gptel-send))
+    (pop-to-buffer buffer (if (bound-and-true-p gptel-mode)
+                              '(display-buffer-same-window)
+                            gptel-display-buffer-action))
+    (goto-char (point-max))
+    (olivetti-mode -1)
+    (visual-line-mode 1)
+    (gptel-send)))
 
 (defun meow/gptel-openrouter-set-reasoning ()
   "Set reasoning effort for openrouter models.
@@ -92,9 +88,10 @@ Called as an advice after selecting a model from the menu."
 																'("none")))
 									 nil 'require-match))
 			(_check (> (length effort) 0)))
-	  (setq gptel--request-params
-			`(:reasoning_effort ,effort))
-	(setq gptel--request-params '())))
+      (gptel--set-with-scope 'gptel--request-params
+                            `(:reasoning_effort ,effort)
+                            gptel--set-buffer-locally)
+    (gptel--set-with-scope 'gptel--request-params nil gptel--set-buffer-locally)))
 
 (advice-add 'gptel--infix-provider :after #'meow/gptel-openrouter-set-reasoning)
 
@@ -164,19 +161,34 @@ Called as an advice after selecting a model from the menu."
    :function (lambda (callback query)
 			   (let ((url (format "http://127.0.0.1:8080/search?q=%s&format=json"
 								  (url-hexify-string query))))
-				 (url-retrieve url
-							   (lambda (_status)
-								 (goto-char (point-min))
-								 (search-forward "\n\n") ;; end of http headers
-								 (let ((json-response (json-read)))
-								   (funcall callback
-											(mapconcat (lambda (result)
-														 (format "%s - %s\n%s"
-																 (cdr (assoc 'title result))
-																 (cdr (assoc 'url result))
-																 (cdr (assoc 'content result))))
-													   (cdr (assoc 'results json-response))
-													   "\n\n")))))))
+                 (url-retrieve
+                  url
+                  (lambda (status)
+                    (let* ((response-buffer (current-buffer))
+                           (result
+                            (condition-case err
+                                (progn
+                                  (when (plist-get status :error)
+                                    (error "Request failed: %S" (plist-get status :error)))
+                                  (when (and (bound-and-true-p url-http-response-status)
+                                             (>= url-http-response-status 400))
+                                    (error "HTTP %s" url-http-response-status))
+                                  (goto-char (point-min))
+                                  (unless (re-search-forward "\r?\n\r?\n" nil t)
+                                    (error "Missing response headers"))
+                                  (let ((json-object-type 'alist)
+                                        (json-key-type 'symbol))
+                                    (mapconcat
+                                     (lambda (result)
+                                       (format "%s - %s\n%s"
+                                               (alist-get 'title result)
+                                               (alist-get 'url result)
+                                               (alist-get 'content result)))
+                                     (alist-get 'results (json-read)) "\n\n")))
+                              (error (format "Search failed: %s" (error-message-string err))))))
+                      (unwind-protect
+                          (funcall callback result)
+                        (kill-buffer response-buffer)))))))
    :async t
    :name "search_web"
    :description "Searches the web and returns formatted results including titles, URLs, and content excerpts."
@@ -197,10 +209,18 @@ Called as an advice after selecting a model from the menu."
 				 (set-process-sentinel
 				  proc
 				  (lambda (process _event)
-					(when (eq (process-status process) 'exit)
-					  (let ((content (with-current-buffer output-buffer
-									   (buffer-string))))
-						(funcall callback content)))))))
+                    (when (memq (process-status process) '(exit signal))
+                      (let ((content (if (buffer-live-p output-buffer)
+                                         (with-current-buffer output-buffer (buffer-string))
+                                       "Response buffer closed")))
+                        (unwind-protect
+                            (funcall callback
+                                     (if (and (eq (process-status process) 'exit)
+                                              (= (process-exit-status process) 0))
+                                         content
+                                       (format "Fetch failed: %s" content)))
+                          (when (buffer-live-p output-buffer)
+                            (kill-buffer output-buffer)))))))))
    :async t
    :name "fetch_url"
    :description "Get the content of a url in a readable form."

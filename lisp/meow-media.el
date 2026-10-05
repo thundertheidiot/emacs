@@ -3,7 +3,7 @@
 (use-package empv
   :demand t
   :general-config
-  (:keymaps 'empv-youtube-results-mode :states '(normal visual insert)
+  (:keymaps 'empv-youtube-results-mode-map :states '(normal visual insert)
 			"RET" 'empv-youtube-results-play-current)
   (:keymaps 'embark-file-map
 			"p" #'empv-play-file)

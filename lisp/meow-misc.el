@@ -2,7 +2,7 @@
 (require 'recentf)
 
 (setq-default tab-width 4
-			  c-basic-offset 'tab-width)
+			  c-basic-offset 4)
 
 (setq use-short-answers t
       native-comp-async-report-warnings-errors 'silent

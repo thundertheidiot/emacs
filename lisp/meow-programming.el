@@ -150,9 +150,11 @@
 
 (defun meow/tmc (args)
   "Call tmc as a shell command with ARGS."
-  (let ((default-directory (or
-							(when (file-in-directory-p default-directory meow/tmc-dir)
-							  (locate-dominating-file default-directory ".tmcproject.yml")))))
+  (let ((default-directory
+         (when (file-in-directory-p default-directory meow/tmc-dir)
+           (locate-dominating-file default-directory ".tmcproject.yml"))))
+    (unless default-directory
+      (user-error "Not in a TMC exercise directory"))
     (async-shell-command (format "tmc %s" args))))
 
 (defun meow/--tmc-pick-exercise (course callback)

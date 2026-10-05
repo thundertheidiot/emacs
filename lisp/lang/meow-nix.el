@@ -20,24 +20,29 @@
 
 (defvar-local meow/nix-build-callpackage-expression "{}")
 (defvar-local meow/nix-build-expression nil)
-(defvar-local meow/nix-build-binpath nil)
+(defvar-local meow/nix-build-binpath nil
+  "Executable path relative to the build output.")
 
 (defun meow/nix-build (&optional buffer)
   "Build the current file with nix build, using a callPackage expression."
   (interactive)
   (async-shell-command
-   (format "nix build --print-build-logs --impure --print-out-paths --expr '%s'"
-		   (or meow/nix-build-expression
-			   (format
-				"with import <nixpkgs> {}; callPackage \"%s\" %s"
-				buffer-file-name
-				meow/nix-build-callpackage-expression)))
+   (format "nix build --print-build-logs --impure --print-out-paths --expr %s"
+		   (shell-quote-argument
+			(or meow/nix-build-expression
+				(format
+				 "with import <nixpkgs> {}; callPackage \"%s\" %s"
+				 (replace-regexp-in-string
+				  "[\\\\\"]\\|\\${" (lambda (match) (concat "\\" match))
+				  buffer-file-name t t)
+				 meow/nix-build-callpackage-expression))))
    (or buffer
        (get-buffer-create "*nix build*"))))
 
-(defun meow/nix-build-and-run ()
-  "Build the current file with nix, run an executable."
-  (interactive)
+(defun meow/nix-build-and-run (&optional arg)
+  "Build the current file with nix, run an executable.
+With prefix ARG, select an executable again."
+  (interactive "P")
   (let* ((buffer (get-buffer-create (format "*nix build&run %s*"
 											buffer-file-name)))
 		 (current-buffer (current-buffer))
@@ -52,14 +57,19 @@
 						(skip-chars-backward "\n\t ")
 						(buffer-substring (line-beginning-position) (line-end-position))))
 					 (bin (with-current-buffer current-buffer
-							(or (if current-prefix-arg
-									nil
-								  (ignore-errors (expand-file-name meow/nix-build-binpath path)))
-								(setq-local meow/nix-build-binpath
-											(read-file-name "Select executable: "
-															path nil t nil
-															#'file-executable-p))))))
-				(async-shell-command bin buffer))))))
+							(expand-file-name
+							 (if (and (not arg) meow/nix-build-binpath)
+								 meow/nix-build-binpath
+							   (setq-local meow/nix-build-binpath
+										   (file-relative-name
+											(expand-file-name
+											 (read-file-name "Select executable: "
+															 path nil t nil
+															 #'file-executable-p)
+											 path)
+											path)))
+							 path))))
+				(async-shell-command (shell-quote-argument bin) buffer))))))
     (meow/nix-build buffer)
     (set-process-sentinel (get-buffer-process buffer) sentinel)))
 

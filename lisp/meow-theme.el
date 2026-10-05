@@ -4,6 +4,7 @@
 
 (require 'olivetti)
 (require 'lsp-mode)
+(require 'rainbow-delimiters)
 
 (defmacro meow/setfaces (&rest args)
   (let ((forms))

@@ -136,19 +136,29 @@ ORIG-FUN is called with ARGS."
   (member tag (org-roam-node-tags (org-roam-node-at-point))))
 
 (defun meow/org-set-agenda-tag ()
-  "Set the agenda tag for the current org document, if TODOs exist."
-  (if (org-element-map
-		  (org-element-parse-buffer 'headline)
-		  'headline
-		(lambda (h)
-		  (eq (org-element-property :todo-type h)
-			  'todo))
-		nil 'first-match)
-	  (unless (meow/org-roam-has-tag-p "agenda")
-		(org-roam-tag-add '("agenda")))
-	(when (meow/org-roam-has-tag-p "agenda")
-	  (ignore-errors
-		(org-roam-tag-remove '("agenda"))))))
+  "Set the agenda tag for the current org document, if TODOs exist.
+Prefer the file node, falling back to the node at the original point."
+  (save-excursion
+	(save-restriction
+	  (let ((original-point (point)))
+		(widen)
+		(goto-char (point-min))
+		(when (or (org-roam-node-at-point)
+				  (progn
+					(goto-char original-point)
+					(org-roam-node-at-point)))
+		  (if (org-element-map
+				  (org-element-parse-buffer 'headline)
+				  'headline
+				(lambda (h)
+				  (eq (org-element-property :todo-type h)
+					  'todo))
+				nil 'first-match)
+			  (unless (meow/org-roam-has-tag-p "agenda")
+				(org-roam-tag-add '("agenda")))
+			(when (meow/org-roam-has-tag-p "agenda")
+			  (ignore-errors
+				(org-roam-tag-remove '("agenda"))))))))))
 
 (defun meow/org-roam-update-all-agenda-tags ()
   (dolist (file (org-roam-list-files))
@@ -277,24 +287,28 @@ ORIG-FUN is called with ARGS."
   "Create TODO entry in BUFFER."
   (with-current-buffer buffer
     (save-excursion
-      (let ((top-headings '()))
+      (let ((headings '()))
 
 		(org-map-entries
 		 (lambda ()
 		   (when (not (or (org-entry-is-todo-p)
 						  (org-entry-is-done-p)))
-			 (push (org-get-heading) top-headings))))
+			 (push (cons (format "%s [line %d]"
+							 (org-get-heading) (line-number-at-pos))
+						 (copy-marker (point) t))
+				   headings))))
 
-		(let* ((heading (completing-read "Heading: " (cons "-- Top Level --" (nreverse top-headings))))
+		(let* ((heading (completing-read
+						 "Heading: "
+						 (cons '("-- Top Level --") (reverse headings)) nil t))
 			   (name (completing-read "Todo: " nil)))
 		  (if (string= heading "-- Top Level --")
 			  (progn
 				(goto-char (point-max))
 				(org-insert-heading '(16) t 1))
 			(progn
-			  (goto-char (point-min))
-			  (re-search-forward (concat "^\\* " (regexp-quote heading) "$"))
-			  (org-insert-heading '(16) t (+ (org-current-level) 1))))
+			  (goto-char (cdr (assoc heading headings)))
+			  (org-insert-heading '(4) t (+ (org-current-level) 1))))
 		  (insert (format "TODO %s" name))
 		  (pcase arg
 			(`(4) (org-schedule nil))

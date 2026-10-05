@@ -143,8 +143,7 @@
 			:items ,(lambda ()
 					  (consult--buffer-query :sort 'visibility
 											 :as #'consult--buffer-pair
-											 :mode 'ewm-surface-mode))
-			:action ,#'ewm-launch-xdg-command))
+											 :mode 'ewm-surface-mode))))
 
   (add-to-list 'consult-buffer-sources consult-source-xdg-apps)
   (add-to-list 'consult-buffer-sources consult-source-ewm-buffers)
