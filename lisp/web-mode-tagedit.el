@@ -12,38 +12,100 @@
 (require 'consult)
 
 (defun tagedit--get-attributes-for-elem (beg end)
-  "Get and format attributes for the tag between BEG and END."
-  (let* ((regex (rx
-				 (or space ?\n)
-				 (group-n 1
-				   (opt (or ?: ?@))
-				   (1+ (or word ?-)))
-				 (opt ?=
-					  (or
-					   (seq (group-n 3 ?\")
-							(group-n 2 (+? anychar))
-							?\")
-					   (seq (group-n 3 ?{)
-							(group-n 2 (+? anychar))
-							?})
-					   (group-n 2 (1+ word))))))
-		 (list '()))
-	(save-excursion
-	  (goto-char beg)
-	  (while (re-search-forward regex end t)
-		(push (cons
-			   (match-string 1)
-			   (list
-				(cons 'name (match-string-no-properties  1))
-				(cons 'value (match-string-no-properties 2))
-				(cons 'value-beginning (match-beginning 2))
-				(cons 'value-end (match-end 2))
-				(cons 'name-end (match-end 1)) ;; for setting empty values
-				(cons 'beginning (match-beginning 0)) ;; start of whole match
-				(cons 'end (match-end 0)) ;; end of whole match
-				(cons 'delimeter (match-string-no-properties 3))))  ;; " | { | nil
-			  list)))
-	list))
+  "Get attributes for the tag between BEG and exclusive END.
+Reject incomplete syntax rather than return partial edit targets."
+  (let ((attributes nil)
+        (parse-sexp-ignore-comments t))
+    (save-excursion
+      (goto-char beg)
+      (unless (and (looking-at (rx "<" (+ (not (any space "/>")))))
+                   (<= (match-end 0) end))
+        (user-error "No opening tag found"))
+      (goto-char (match-end 0))
+      (while (progn
+               (skip-chars-forward " \t\r\n" end)
+               (and (< (point) end) (not (looking-at "/?>"))))
+        (let ((name-beg (point)) name-end attr-end value-beg value-end delimiter)
+          (unless (looking-at (rx (+ (not (any space "=/><\"'{}")))))
+            (user-error "Unsupported attribute syntax"))
+          (setq name-end (match-end 0))
+          (unless (<= name-end end)
+            (user-error "Unterminated attribute name"))
+          (goto-char name-end)
+          (skip-chars-forward " \t\r\n" end)
+          (if (eq (char-after) ?=)
+              (progn
+                (forward-char)
+                (skip-chars-forward " \t\r\n" end)
+                (pcase (char-after)
+                  ((or ?\" ?\')
+                   (setq delimiter (char-to-string (char-after)))
+                   (forward-char)
+                   (setq value-beg (point))
+                   (unless (search-forward delimiter end t)
+                     (user-error "Unterminated quoted attribute"))
+                   (setq value-end (1- (point))))
+                  (?{
+                   (setq delimiter "{" value-beg (1+ (point)))
+                   ;; Scan balanced JSX expressions, including nested objects and strings.
+                   (with-syntax-table (make-syntax-table)
+                     (modify-syntax-entry ?{ "(}")
+                     (modify-syntax-entry ?} "){")
+                     (modify-syntax-entry ?\' "\"")
+                     (modify-syntax-entry ?` "\"")
+                     (modify-syntax-entry ?/ ". 124b")
+                     (modify-syntax-entry ?* ". 23")
+                     (modify-syntax-entry ?\n "> b")
+                     (let ((close (condition-case nil
+                                      (save-restriction
+                                        (narrow-to-region (point) end)
+                                        (scan-sexps (point) 1))
+                                    (scan-error nil))))
+                       (unless (and close (<= close end))
+                         (user-error "Unterminated attribute expression"))
+                       ;; The sexp scanner cannot distinguish JS regexps from division.
+                       (save-excursion
+                         (while (re-search-forward "[/`]" close t)
+                           (let* ((pos (match-beginning 0))
+                                  (state (save-excursion
+                                           (parse-partial-sexp (1- value-beg) pos))))
+                             (cond
+                              ((or (nth 3 state) (nth 4 state)))
+                              ((and (eq (char-after pos) ?/)
+                                    (memq (char-after (1+ pos)) '(?/ ?*)))
+                               (forward-char))
+                              (t (user-error "Unsupported regexp, slash operator or template literal in attribute"))))))
+                       (goto-char close)))
+                   (setq value-end (1- (point))))
+                  (_
+                   (setq value-beg (point))
+                   (skip-chars-forward "^ \t\r\n<>\"'=`" end)
+                   (setq value-end (point))
+                   (when (= value-beg value-end)
+                     (user-error "Missing attribute value"))))
+                (unless (or (>= (point) end)
+                            (looking-at (rx (or space "/>" ">"))))
+                  (user-error "Unsupported attribute value syntax"))
+                (setq attr-end (point)))
+            (setq attr-end name-end))
+          (push (cons (buffer-substring-no-properties name-beg name-end)
+                      (list
+                       (cons 'name (buffer-substring-no-properties name-beg name-end))
+                       (cons 'value (when value-beg
+                                      (buffer-substring-no-properties value-beg value-end)))
+                       (cons 'value-beginning value-beg)
+                       (cons 'value-end value-end)
+                       (cons 'name-end name-end)
+                       (cons 'beginning (save-excursion
+                                          (goto-char name-beg)
+                                          (skip-chars-backward " \t" beg)
+                                          (point)))
+                       (cons 'end attr-end)
+                       (cons 'delimeter delimiter)))
+                attributes)))
+      (unless (and (looking-at "/?>") (= (match-end 0) end))
+        (user-error "Unterminated opening tag")))
+    attributes))
 
 (defun tagedit--get-attributes ()
   (if-let* ((elt-beg (web-mode-element-beginning-position)))
@@ -51,7 +113,7 @@
 		(goto-char elt-beg)
 		(if-let* ((beg (web-mode-tag-beginning-position))
 				  (end (web-mode-tag-end-position)))
-			(let* ((attributes (tagedit--get-attributes-for-elem beg end)))
+			(let* ((attributes (tagedit--get-attributes-for-elem beg (1+ end))))
 			  (list (cons 'beg beg)
 					(cons 'end end)
 					(cons 'attributes attributes)))
@@ -82,11 +144,13 @@ Require match if REQUIRE-MATCH is set."
 The range is used to detect whether the tag is split across multiple lines."
   (interactive (tagedit--interactive-pick t))
   (let ((multiline (> (count-lines tag-beg tag-end) 1)))
-	(delete-region (cdr (assoc 'beginning attr)) (cdr (assoc 'end attr)))
-	(when multiline
-	  (save-excursion
-		(goto-char (cdr (assoc 'beginning attr)))
-		(delete-line)))))
+    (delete-region (cdr (assoc 'beginning attr)) (cdr (assoc 'end attr)))
+    (when multiline
+      (save-excursion
+        (goto-char (cdr (assoc 'beginning attr)))
+        (beginning-of-line)
+        (when (looking-at (rx (* (any " \t")) line-end))
+          (delete-region (point) (min (point-max) (1+ (line-end-position)))))))))
 
 ;;; ###autoload
 (defun tagedit-set-attribute (attr tag-beg tag-end)
@@ -102,12 +166,13 @@ The range is used to detect whether the tag is split across multiple lines."
 			   (name-end (cdr (assoc 'name-end attr)))
 			   (match-end (cdr (assoc 'end attr)))
 			   (delimeter (cdr (assoc 'delimeter attr)))
-			   (value (read-string (format "Value for %s (%s delim): "
-										   name
-										   (cond ((string= "{" delimeter) "{}")
-												 ((string= "\"" delimeter) "\"\"")
-												 (t "no")))
-								   old-value)))
+               (value (read-string
+                       (format "Value for %s (%s delim): " name
+                               (cond ((string= "{" delimeter) "{}")
+                                     ((string= "\"" delimeter) "\"\"")
+                                     ((string= "'" delimeter) "''")
+                                     (t "no")))
+                       old-value)))
 		  (if (string= value "")
 			  (delete-region name-end match-end)
 			(if (and value-beg value-end)

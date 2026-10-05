@@ -236,14 +236,25 @@ First argument in ARGS is the program name, the rest are switches."
 						  (meow/ghostel-project)))))
 
 (defun meow/ghostel-kill-buffer-properly (orig-fun &rest args)
-  "Also close the window ghostel created.
+  "Close deletable terminal windows when Ghostel kills its buffer.
 Around advice for `ghostel--sentinel'.  ORIG-FUN is called with ARGS."
-  (let ((original-kill-buffer (symbol-function 'kill-buffer)))
-	(cl-letf (((symbol-function 'kill-buffer)
-			   (lambda (buf)
-				 (evil-quit)
-				 (funcall original-kill-buffer buf))))
-	  (apply orig-fun args))))
+  (let ((buffer (process-buffer (car args))))
+    (if (buffer-live-p buffer)
+        (with-current-buffer buffer
+          (let ((kill-buffer-quit-windows nil)
+                (kill-buffer-hook
+                 (cons (lambda ()
+                         (when (eq (current-buffer) buffer)
+                           (dolist (window (get-buffer-window-list buffer nil t))
+                             (if (eq t (window-deletable-p window))
+                                 ;; Never delete an atomic group or invoke a quit handler.
+                                 (let ((ignore-window-parameters t))
+                                   (delete-window window))
+                               ;; A dedicated sole window can otherwise kill its frame.
+                               (set-window-dedicated-p window nil)))))
+                       kill-buffer-hook)))
+            (apply orig-fun args)))
+      (apply orig-fun args))))
 
 (advice-add 'ghostel--sentinel :around #'meow/ghostel-kill-buffer-properly)
 

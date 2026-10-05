@@ -18,13 +18,15 @@ ARGS is the list of arguments passed to the function."
 (advice-add 'eshell-external-command :around #'eshell-external-cargo-mommy)
 
 (defun async-shell-command-cargo-mommy (orig-fun command &optional &rest args)
+  "Wrap the intact shell COMMAND with Cargo Mommy, forwarding ARGS to ORIG-FUN."
   (if-let* ((mommy (executable-find "cargo-mommy")))
-      (let* ((split (split-string-shell-command command))
-	     (process-environment
-	      (cons (format "CARGO_MOMMYS_ACTUAL=%s" (car split))
-		    process-environment))
-	     (command (combine-and-quote-strings (cons mommy (cdr split)))))
-	(apply orig-fun command args))
+      (let ((process-environment
+             (cons (format "CARGO_MOMMYS_ACTUAL=%s" shell-file-name)
+                   process-environment)))
+        (apply orig-fun
+               (mapconcat #'shell-quote-argument
+                          (list mommy shell-command-switch command) " ")
+               args))
     (apply orig-fun command args)))
 
 (advice-add 'async-shell-command :around #'async-shell-command-cargo-mommy)
