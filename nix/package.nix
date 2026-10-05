@@ -27,7 +27,11 @@ let
         "unknown" = _: _: throw "unexpected unknown";
       };
 
-      f = dir: mapAttrsToList (file: type: match."${type}" file dir) (readDir dir);
+      f =
+        dir:
+        mapAttrsToList (file: type: match."${type}" file dir) (
+          filterAttrs (name: _: dir != ../. || name != "claudepet") (readDir dir)
+        );
     in
     filter (hasSuffix ".el") (flatten (f ../.));
 
@@ -78,6 +82,7 @@ let
         (packages epkgs)
         ++ (meow-lisp epkgs)
         ++ [
+          epkgs.claudepet
           (epkgs.treesit-grammars.with-grammars (
             p: attrValues (filterAttrs (n: _v: n != "tree-sitter-cuda") p)
           ))

@@ -149,6 +149,18 @@
           };
 
           packages.default = config.packages.emacs-pwayl;
+          packages.clawdpet = config.packages.emacs-pwayl.epkgs.clawdpet;
+          checks.clawdpet = config.packages.clawdpet;
+
+          devShells.clawdpet = pkgs.mkShell {
+            packages = [
+              (config.packages.emacs-pwayl.epkgs.emacsWithPackages (epkgs: [
+                epkgs.posframe
+                epkgs.evil
+              ]))
+            ];
+          };
+
           packages.emacs = import ./nix/package.nix (
             emacsArgs
             // {

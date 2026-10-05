@@ -4,6 +4,22 @@
   ...
 }:
 final: prev: {
+  claudepet = final.trivialBuild {
+    pname = "claudepet";
+    version = "1.0.0";
+
+    src = pkgs.lib.fileset.toSource {
+      root = ../claudepet;
+      fileset = pkgs.lib.fileset.unions [
+        ../claudepet/claudepet.el
+        ../claudepet/claudepet-animations.el
+        ../claudepet/claudepet-integrations.el
+      ];
+    };
+
+    packageRequires = [ final.posframe ];
+  };
+
   ewm =
     (import "${inputs.ewm}/nix/default.nix" {
       inherit pkgs;

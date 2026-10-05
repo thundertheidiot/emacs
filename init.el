@@ -43,6 +43,8 @@
 
 (require 'meow-theme)
 
+(require 'claudepet)
+
 ;; gc setup
 (unless (featurep 'igc)
   (setq gc-cons-threshold (* 1024 1024 64))
