@@ -215,16 +215,24 @@ Called as an advice after selecting a model from the menu."
 				   meow/gptel-tool-search
 				   meow/gptel-tool-fetch-url))
 
+(defun meow/opencode ()
+  (interactive)
+  (let ((buf (generate-new-buffer "*opencode*")))
+	(ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" (expand-file-name default-directory)))
+	(switch-to-buffer buf)))
+
 (meow/leader
   "oo" '("opencode" . (lambda () (interactive)
 						(select-window (meow/intelligent-split t))
-						(let ((buf (generate-new-buffer "*opencode*")))
-						  (ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" (expand-file-name default-directory)))
-						  (switch-to-buffer buf))))
-  "oO" '("opencode same window" . (lambda () (interactive)
-									(let ((buf (generate-new-buffer "*opencode*")))
-									  (ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" (expand-file-name default-directory)))
-									  (switch-to-buffer buf))))
+						(meow/opencode)))
+  "oO" '("opencode same window" . meow/opencode)
+  "poo" '("opencode". (lambda () (interactive)
+						(select-window (meow/intelligent-split t))
+						(let ((default-directory (project-root (project-current))))
+						  (meow/opencode))))
+  "poO" '("opencode same window" (lambda () (interactive)
+								   (let ((default-directory (project-root (project-current))))
+									 (meow/opencode))))
   "bo" '("switch to opencode" . (lambda () (interactive)
 								  (consult-buffer
 								   (list
