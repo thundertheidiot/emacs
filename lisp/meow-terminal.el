@@ -48,6 +48,17 @@ If PROJECT is non nil, launch it in the project root."
   (eshell-write-history nil t)
   (eshell-read-history nil t))
 
+(defun meow/eshell-directory-settings ()
+  "Adjust completion when Eshell changes directory."
+  (let ((remote (file-remote-p default-directory)))
+    (setq-local corfu-auto (and (not remote) (default-value 'corfu-auto))
+                corfu-auto-prefix 1
+                ;; Bypass Fish's remote fallback, which can be nil.
+                pcomplete-default-completion-function
+                (if remote
+                    (default-value 'pcomplete-default-completion-function)
+                  #'fish-completion-shell-complete))))
+
 ;; eat is a "full terminal emulator" implemented in native emacs lisp
 ;; this allows for better extensibility and integration than ghostel
 ;; `eat-eshell-mode' is the main purpose, it lets you run most commands inside the eshell buffer with no extra annoyances
@@ -80,9 +91,8 @@ If PROJECT is non nil, launch it in the project root."
   (add-to-list 'eshell-modules-list 'eshell-tramp)
   :hook
   (eshell-mode . meow/turn-off-line-numbers)
-  (eshell-mode . fish-completion-mode)
-  (eshell-mode . (lambda ()
-				   (setq-local corfu-auto-prefix 1)))
+  (eshell-mode . meow/eshell-directory-settings)
+  (eshell-directory-change . meow/eshell-directory-settings)
   (eshell-post-command . meow/eshell-sync-history)
   :general-config
   (meow/leader

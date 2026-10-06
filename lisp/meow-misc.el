@@ -130,6 +130,10 @@ Preserve window configuration when pressing ESC."
    '((tramp-direct-async-process . t)))
 
   (connection-local-set-profiles
+   '(:application tramp :protocol "ssh")
+   'remote-direct-async-process)
+
+  (connection-local-set-profiles
    '(:application tramp :protocol "scp")
    'remote-direct-async-process)
 

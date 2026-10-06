@@ -134,7 +134,12 @@
   :demand t
   :hook (after-init . envrc-global-mode)
   :config
-  (require 'info))
+  (require 'info)
+  (defun meow/envrc-find-env-dir (original)
+    "Follow `envrc-remote' when an existing buffer changes directory."
+    (when (or envrc-remote (not (file-remote-p default-directory)))
+      (funcall original)))
+  (advice-add 'envrc--find-env-dir :around #'meow/envrc-find-env-dir))
 
 (use-package lispyville
   :hook (emacs-lisp-mode . lispyville-mode)
