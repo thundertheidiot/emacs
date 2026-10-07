@@ -16,6 +16,7 @@
   "Define a runonce helper NAME, FORMS are executed only once.
 Called on `after-init-hook' and `server-after-make-frame-hook'.
 If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
+  (declare (indent 1))
   (let ((flag (intern (format "--meow/runonce-flag-%s" name))))
     `(progn
        (defvar ,flag nil)
@@ -29,6 +30,20 @@ If ONLY-DAEMON is set, it's only run on `server-after-make-frame-hook'."
 				   (unless ,flag
 					 ,@forms
 					 (setq ,flag t)))))))
+
+(defmacro meow/runonce-graphical (name &rest forms)
+  "Execute FORMS once for NAME, after a graphical frame is available.
+Retry on `after-init-hook' and `server-after-make-frame-hook' until then."
+  (declare (indent 1))
+  (let ((flag (intern (format "--meow/runonce-graphical-flag-%s" name))))
+    `(progn
+       (defvar ,flag nil)
+       (let ((setup (lambda ()
+                      (when (and (not ,flag) (display-graphic-p))
+                        ,@forms
+                        (setq ,flag t)))))
+         (add-hook 'after-init-hook setup)
+         (add-hook 'server-after-make-frame-hook setup)))))
 
 (defun meow/intelligent-split (&optional force)
   (interactive)

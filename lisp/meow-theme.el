@@ -17,10 +17,8 @@
 ;; different background color for "unimportant" frames
 (use-package solaire-mode
   :config
-  (meow/runonce
-   "solaire" nil
-   (when (display-graphic-p)
-     (solaire-global-mode 1))))
+  (meow/runonce-graphical "solaire"
+    (solaire-global-mode 1)))
 
 (defun meow/theme-setup (_theme)
   "Customize faces dependent on the current theme colors.
@@ -54,7 +52,9 @@ Currently dependent on batppuccin."
   (meow/theme-setup nil)
 
   (add-hook 'enable-theme-functions #'meow/theme-setup)
-  (meow/mode-line))
+  (meow/mode-line)
+  (meow/runonce-graphical "mode-line"
+    (meow/mode-line)))
 
 ;; (let ((green (face-attribute 'success :foreground))
 ;;       (purple (face-attribute 'font-lock-keyword-face :foreground))
