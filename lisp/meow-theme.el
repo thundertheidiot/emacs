@@ -85,7 +85,9 @@ Currently dependent on batppuccin."
 
 (add-hook 'server-after-make-frame-hook
 		  (lambda ()
-			(set-frame-font "Monospace-14")))
+			(set-frame-font "Monospace-14")
+			(when (display-graphic-p)
+			  (meow/mode-line))))
 
 ;; font setup
 ;; (meow/runonce

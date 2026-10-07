@@ -89,8 +89,8 @@ Called as an advice after selecting a model from the menu."
 									 nil 'require-match))
 			(_check (> (length effort) 0)))
       (gptel--set-with-scope 'gptel--request-params
-                            `(:reasoning_effort ,effort)
-                            gptel--set-buffer-locally)
+                             `(:reasoning_effort ,effort)
+                             gptel--set-buffer-locally)
     (gptel--set-with-scope 'gptel--request-params nil gptel--set-buffer-locally)))
 
 (advice-add 'gptel--infix-provider :after #'meow/gptel-openrouter-set-reasoning)
@@ -237,8 +237,9 @@ Called as an advice after selecting a model from the menu."
 
 (defun meow/opencode ()
   (interactive)
-  (let ((buf (generate-new-buffer "*opencode*")))
-	(ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" (expand-file-name default-directory)))
+  (let* ((directory (expand-file-name default-directory))
+		 (buf (generate-new-buffer (format  "*opencode %s*" (abbreviate-file-name directory)))))
+	(ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" directory))
 	(switch-to-buffer buf)))
 
 (meow/leader
