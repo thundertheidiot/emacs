@@ -57,4 +57,6 @@
 
 (run-with-idle-timer 10 t #'garbage-collect)
 
+(setenv "DISPLAY" ":0")
+
 ;;; init.el ends here
