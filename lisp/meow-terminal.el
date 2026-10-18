@@ -162,7 +162,8 @@ If PROJECT is non nil, launch it in the project root."
 				   args)))
 
     (let* ((output (shell-command-to-string
-					(format "nix shell %s --command env"
+					;; impure to allow unfree
+					(format "nix shell %s --impure --command env"
 							(mapconcat #'identity packages " "))))
 		   (lines (split-string output "\n" t))
 		   (environment (mapcar (lambda (line)
@@ -225,10 +226,6 @@ First argument in ARGS is the program name, the rest are switches."
   :hook (ghostel-mode . meow/turn-off-line-numbers)
   :custom
   (ghostel-tramp-shell-integration t)
-  :config
-  (set-face-attribute 'ghostel-default nil
-					  :inherit 'solaire-default-face
-					  :background (face-attribute 'solaire-default-face :background))
   :general-config
   (:keymaps '(ghostel-mode-map) :states '(normal visual)
 			"gk" (lambda () (interactive) (ghostel--navigate-previous-prompt))

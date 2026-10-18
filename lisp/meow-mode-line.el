@@ -148,6 +148,8 @@ NUM is passed from the ultra scroll hook."
   ;; box to make mode line look nicer
   (mapc (lambda (face)
 		  (set-face-attribute face nil
+							  :background (face-background 'solaire-default-face nil t))
+		  (set-face-attribute face nil
 							  :box `(:line-width (1 . 10) :color ,(face-background face nil t) :style nil)
 							  :overline (face-attribute 'shadow :foreground nil t)
 							  :height 110))
@@ -193,12 +195,16 @@ NUM is passed from the ultra scroll hook."
 					(:eval
 					 (meow/mode-line-org-clock))
 
-					(meow/mode-line-nyan-cat (:eval (nyan-create)))
+					(meow/mode-line-nyan-cat
+					 (:eval (when (mode-line-window-selected-p)
+							  (nyan-create))))
 					meow/mode-line-org-agenda))))
 
 ;; load on a new theme
+(remove-hook 'enable-theme-functions
+			 (lambda (_theme) (meow/mode-line)))
 (add-hook 'enable-theme-functions
-		  (lambda (_theme) (meow/mode-line)))
+		  (lambda (_theme) (meow/mode-line)) 95)
 
 ;; (advice-add 'magit-checkout :after #'meow/invalidate-git-cache)
 ;; (add-hook 'find-file-hook #'meow/invalidate-git-cache)

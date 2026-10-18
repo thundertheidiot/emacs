@@ -42,7 +42,7 @@
   ;; remove warning when company doesn't exist
   (lsp-completion-provider :none)
   
-  ;; according to claude this may fix freezes 🤷‍♀️
+  ;; according to claude this may fix freezes
   (lsp-semantic-tokens-enable nil)
 
   ;; use eldoc for info

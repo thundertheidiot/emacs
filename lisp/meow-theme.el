@@ -5,6 +5,7 @@
 (require 'olivetti)
 (require 'lsp-mode)
 (require 'rainbow-delimiters)
+(require 'ghostel)
 
 (defmacro meow/setfaces (&rest args)
   (let ((forms))
@@ -23,8 +24,19 @@
 (defun meow/theme-setup (_theme)
   "Customize faces dependent on the current theme colors.
 Currently dependent on batppuccin."
-  (unless (minibufferp (current-buffer))
+  (when batppuccin--current
 	(meow/setfaces
+	 'default `(:background ,(batppuccin-get-color "bat-base"))
+	 'fringe `(:inherit default :background unspecified)
+	 'solaire-default-face `(:background ,(batppuccin-get-color "bat-mantle"))
+	 'solaire-fringe-face `(:inherit solaire-default-face :background unspecified)
+	 'olivetti-fringe `(:inherit default :background unspecified)
+	 'ghostel-default `(:inherit solaire-default-face :background ,(batppuccin-get-color "bat-mantle"))
+	 'window-divider `(:foreground ,(batppuccin-get-color "bat-surface0"))
+	 'window-divider-first-pixel `(:foreground ,(batppuccin-get-color "bat-surface0"))
+	 'window-divider-last-pixel `(:foreground ,(batppuccin-get-color "bat-surface0"))
+	 'variable-pitch `(:family "Inter Nerd Font")
+
 	 ;; take height from default so decrease/increase font size works
 	 'line-number `(:inherit default)
 	 'line-number-current-line `(:inherit default)
@@ -36,7 +48,8 @@ Currently dependent on batppuccin."
 	 'evil-ex-substitute-replacement `(:foreground ,(batppuccin-get-color "bat-green") :underline t)
 
 	 'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-yellow"))
-	 'rainbow-delimiters-unmatched-face `(:box nil)))
+	 'rainbow-delimiters-unmatched-face `(:box nil))
+	(ghostel-sync-theme))
   
 
   (setopt hl-todo-keyword-faces `(("TODO" . ,(face-attribute 'error :foreground))
@@ -51,7 +64,9 @@ Currently dependent on batppuccin."
 
   (meow/theme-setup nil)
 
-  (add-hook 'enable-theme-functions #'meow/theme-setup)
+  ;; Batppuccin must update its active palette before we read its colors.
+  (remove-hook 'enable-theme-functions #'meow/theme-setup)
+  (add-hook 'enable-theme-functions #'meow/theme-setup 90)
   (meow/mode-line)
   (meow/runonce-graphical "mode-line"
     (meow/mode-line)))
@@ -78,7 +93,16 @@ Currently dependent on batppuccin."
 ;; 						 :foreground red))
 ;;    '(diff-hl-delete diff-hl-dired-delete diff-hl-margin-delete)))
 
-(set-face-attribute 'olivetti-fringe nil :inherit 'solaire-fringe-face)
+(dolist (parameter '((internal-border-width . 0)
+                     (left-fringe . 10)
+                     (right-fringe . 10)))
+  (add-to-list 'default-frame-alist parameter)
+  (when (display-graphic-p)
+    (set-frame-parameter nil (car parameter) (cdr parameter))))
+
+(setq window-divider-default-right-width 1
+      window-divider-default-places 'right-only)
+(window-divider-mode 1)
 
 (add-to-list 'default-frame-alist '(font . "Monospace-14"))
 (set-frame-font "Monospace-14")
