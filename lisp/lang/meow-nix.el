@@ -82,7 +82,7 @@ With prefix ARG, select an executable again."
 (use-package nix-mode
   :demand t ;; lazy loading is bad, i am an emacs server user
   :mode "\\.nix\\'"
-  :hook (nix-mode . lsp-deferred)
+  :hook (nix-mode . eglot-ensure)
   :commands (meow/nix-repl)
   :general-config
   (meow/leader

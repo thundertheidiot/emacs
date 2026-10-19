@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 (use-package lua-mode
   :mode "\\.lua\\'"
-  :hook (lua-mode . lsp-deferred))
+  :hook (lua-mode . eglot-ensure))
 
 (use-package glsl-mode)
 
@@ -25,7 +25,7 @@
 				(".*\\.py\\'" . python-ts-mode))
 			  auto-mode-alist))
 
-(add-hook 'python-ts-mode-hook #'lsp-deferred)
+(add-hook 'python-ts-mode-hook #'eglot-ensure)
 
 (use-package json-ts-mode
   :ensure nil
@@ -33,7 +33,7 @@
 
 (use-package php-mode
   :mode "\\.php\\'"
-  :hook (php-mode . lsp-deferred)
+  :hook (php-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
 			   '(php-mode
@@ -46,11 +46,17 @@
   :config
   (define-derived-mode astro-mode web-mode "astro")
   (define-derived-mode bladephp-web-mode web-mode "bladephp")
-  (add-hook 'bladephp-web-mode-hook #'lsp-deferred)
+  (add-hook 'astro-mode-hook #'eglot-ensure)
+  (add-hook 'bladephp-web-mode-hook #'eglot-ensure)
   (setq auto-mode-alist
 		(append '((".*\\.astro\\'" . astro-mode)
 				  (".*\\.blade\\.php\\'" . bladephp-web-mode))
 				auto-mode-alist))
+  (add-to-list 'eglot-server-programs
+               '((astro-mode :language-id "astro")
+                 "astro-ls" "--stdio"
+                 :initializationOptions
+                 (:typescript (:tsdk "./node_modules/typescript/lib"))))
   (add-to-list 'eglot-server-programs
 			   '(bladephp-web-mode
 				 "rass"
@@ -68,18 +74,18 @@
   :hook
   ((web-mode html-mode) . emmet-mode))
 
-(add-hook 'js-mode-hook #'lsp-deferred)
+(add-hook 'js-mode-hook #'eglot-ensure)
 
 (use-package typescript-ts-mode
   :demand t
   :ensure nil
   :mode (("\\.ts\\'" . typescript-ts-mode)
 		 ("\\.tsx\\'" . tsx-ts-mode))
-  :hook (typescript-ts-mode . lsp-deferred)
-  :hook (tsx-ts-mode . lsp-deferred)
+  :hook (typescript-ts-mode . eglot-ensure)
+  :hook (tsx-ts-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-			   '((typescript-mode tsx-ts-mode astro-mode)
+			   '((typescript-mode typescript-ts-mode tsx-ts-mode)
 				 "rass"
 				 "--" "typescript-language-server" "--stdio"
 				 "--" "vscode-eslint-language-server" "--stdio"))

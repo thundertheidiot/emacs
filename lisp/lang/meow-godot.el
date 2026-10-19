@@ -2,7 +2,7 @@
 (use-package gdscript-mode
   :mode "\\.gdscript\\'"
   :mode "\\.gd\\'"
-  :hook (gdscript-mode . lsp-deferred))
+  :hook (gdscript-mode . eglot-ensure))
 
 ;; the default regex given to directory-files-recursively is ".*.tscn", which adds some cfg files and other useless stuff into the mix
 ;; this override sets a more sensible regex

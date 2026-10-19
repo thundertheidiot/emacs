@@ -1,9 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 (use-package rustic
   :mode ("\\.rs\\'" . rustic-mode)
-  :hook (rustic-mode . lsp-deferred)
+  :hook (rustic-mode . eglot-ensure)
   :init
-  (setq rustic-lsp-client 'lsp-mode
+  (setq rustic-lsp-client 'eglot
 		rustic-use-rust-save-some-buffers t
 		compilation-ask-about-save nil))
 
