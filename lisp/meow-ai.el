@@ -235,6 +235,18 @@ Called as an advice after selecting a model from the menu."
 				   meow/gptel-tool-search
 				   meow/gptel-tool-fetch-url))
 
+(use-package agent-shell
+  :custom
+  (agent-shell-opencode-default-model-id 'model-zai-coding-plan/glm-5.3-flash)
+  :general-config
+  (:keymaps 'override
+			"C-c a o" #'agent-shell)
+  (meow/leader
+    "oA" #'agent-shell)
+  (:keymaps 'agent-shell-mode-map :states '(normal visual insert)
+			"TAB" #'agent-shell-set-session-mode
+			"C-v" #'yank-media))
+
 (defun meow/opencode ()
   (interactive)
   (let* ((directory (expand-file-name default-directory))
