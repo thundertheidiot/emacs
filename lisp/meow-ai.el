@@ -236,8 +236,6 @@ Called as an advice after selecting a model from the menu."
 				   meow/gptel-tool-fetch-url))
 
 (use-package agent-shell
-  :custom
-  (agent-shell-opencode-default-model-id 'model-zai-coding-plan/glm-5.3-flash)
   :general-config
   (:keymaps 'override
 			"C-c a o" #'agent-shell)
