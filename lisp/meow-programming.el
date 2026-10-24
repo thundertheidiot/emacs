@@ -1,4 +1,14 @@
 ;; -*- lexical-binding: t; -*-
+(setq treesit-font-lock-level 2)
+
+(use-package lisp-mode
+  :ensure nil
+  :hook
+  ((lisp-data-mode lisp-mode)
+   . (lambda ()
+       (font-lock-add-keywords
+        nil '(("\\_<:\\(?:\\sw\\|\\s_\\)+\\_>" 0 'meow-lisp-keyword-face))))))
+
 (use-package flycheck
   :demand t
   :hook

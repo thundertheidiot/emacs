@@ -4,8 +4,12 @@
 
 (require 'olivetti)
 (require 'lsp-mode)
-(require 'rainbow-delimiters)
 (require 'ghostel)
+
+(defface meow-lisp-keyword-face
+  '((t (:inherit font-lock-constant-face)))
+  "Face for Lisp keyword symbols."
+  :group 'font-lock-faces)
 
 (defmacro meow/setfaces (&rest args)
   (let ((forms))
@@ -47,8 +51,24 @@ Currently dependent on batppuccin."
 	 'evil-ex-substitute-matches `(:foreground ,(batppuccin-get-color "bat-red") :underline t :weight bold :background nil)
 	 'evil-ex-substitute-replacement `(:foreground ,(batppuccin-get-color "bat-green") :underline t)
 
-	 'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-yellow"))
-	 'rainbow-delimiters-unmatched-face `(:box nil))
+	 'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-text")))
+	;; Keep ordinary code neutral; reserve accents for syntax landmarks.
+	(dolist (face '(font-lock-variable-name-face font-lock-variable-use-face
+					font-lock-function-call-face font-lock-property-name-face
+					font-lock-property-use-face font-lock-operator-face
+					font-lock-bracket-face font-lock-delimiter-face
+					font-lock-punctuation-face font-lock-constant-face
+					font-lock-number-face font-lock-builtin-face))
+	  (set-face-attribute face nil :foreground (batppuccin-get-color "bat-text")))
+	(meow/setfaces
+	 'meow-lisp-keyword-face `(:foreground ,(batppuccin-get-color "bat-red"))
+	 'font-lock-keyword-face `(:foreground ,(batppuccin-get-color "bat-mauve"))
+	 'font-lock-function-name-face `(:foreground ,(batppuccin-get-color "bat-blue"))
+	 'font-lock-type-face `(:foreground ,(batppuccin-get-color "bat-blue"))
+	 'font-lock-string-face `(:foreground ,(batppuccin-get-color "bat-green"))
+	 'font-lock-comment-face `(:foreground ,(batppuccin-get-color "bat-subtext0"))
+	 'font-lock-comment-delimiter-face `(:foreground ,(batppuccin-get-color "bat-subtext0"))
+	 'font-lock-doc-face `(:foreground ,(batppuccin-get-color "bat-subtext0")))
 	(ghostel-sync-theme))
   
 

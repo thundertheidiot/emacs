@@ -192,10 +192,10 @@
 						  '("==" "===" "!=" "!==" "&&" "||"))
   (global-ligature-mode t))
 
-(use-package rainbow-delimiters
-  :hook
-  (prog-mode . rainbow-delimiters-mode)
-  (org-mode . rainbow-delimiters-mode))
+(use-package paren
+  :ensure nil
+  :config
+  (show-paren-mode 1))
 
 
 ;; icons
@@ -214,6 +214,8 @@
 							(nerd-icons-ibuffer-mode)))))
 
 (use-package nerd-icons-completion
+  :after marginalia
+  :demand t
   :hook
   (marginalia-mode . nerd-icons-completion-marginalia-setup)
   :config
@@ -221,8 +223,8 @@
 		'(nerd-icons-mdicon "nf-md-function" nerd-icons-blue)
 		(alist-get 'symbol nerd-icons-completion-category-icons)
 		'(nerd-icons-mdicon "nf-md-symbol" nerd-icons-blue))
-  (when (display-graphic-p)
-	(nerd-icons-completion-mode)))
+  (meow/runonce-graphical "nerd-icons-completion"
+	(nerd-icons-completion-mode 1)))
 
 ;; icons for corfu
 ;; (use-package kind-icon
