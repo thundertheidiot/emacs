@@ -69,6 +69,11 @@ Currently dependent on batppuccin."
 	 'font-lock-comment-face `(:foreground ,(batppuccin-get-color "bat-subtext0"))
 	 'font-lock-comment-delimiter-face `(:foreground ,(batppuccin-get-color "bat-subtext0"))
 	 'font-lock-doc-face `(:foreground ,(batppuccin-get-color "bat-subtext0")))
+	;; Nix uses constants for paths and builtins for import and literals.
+	(meow/setfaces
+	 'nix-constant-face `(:foreground ,(batppuccin-get-color "bat-peach"))
+	 'nix-builtin-face `(:foreground ,(batppuccin-get-color "bat-mauve"))
+	 'nix-attribute-face `(:foreground ,(batppuccin-get-color "bat-blue")))
 	(ghostel-sync-theme))
   
 
