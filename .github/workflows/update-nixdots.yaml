@@ -4,16 +4,15 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - env:
-        GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-      name: Repository dispatch
-      run: |-
-        gh workflow run build-package.yaml \
-          --repo thundertheidiot/nixdots \
-          --ref main \
-          -f package=nixosConfigurations.desktop.config.home-manager.users.thunder.programs.emacs.package \
-          -f flake-input=emacs \
-          -f vps-deploy=false
+      - env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        name: Repository dispatch
+        run: |-
+          gh workflow run build-package.yaml \
+            --repo thundertheidiot/nixdots \
+            --ref main \
+            -f package=nixosConfigurations.desktop.config.home-manager.users.thunder.programs.emacs.package \
+            -f flake-input=emacs
 name: Update emacs in nixdots
-'on':
+"on":
   push: {}
