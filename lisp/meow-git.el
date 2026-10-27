@@ -20,6 +20,10 @@
   :after magit
   :config (magit-todos-mode 1))
 
+(use-package magit-delta
+  :after magit
+  :hook (magit-mode . magit-delta-mode))
+
 ;; (use-package diff-hl
 ;;   :demand t
 ;;   :custom

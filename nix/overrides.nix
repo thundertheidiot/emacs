@@ -82,6 +82,12 @@ final: prev: {
     src = inputs.org-defblock;
   };
 
+  # needs the delta binary; propagatedUserEnvPkgs is what the emacs
+  # wrapper actually links into bin (propagatedNativeBuildInputs don't reach it)
+  magit-delta = prev.magit-delta.overrideAttrs (old: {
+    propagatedUserEnvPkgs = [ pkgs.delta ];
+  });
+
   lsp-mode = prev.lsp-mode.overrideAttrs (prev: {
     buildPhase = ''
       export LSP_USE_PLISTS=true
