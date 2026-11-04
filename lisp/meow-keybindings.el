@@ -52,7 +52,7 @@
   "cr" '("recompile" . recompile)
   "ca" '("code actions" . (lambda () (interactive)
 							(if (eglot-managed-p)
-								(eglot-code-actions (point-min) (point-max) nil t)
+								(eglot-code-actions (point) (point) nil t)
 							  (lsp-execute-code-action (lsp--select-action (lsp-code-actions-at-point))))))
 
   "d" '("dired" . (lambda () (interactive)
