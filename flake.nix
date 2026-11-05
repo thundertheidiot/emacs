@@ -48,6 +48,10 @@
       flake = false;
     };
 
+    # every nixpkgs package version that ever existed, as installables
+    # (used to get zig 0.17.0 for ghostel, which nixpkgs bumped past)
+    multiverse.url = "github:fzakaria/nixpkgs-multiverse";
+
     org-defblock = {
       url = "github:cashpw/org-defblock";
       flake = false;

@@ -3,6 +3,12 @@
   inputs,
   ...
 }:
+let
+  # pull ghostel's zig 0.17.0 from nixpkgs multiverse
+  zig_0_17_0 =
+    inputs.multiverse.multiverse.${pkgs.stdenv.hostPlatform.system}.fast.version "zig_0_17"
+      "0.17.0";
+in
 final: prev: {
   claudepet = final.trivialBuild {
     pname = "claudepet";
@@ -83,11 +89,30 @@ final: prev: {
   };
 
   # needs the delta binary; propagatedUserEnvPkgs is what the emacs
-  # wrapper actually links into bin (propagatedNativeBuildInputs don't reach it)
+  # wrapper actually links into bin
   magit-delta = prev.magit-delta.overrideAttrs (old: {
     propagatedUserEnvPkgs = [ pkgs.delta ];
   });
 
+  # ghostel/evil-ghostel from git
+  ghostel = prev.ghostel.overrideAttrs (old: rec {
+    version = "0.60.0";
+    src = inputs.ghostel;
+    zig = zig_0_17_0;
+    # fetchDeps only downloads the zon dependencies (version-independent)
+    # use nixpkgs' zig for it, the multiverse fake has no passthru.
+    zigDeps = pkgs.zig_0_17.fetchDeps {
+      inherit (old) pname;
+      inherit version src;
+      fetchAll = true;
+      hash = "sha256-Kt3r1B/5kgjMO89gih/87oEtuWmby9NB6oQp5t0vUYw=";
+    };
+  });
+
+  evil-ghostel = prev.evil-ghostel.overrideAttrs (old: {
+    version = "0.60.0";
+    src = inputs.ghostel;
+  });
   lsp-mode = prev.lsp-mode.overrideAttrs (prev: {
     buildPhase = ''
       export LSP_USE_PLISTS=true

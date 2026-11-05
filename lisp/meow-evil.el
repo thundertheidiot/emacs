@@ -38,7 +38,6 @@
 						  debug
 						  diff-hl
 						  dired
-						  eat
 						  ediff
 						  elfeed
 						  emoji
@@ -54,7 +53,6 @@
 						  simple-mpc
 						  sly
 						  vdiff
-						  vterm
 						  wdired
 						  wgrep
 						  woman

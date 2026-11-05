@@ -59,16 +59,8 @@ If PROJECT is non nil, launch it in the project root."
                     (default-value 'pcomplete-default-completion-function)
                   #'fish-completion-shell-complete))))
 
-;; eat is a "full terminal emulator" implemented in native emacs lisp
-;; this allows for better extensibility and integration than ghostel
-;; `eat-eshell-mode' is the main purpose, it lets you run most commands inside the eshell buffer with no extra annoyances
-;; some commands like pulsemixer break down and spam weird errors, ghostel is set up below for "emergency" cases
-(use-package eat
-  :demand t
-  :hook
-  (eat-mode . meow/turn-off-line-numbers)
-  :config
-  (eat-eshell-mode))
+;; eshell is the primary shell (prompts are real buffer text, evil
+;; works natively), ghostel is the terminal for anything full-screen
 
 ;; eshell is a shell and elisp interpreter in one, allowing you to mix paradigms on the fly
 ;; it's a dumb terminal, doesn't support any fancy rendering tricks, and is slow
@@ -84,7 +76,11 @@ If PROJECT is non nil, launch it in the project root."
        (*?
 		nonl)
        "λ "))
-  (eshell-visual-commands '("btop"))
+  (eshell-visual-commands '("btop" "pulsemixer"))
+  ;; visual commands run via ghostel-eshell
+  ;; kill the buffer (and its window, via the ghostel--sentinel advice below)
+  ;; when they exit, instead of lingering on "[Process exited]"
+  (eshell-destroy-buffer-when-process-dies t)
   (eshell-history-append t)
   :config
   (add-to-list 'eshell-modules-list 'eshell-elecslash)
@@ -228,8 +224,8 @@ First argument in ARGS is the program name, the rest are switches."
   (ghostel-tramp-shell-integration t)
   :general-config
   (:keymaps '(ghostel-mode-map) :states '(normal visual)
-			"gk" (lambda () (interactive) (ghostel--navigate-previous-prompt))
-			"gj" (lambda () (interactive) (ghostel--navigate-next-prompt)))
+			"gk" #'ghostel-previous-prompt
+			"gj" #'ghostel-next-prompt)
   (meow/leader
 	"ot" '("ghostel" . (lambda () (interactive)
 						 (select-window (meow/intelligent-split t))
@@ -253,12 +249,21 @@ Around advice for `ghostel--sentinel'.  ORIG-FUN is called with ARGS."
                  (cons (lambda ()
                          (when (eq (current-buffer) buffer)
                            (dolist (window (get-buffer-window-list buffer nil t))
-                             (if (eq t (window-deletable-p window))
-                                 ;; Never delete an atomic group or invoke a quit handler.
-                                 (let ((ignore-window-parameters t))
-                                   (delete-window window))
-                               ;; A dedicated sole window can otherwise kill its frame.
-                               (set-window-dedicated-p window nil)))))
+                             (if (and (eq 'eshell (cdr (assq 'kind ghostel-identity)))
+                                      ;; visual command from eshell, the window
+                                      ;; showed the eshell before, revert to it
+									  ;; instead of deleting the window
+                                      (let ((prev (caar (window-prev-buffers window))))
+                                        (and (buffer-live-p prev)
+                                             (not (eq prev buffer)))))
+                                 (set-window-buffer
+                                  window (caar (window-prev-buffers window)))
+                               (if (eq t (window-deletable-p window))
+                                   ;; never delete an atomic group or invoke a quit handler
+                                   (let ((ignore-window-parameters t))
+                                     (delete-window window))
+                                 ;; a dedicated sole window can otherwise kill its frame
+                                 (set-window-dedicated-p window nil))))))
                        kill-buffer-hook)))
             (apply orig-fun args)))
       (apply orig-fun args))))
