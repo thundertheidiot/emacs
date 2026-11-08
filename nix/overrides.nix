@@ -88,6 +88,12 @@ final: prev: {
     src = inputs.org-defblock;
   };
 
+  madoromi = final.trivialBuild {
+    pname = "madoromi";
+    version = "0.1.0";
+    src = inputs.madoromi-emacs;
+  };
+
   # needs the delta binary; propagatedUserEnvPkgs is what the emacs
   # wrapper actually links into bin
   magit-delta = prev.magit-delta.overrideAttrs (old: {

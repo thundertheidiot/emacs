@@ -5,6 +5,10 @@
 (require 'olivetti)
 (require 'lsp-mode)
 (require 'ghostel)
+(require 'consult)
+(require 'evil-ex)
+(require 'web-mode)
+(require 'nix-mode)
 
 (defface meow-lisp-keyword-face
   '((t (:inherit font-lock-constant-face)))
@@ -27,53 +31,53 @@
 
 (defun meow/theme-setup (_theme)
   "Customize faces dependent on the current theme colors.
-Currently dependent on batppuccin."
-  (when batppuccin--current
+Colors follow the active Madoromi palette."
+  (when madoromi--current
 	(meow/setfaces
-	 'default `(:background ,(batppuccin-get-color "bat-base"))
+	 'default `(:background ,(madoromi-get-color "kami"))
 	 'fringe `(:inherit default :background unspecified)
-	 'solaire-default-face `(:background ,(batppuccin-get-color "bat-mantle"))
+	 'solaire-default-face `(:background ,(madoromi-get-color "hyoshi"))
 	 'solaire-fringe-face `(:inherit solaire-default-face :background unspecified)
 	 'olivetti-fringe `(:inherit default :background unspecified)
-	 'ghostel-default `(:inherit solaire-default-face :background ,(batppuccin-get-color "bat-mantle"))
-	 'window-divider `(:foreground ,(batppuccin-get-color "bat-surface0"))
-	 'window-divider-first-pixel `(:foreground ,(batppuccin-get-color "bat-surface0"))
-	 'window-divider-last-pixel `(:foreground ,(batppuccin-get-color "bat-surface0"))
+	 'ghostel-default `(:inherit solaire-default-face :background ,(madoromi-get-color "hyoshi"))
+	 'window-divider `(:foreground ,(madoromi-get-color "chitsu"))
+	 'window-divider-first-pixel `(:foreground ,(madoromi-get-color "chitsu"))
+	 'window-divider-last-pixel `(:foreground ,(madoromi-get-color "chitsu"))
 	 'variable-pitch `(:family "Inter Nerd Font")
 
 	 ;; take height from default so decrease/increase font size works
 	 'line-number `(:inherit default)
 	 'line-number-current-line `(:inherit default)
 
-	 'consult-highlight-match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background nil)
-	 'match `(:foreground ,(batppuccin-get-color "bat-green") :underline t :weight bold :background ,(batppuccin-get-color "bat-surface1"))
+	 'consult-highlight-match `(:foreground ,(madoromi-get-color "tokiwa") :underline t :weight bold :background nil)
+	 'match `(:foreground ,(madoromi-get-color "tokiwa") :underline t :weight bold :background ,(madoromi-get-color "nijimi0"))
 
-	 'evil-ex-substitute-matches `(:foreground ,(batppuccin-get-color "bat-red") :underline t :weight bold :background nil)
-	 'evil-ex-substitute-replacement `(:foreground ,(batppuccin-get-color "bat-green") :underline t)
+	 'evil-ex-substitute-matches `(:foreground ,(madoromi-get-color "beni") :underline t :weight bold :background nil)
+	 'evil-ex-substitute-replacement `(:foreground ,(madoromi-get-color "tokiwa") :underline t)
 
-	 'web-mode-block-delimiter-face `(:foreground ,(batppuccin-get-color "bat-text")))
+	 'web-mode-block-delimiter-face `(:foreground ,(madoromi-get-color "sumi")))
 	;; Keep ordinary code neutral; reserve accents for syntax landmarks.
 	(dolist (face '(font-lock-variable-name-face font-lock-variable-use-face
-					font-lock-function-call-face font-lock-property-name-face
-					font-lock-property-use-face font-lock-operator-face
-					font-lock-bracket-face font-lock-delimiter-face
-					font-lock-punctuation-face font-lock-constant-face
-					font-lock-number-face font-lock-builtin-face))
-	  (set-face-attribute face nil :foreground (batppuccin-get-color "bat-text")))
+												 font-lock-function-call-face font-lock-property-name-face
+												 font-lock-property-use-face font-lock-operator-face
+												 font-lock-bracket-face font-lock-delimiter-face
+												 font-lock-punctuation-face font-lock-constant-face
+												 font-lock-number-face font-lock-builtin-face))
+	  (set-face-attribute face nil :foreground (madoromi-get-color "sumi")))
 	(meow/setfaces
-	 'meow-lisp-keyword-face `(:foreground ,(batppuccin-get-color "bat-red"))
-	 'font-lock-keyword-face `(:foreground ,(batppuccin-get-color "bat-mauve"))
-	 'font-lock-function-name-face `(:foreground ,(batppuccin-get-color "bat-blue"))
-	 'font-lock-type-face `(:foreground ,(batppuccin-get-color "bat-blue"))
-	 'font-lock-string-face `(:foreground ,(batppuccin-get-color "bat-green"))
-	 'font-lock-comment-face `(:foreground ,(batppuccin-get-color "bat-subtext0"))
-	 'font-lock-comment-delimiter-face `(:foreground ,(batppuccin-get-color "bat-subtext0"))
-	 'font-lock-doc-face `(:foreground ,(batppuccin-get-color "bat-subtext0")))
+	 'meow-lisp-keyword-face `(:foreground ,(madoromi-get-color "beni"))
+	 'font-lock-keyword-face `(:foreground ,(madoromi-get-color "botan"))
+	 'font-lock-function-name-face `(:foreground ,(madoromi-get-color "ai"))
+	 'font-lock-type-face `(:foreground ,(madoromi-get-color "ai"))
+	 'font-lock-string-face `(:foreground ,(madoromi-get-color "tokiwa"))
+	 'font-lock-comment-face `(:foreground ,(madoromi-get-color "usuzumi0"))
+	 'font-lock-comment-delimiter-face `(:foreground ,(madoromi-get-color "usuzumi0"))
+	 'font-lock-doc-face `(:foreground ,(madoromi-get-color "usuzumi0")))
 	;; Nix uses constants for paths and builtins for import and literals.
 	(meow/setfaces
-	 'nix-constant-face `(:foreground ,(batppuccin-get-color "bat-peach"))
-	 'nix-builtin-face `(:foreground ,(batppuccin-get-color "bat-mauve"))
-	 'nix-attribute-face `(:foreground ,(batppuccin-get-color "bat-blue")))
+	 'nix-constant-face `(:foreground ,(madoromi-get-color "kaki"))
+	 'nix-builtin-face `(:foreground ,(madoromi-get-color "botan"))
+	 'nix-attribute-face `(:foreground ,(madoromi-get-color "ai")))
 	(ghostel-sync-theme))
   
 
@@ -82,14 +86,14 @@ Currently dependent on batppuccin."
 								  ("NOTE" . ,(face-attribute 'match :foreground))
 								  ("FIXME" . ,(face-attribute 'error :foreground)))))
 
-(use-package batppuccin
+(use-package madoromi
   :config
-  (require 'batppuccin-autoloads)
-  (load-theme 'batppuccin-latte t)
+  (add-to-list 'custom-theme-load-path
+               (file-name-directory (locate-library "madoromi-aki-hiru-theme")))
+  (load-theme 'madoromi-aki-hiru t)
 
   (meow/theme-setup nil)
 
-  ;; Batppuccin must update its active palette before we read its colors.
   (remove-hook 'enable-theme-functions #'meow/theme-setup)
   (add-hook 'enable-theme-functions #'meow/theme-setup 90)
   (meow/mode-line)

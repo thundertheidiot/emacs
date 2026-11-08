@@ -56,6 +56,11 @@
       url = "github:cashpw/org-defblock";
       flake = false;
     };
+
+    madoromi-emacs = {
+      url = "github:thundertheidiot/madoromi-emacs";
+      flake = false;
+    };
   };
 
   outputs =

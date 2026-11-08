@@ -258,6 +258,22 @@
         "type": "github"
       }
     },
+    "madoromi-emacs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794127147,
+        "narHash": "sha256-p/eMO2sHhyw/eE7+0wlXRM3wP4lxZ4WjEGzTbpLN2Ws=",
+        "owner": "thundertheidiot",
+        "repo": "madoromi-emacs",
+        "rev": "eb7f80dadda4d60b296a11fdbc894d38657c8b67",
+        "type": "github"
+      },
+      "original": {
+        "owner": "thundertheidiot",
+        "repo": "madoromi-emacs",
+        "type": "github"
+      }
+    },
     "multiverse": {
       "locked": {
         "lastModified": 1793812214,
@@ -396,6 +412,7 @@
         "ghostel": "ghostel",
         "gptel-zai": "gptel-zai",
         "home-manager": "home-manager",
+        "madoromi-emacs": "madoromi-emacs",
         "multiverse": "multiverse",
         "nixpkgs": "nixpkgs_4",
         "org-defblock": "org-defblock"
