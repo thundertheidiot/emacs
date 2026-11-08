@@ -219,37 +219,67 @@ CALLBACK is called when done."
 			 (push (cons (car types) songs) meow/mpd-song-cache)))))
 	 (when callback (funcall callback)))))
 
-;; WIP progress bar
-;; (defvar meow/mpd-progress-timer nil)
-;; (defvar meow/mpd-progress-bar-active nil)
-;; (defvar meow/mpd-progress-bar-string "")
+;; The overlay lives before the prompt, not in the echo area or Vertico's
+;; candidate display.  It therefore travels with the minibuffer in posframes.
+(defvar-local meow/mpd-progress-overlay nil)
+(defvar-local meow/mpd-progress-timer nil)
+(defvar-local meow/mpd-progress-pending nil)
 
-;; (defun meow/mpd-progress-start ()
-;;   (unless meow/mpd-progress-timer
-;; 	(setq meow/mpd-progress-timer
-;; 		  (run-with-timer 0 1 #'meow/--mpd-draw-progress-bar))))
+(defun meow/--mpd-progress-format (data)
+  "Format MPD status DATA as a compact progress bar."
+  (let* ((state (cdr (assq 'state data)))
+         (elapsed (cdr (assq 'elapsed data)))
+         (duration (cdr (assq 'duration data)))
+         (elapsed (and elapsed (string-to-number elapsed)))
+         (duration (and duration (string-to-number duration))))
+    (if (and elapsed duration (> duration 0)
+             (member state '("play" "pause")))
+        (let* ((fraction (max 0.0 (min 1.0 (/ (float elapsed) duration))))
+               (filled (floor (* 12 fraction))))
+          (format "[%s%s] %d:%02d/%d:%02d%s  "
+                  (make-string filled ?=) (make-string (- 12 filled) ?-)
+                  (/ (floor elapsed) 60) (% (floor elapsed) 60)
+                  (/ (floor duration) 60) (% (floor duration) 60)
+                  (if (equal state "pause") " paused" "")))
+      "[MPD stopped]  ")))
 
-;; (defun meow/mpd-progress-stop ()
-;;   (when meow/mpd-progress-timer
-;; 	(cancel-timer meow/mpd-progress-timer)
-;; 	(setq meow/mpd-progress-timer nil)))
+(defun meow/--mpd-progress-poll (buffer overlay)
+  "Request playback status for BUFFER while OVERLAY is active."
+  (when (and (buffer-live-p buffer) (overlay-buffer overlay))
+    (with-current-buffer buffer
+      (unless meow/mpd-progress-pending
+        (setq meow/mpd-progress-pending t)
+        (condition-case nil
+            (libmpdel-send-command
+             "status"
+             (lambda (data)
+               (when (and (buffer-live-p buffer) (overlay-buffer overlay))
+                 (with-current-buffer buffer
+                   (setq meow/mpd-progress-pending nil)
+                   (overlay-put overlay 'before-string
+                                (propertize (meow/--mpd-progress-format data)
+                                            'face 'shadow))
+                   (force-mode-line-update)))))
+          (error (setq meow/mpd-progress-pending nil)))))))
 
-;; (defun meow/--mpd-draw-progress-bar ()
-;;   (libmpdel-send-command
-;;    "status"
-;;    (lambda (data)
-;; 	 (let ((elapsed (string-to-number (cdr (assoc 'elapsed data))))
-;; 		   (duration (string-to-number (cdr (assoc 'duration data)))))
-;; 	   (when (and elapsed duration)
-;; 		 (let ((fraction (/ elapsed duration))
-;; 			   (len 64))
-;; 		   (setq meow/mpd-progress-bar-string
-;; 				 (message "[%s%s]"
-;; 						  (propertize
-;; 						   (concat (make-string (1- (floor (* len fraction))) ?=)
-;; 								   ">")
-;; 						   'face `(:foreground ,(batppuccin-get-color "bat-green")))
-;; 						  (make-string (floor (* len (- 1 fraction))) ?-)))))))))
+(defun meow/--mpd-progress-stop ()
+  "Remove the queue progress display and cancel its timer."
+  (when (timerp meow/mpd-progress-timer)
+    (cancel-timer meow/mpd-progress-timer))
+  (setq meow/mpd-progress-timer nil meow/mpd-progress-pending nil)
+  (when (overlayp meow/mpd-progress-overlay)
+    (delete-overlay meow/mpd-progress-overlay))
+  (setq meow/mpd-progress-overlay nil))
+
+(defun meow/--mpd-progress-setup ()
+  "Show playback progress for this minibuffer session."
+  (let ((buffer (current-buffer))
+        (overlay (make-overlay (point-min) (point-min))))
+    (setq-local meow/mpd-progress-overlay overlay)
+    (overlay-put overlay 'before-string (propertize "[MPD …]  " 'face 'shadow))
+    (add-hook 'minibuffer-exit-hook #'meow/--mpd-progress-stop nil t)
+    (setq-local meow/mpd-progress-timer
+                (run-with-timer 0 1 #'meow/--mpd-progress-poll buffer overlay))))
 
 (defun meow/mpd-search ()
   "Search through songs with consult."
@@ -313,7 +343,13 @@ CALLBACK is called when done."
    'current-playlist
    (lambda (songs)
      (let* ((vertico-sort-override-function #'identity)
-			(meow/mpd-progress-bar-active t)
+            (progress-started nil)
+            (minibuffer-setup-hook
+             (cons (lambda ()
+                     (unless progress-started
+                       (setq progress-started t)
+                       (meow/--mpd-progress-setup)))
+                   minibuffer-setup-hook))
 			(candidate
 			 (consult--read
 			  (if-let* ((cur (libmpdel-current-song))
@@ -412,23 +448,23 @@ Doubles up as a generic playlist selector, which you can embark with."
   "Move volume down by volume step."
   (interactive)
   (libmpdel-get-state 'volume
-    (lambda (volume)
-      (if (and volume (>= (string-to-number volume) 0))
-          (let ((volume (max 0 (min 100 (- (string-to-number volume) meow/mpd-volume-step)))))
-            (libmpdel-playback-set-volume volume)
-            (message "Volume %d" volume))
-        (message "MPD volume unavailable")))))
+					  (lambda (volume)
+						(if (and volume (>= (string-to-number volume) 0))
+							(let ((volume (max 0 (min 100 (- (string-to-number volume) meow/mpd-volume-step)))))
+							  (libmpdel-playback-set-volume volume)
+							  (message "Volume %d" volume))
+						  (message "MPD volume unavailable")))))
 
 (defun meow/mpd-volume-up ()
   "Move volume up by volume step."
   (interactive)
   (libmpdel-get-state 'volume
-    (lambda (volume)
-      (if (and volume (>= (string-to-number volume) 0))
-          (let ((volume (max 0 (min 100 (+ (string-to-number volume) meow/mpd-volume-step)))))
-            (libmpdel-playback-set-volume volume)
-            (message "Volume %d" volume))
-        (message "MPD volume unavailable")))))
+					  (lambda (volume)
+						(if (and volume (>= (string-to-number volume) 0))
+							(let ((volume (max 0 (min 100 (+ (string-to-number volume) meow/mpd-volume-step)))))
+							  (libmpdel-playback-set-volume volume)
+							  (message "Volume %d" volume))
+						  (message "MPD volume unavailable")))))
 
 (transient-define-prefix meow/mpd-transient-menu ()
   [["Menu"
