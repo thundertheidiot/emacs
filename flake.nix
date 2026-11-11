@@ -97,7 +97,7 @@
             };
 
             config = {
-              programs.emacs.package = mkDefault inputs.self.packages.${pkgs.system}.${config.meowEmacs.package};
+              programs.emacs.package = mkDefault inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.${config.meowEmacs.package};
             };
           };
       };
@@ -129,7 +129,7 @@
 
               programs.ewm.emacsPackage =
                 mkDefault
-                  inputs.self.packages.${pkgs.system}.${config.meowEmacs.package};
+                  inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.${config.meowEmacs.package};
             };
           };
       };

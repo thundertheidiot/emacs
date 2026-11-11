@@ -16,6 +16,8 @@
   (eglot-managed-mode . flycheck-mode)
   (flycheck-mode . (lambda () (flycheck-set-indication-mode 'left-fringe)))
   :config
+  ;; native eglot bridge (flycheck >= 38; replaces the flycheck-eglot package)
+  (global-flycheck-eglot-mode 1)
   (add-to-list 'display-buffer-alist
 			   '((major-mode . flycheck-error-list-mode)
 				 meow/display-buffer-in-side-window-fixed
@@ -34,13 +36,6 @@
   :general
   (meow/leader
 	"sd" '("flycheck" . consult-flycheck)))
-
-;; integrate flycheck with eglot
-(use-package flycheck-eglot
-  :demand t
-  :after (flycheck eglot)
-  :config
-  (global-flycheck-eglot-mode 1))
 
 ;; autocompletion
 (use-package corfu
