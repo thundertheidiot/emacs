@@ -4,6 +4,18 @@
 (setq-default tab-width 4
 			  c-basic-offset 4)
 
+;; the pwayl backend only enables text-input-v3 (fcitx5/mozc, and fcitx5's own
+;; trigger key) for buffers whose `text-conversion-style' is non-nil
+(setq-default text-conversion-style t)
+
+;; the pwayl backend serves the legacy text targets through x11-style
+;; converters, `text/plain' becomes "?" for non-ASCII and STRING/TEXT
+;; become Latin-1 bytes, this fixes pasting text to discord or other xwayland apps
+(dolist (target '(text/plain STRING TEXT))
+  (setf (alist-get target selection-converter-alist)
+		(lambda (selection _type value)
+		  (xselect-convert-to-string selection 'UTF8_STRING value))))
+
 (setq use-short-answers t
       native-comp-async-report-warnings-errors 'silent
 
