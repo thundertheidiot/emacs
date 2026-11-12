@@ -153,4 +153,14 @@ Retry on `after-init-hook' and `server-after-make-frame-hook' until then."
 		 (funcall callback process buf))))
 	buf))
 
+(defun meow/nixdots-behind ()
+  "Return a warning when the running system isn't in nixdots HEAD."
+  (when-let* (((not (file-remote-p default-directory)))
+              (root (locate-dominating-file default-directory "flake/mksystem.nix"))
+              ((executable-find "nixdots-behind")))
+    (with-temp-buffer
+      (let ((default-directory root))
+        (unless (zerop (call-process "nixdots-behind" nil t))
+          (string-trim (buffer-string)))))))
+
 (provide 'meow-helpers)

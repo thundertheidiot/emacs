@@ -24,6 +24,9 @@ If PROJECT is non nil, launch it in the project root."
 (defun meow/eshell-prompt ()
   "Custom eshell prompt."
   (concat
+   (when-let* ((msg (meow/nixdots-behind)))
+     (propertize (concat msg "\n") 'face 'error))
+
    (when (and meow/eshell-nix-shell-path meow/eshell-nix-shell-environment)
      (propertize "<nix-shell> " 'face '(:foreground "green")))
 

@@ -16,6 +16,14 @@
 	"gp" '("push" . magit-push)
 	"gF" '("push" . magit-pull)))
 
+(defun meow/magit-insert-nixdots-behind ()
+  "Show `meow/nixdots-behind' in the magit status header."
+  (when-let* ((msg (meow/nixdots-behind)))
+    (insert (propertize (concat msg "\n") 'font-lock-face 'error))))
+
+(with-eval-after-load 'magit
+  (add-hook 'magit-status-headers-hook #'meow/magit-insert-nixdots-behind))
+
 (use-package magit-todos
   :after magit
   :config (magit-todos-mode 1))
