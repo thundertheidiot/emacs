@@ -8,6 +8,22 @@
 ;; trigger key) for buffers whose `text-conversion-style' is non-nil
 (setq-default text-conversion-style t)
 
+;; transient (20261101 / 0.13.9, also emacs 31 builtin) has the two setqs in
+;; `transient--suspend-text-conversion-style' swapped: entering a transient is a
+;; no-op and exiting it sets `overriding-text-conversion-style' to nil for good,
+;; which disables the IME in every buffer after the first magit/empv menu.  it
+;; only runs when `text-conversion-style' is non-nil, so the line above armed it
+(with-eval-after-load 'transient
+  (defun transient--suspend-text-conversion-style ()
+	(when (and (bound-and-true-p text-conversion-style)
+			   (bound-and-true-p overriding-text-conversion-style))
+	  (letrec ((suspended overriding-text-conversion-style)
+			   (fn (lambda ()
+					 (setq overriding-text-conversion-style suspended)
+					 (remove-hook 'transient-exit-hook fn))))
+		(setq overriding-text-conversion-style nil)
+		(add-hook 'transient-exit-hook fn)))))
+
 ;; the pwayl backend serves the legacy text targets through x11-style
 ;; converters, `text/plain' becomes "?" for non-ASCII and STRING/TEXT
 ;; become Latin-1 bytes, this fixes pasting text to discord or other xwayland apps
