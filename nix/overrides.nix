@@ -105,7 +105,7 @@ final: prev: {
 
   # ghostel/evil-ghostel from git
   ghostel = prev.ghostel.overrideAttrs (old: rec {
-    version = "0.60.0";
+    version = "0.66.0";
     src = inputs.ghostel;
     zig = zig_0_17_0;
     # fetchDeps only downloads the zon dependencies (version-independent)
@@ -114,12 +114,12 @@ final: prev: {
       inherit (old) pname;
       inherit version src;
       fetchAll = true;
-      hash = "sha256-Kt3r1B/5kgjMO89gih/87oEtuWmby9NB6oQp5t0vUYw=";
+      hash = "sha256-X16YfBc8i84G2/Dd7/qPhm0lRMDJDLfWCcLeXymb4yg=";
     };
   });
 
   evil-ghostel = prev.evil-ghostel.overrideAttrs (old: {
-    version = "0.60.0";
+    version = "0.66.0";
     src = inputs.ghostel;
   });
   lsp-mode = prev.lsp-mode.overrideAttrs (prev: {
