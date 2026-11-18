@@ -67,7 +67,7 @@
 
 (use-package yasnippet
   :custom
-  (yas-snippets-dirs (expand-file-name "snippets" user-emacs-directory))
+  (yas-snippet-dirs (expand-file-name "snippets" user-emacs-directory))
   :hook ((lsp-mode . yas-minor-mode)))
 
 (defun meow/lsp-supercomplete ()

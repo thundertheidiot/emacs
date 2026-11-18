@@ -40,14 +40,18 @@
     ("=" "Volume Up" empv-volume-up :transient t)]])
 
 (defmacro media-menu--mpv-or-mpd-action (mpv mpd &optional mpv-args mpd-args)
-  "If the mpv playlist is not empty, call MPV, else call MPD.
-MPV is called with MPV-ARGS and MPD is called with MPD-ARGS."
-  `(empv--send-command
-    '("get_property_string" "playlist")
-    (lambda (result)
-      (if (> (length (json-parse-string result)) 0)
-		  (apply ,mpv ,mpv-args)
-		(apply ,mpd ,mpd-args)))))
+  "If mpv is running with a non-empty playlist, call MPV, else call MPD.
+MPV is called with MPV-ARGS and MPD is called with MPD-ARGS.
+mpv is checked with `empv--running?' first, because
+`empv--send-command' starts an idle mpv when none is running."
+  `(if (empv--running?)
+	   (empv--send-command
+		'("get_property_string" "playlist")
+		(lambda (result)
+		  (if (> (length (json-parse-string result)) 0)
+			  (apply ,mpv ,mpv-args)
+			(apply ,mpd ,mpd-args))))
+	 (apply ,mpd ,mpd-args)))
 
 (defun media-menu--toggle ()
   (interactive)

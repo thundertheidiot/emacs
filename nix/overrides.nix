@@ -32,7 +32,7 @@ final: prev: {
       withScreencastSupport = true;
     })
     // {
-      propagatedNativeBuildInputs = [
+      propagatedUserEnvPkgs = [
         pkgs.wayfreeze
         pkgs.grim
         pkgs.slurp
@@ -46,7 +46,7 @@ final: prev: {
 
     src = inputs.eglot-booster;
 
-    propagatedNativeBuildInputs = [
+    propagatedUserEnvPkgs = [
       pkgs.emacs-lsp-booster
     ];
   };

@@ -191,7 +191,9 @@ The range is used to detect whether the tag is split across multiple lines."
         (if multiline
             (progn
               (insert "\n")
-              (open-line 1)
+              ;; keep attributes that followed the tag name on their own line
+              (unless (looking-at-p "[ \t]*$")
+                (open-line 1))
               (indent-for-tab-command))
           (insert " "))
         (insert (if (string-empty-p value) attr (concat attr "=" value)))))))

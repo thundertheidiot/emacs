@@ -134,6 +134,9 @@ Create a list of `libpdel-song' from DATA."
   "Fields to include in the searchable text of a formatted MPD song.
 Don't override this, it's let bound in every relevant case.")
 
+(defvar meow/--mpd-candidate-counter 0
+  "Counter making formatted MPD song candidates unique.")
+
 (defun meow/--format-mpd-song (song &optional cur-id)
   "Format libmpdel song SONG for consult.
 Highlight the song with CUR-ID."
@@ -151,8 +154,10 @@ Highlight the song with CUR-ID."
 					  ('album album)
 					  ('file file)))
 				  meow/mpd-song-fields))
-		 ;; entries with the same string get deduped, this prevents that
-		 (unique-suffix (format " %s" (or (libmpdel--song-id song) (random)))))
+		 ;; entries with the same string get deduped, this prevents that.
+		 ;; tofu chars are private-use codepoints, so queries never match them.
+		 (unique-suffix (consult--tofu-encode
+						 (cl-incf meow/--mpd-candidate-counter))))
     (apply
      #'propertize
 	 (concat (string-join search-strings " ") unique-suffix)

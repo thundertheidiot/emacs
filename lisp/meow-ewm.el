@@ -103,8 +103,8 @@
 
   (defun meow/battery-display ()
 	(if-let* ((status (ignore-errors (funcall battery-status-function))))
-		(let* ((percentage (string-to-number (alist-get ?\p status)))
-			   (charging (string-match-p "Charging" (alist-get ?\B status)))
+		(let* ((percentage (string-to-number (alist-get ?p status)))
+			   (charging (string-match-p "Charging" (alist-get ?B status)))
 			   (icon (cond
 					  (charging "")
 					  ((>= percentage 90) "")
@@ -114,9 +114,9 @@
 					  (t ""))))
 		  (format "%s %s (%s)  "
 				  icon
-				  (alist-get ?\p status)
+				  (alist-get ?p status)
 
-				  (alist-get ?\t status)))
+				  (alist-get ?t status)))
 	  ""))
 
   (setq global-mode-string '(""

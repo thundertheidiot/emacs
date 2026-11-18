@@ -102,6 +102,11 @@ even when an existing window is reused. Claudeslop."
 			 "^\\*Embark Export")
 		 display-buffer-reuse-window
 		 (inhibit-same-window . t))
+		;; ("add-to-load-path"
+		;;  meow/display-buffer-in-side-window-fixed
+		;;  (side . bottom)
+		;;  (window-height . 15)
+		;;  (preserve-size . (nil . t )))
 		("^\\*eldoc"
 		 meow/display-buffer-in-side-window-fixed
 		 (side . bottom)
@@ -130,15 +135,6 @@ Preserve window configuration when pressing ESC."
   (let ((buffer-quit-function (or buffer-quit-function #'ignore)))
     (funcall fun)))
 (advice-add #'keyboard-escape-quit :around #'advice!-keyboard-escape-quit-adv)
-
-;; better pixel scroll
-(use-package ultra-scroll
-  :init
-  (setq scroll-conservatively 101 ; important!
-        scroll-margin 0
-		jit-lock-defer-time 0.05)  ; defer fontification
-  :config
-  (ultra-scroll-mode 1))
 
 ;; this fixes rendering of eldoc for at least haskell language server
 (use-package markdown-mode

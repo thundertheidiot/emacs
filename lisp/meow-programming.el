@@ -148,7 +148,7 @@
 
 (use-package lispyville
   :hook (emacs-lisp-mode . lispyville-mode)
-  :hook (common-lisp-mode . lispyville-mode)
+  :hook (lisp-mode . lispyville-mode)
   :config
   (lispyville-set-key-theme
    '((operators normal)

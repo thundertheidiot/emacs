@@ -97,7 +97,9 @@
             };
 
             config = {
-              programs.emacs.package = mkDefault inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.${config.meowEmacs.package};
+              programs.emacs.package =
+                mkDefault
+                  inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.${config.meowEmacs.package};
             };
           };
       };
@@ -158,10 +160,10 @@
           };
 
           packages.default = config.packages.emacs-pwayl;
-          packages.clawdpet = config.packages.emacs-pwayl.epkgs.clawdpet;
-          checks.clawdpet = config.packages.clawdpet;
+          packages.claudepet = config.packages.emacs-pwayl.epkgs.clawdpet;
+          checks.claudepet = config.packages.clawdpet;
 
-          devShells.clawdpet = pkgs.mkShell {
+          devShells.claudepet = pkgs.mkShell {
             packages = [
               (config.packages.emacs-pwayl.epkgs.emacsWithPackages (epkgs: [
                 epkgs.posframe

@@ -43,6 +43,9 @@
 (require 'web-mode-tagedit)
 
 (use-package web-mode
+  ;; web-mode doesn't claim any extensions itself, so plain HTML fell
+  ;; through to mhtml-mode, where tagedit and the SPC l t bindings don't exist
+  :mode "\\.html?\\'"
   :config
   (define-derived-mode astro-mode web-mode "astro")
   (define-derived-mode bladephp-web-mode web-mode "bladephp")

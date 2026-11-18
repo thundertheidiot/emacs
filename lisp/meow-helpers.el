@@ -68,13 +68,6 @@ Retry on `after-init-hook' and `server-after-make-frame-hook' until then."
   "Turn off line numbers 🤯."
   (display-line-numbers-mode 0))
 
-(add-to-list 'display-buffer-alist
-			 '("add-to-load-path"
-			   meow/display-buffer-in-side-window-fixed
-			   (side . bottom)
-			   (window-height . 15)
-			   (preserve-size . (nil . t ))))
-
 (defun add-to-load-path (packages)
   "Add PACKAGES from the Emacs flake to `load-path'."
   (interactive "sPackage(s): ")

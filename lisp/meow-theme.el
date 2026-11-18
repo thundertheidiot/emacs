@@ -49,10 +49,10 @@ Colors follow the active Madoromi palette."
 	 'line-number `(:inherit default)
 	 'line-number-current-line `(:inherit default)
 
-	 'consult-highlight-match `(:foreground ,(madoromi-get-color "tokiwa") :underline t :weight bold :background nil)
+	 'consult-highlight-match `(:foreground ,(madoromi-get-color "tokiwa") :underline t :weight bold :background unspecified)
 	 'match `(:foreground ,(madoromi-get-color "tokiwa") :underline t :weight bold :background ,(madoromi-get-color "nijimi0"))
 
-	 'evil-ex-substitute-matches `(:foreground ,(madoromi-get-color "beni") :underline t :weight bold :background nil)
+	 'evil-ex-substitute-matches `(:foreground ,(madoromi-get-color "beni") :underline t :weight bold :background unspecified)
 	 'evil-ex-substitute-replacement `(:foreground ,(madoromi-get-color "tokiwa") :underline t)
 
 	 'web-mode-block-delimiter-face `(:foreground ,(madoromi-get-color "sumi")))

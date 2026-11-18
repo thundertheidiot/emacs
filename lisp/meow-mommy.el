@@ -7,7 +7,8 @@ This is an `:around' advice for `eshell-external-command'.
 
 ORIG-FUN is the original function, COMMAND is the command.
 ARGS is the list of arguments passed to the function."
-  (if-let* ((mommy (executable-find "cargo-mommy"))
+  (if-let* (((not (file-remote-p default-directory)))
+	    (mommy (executable-find "cargo-mommy"))
 	    (_contains (not (member command eshell-visual-commands))))
       (let ((process-environment
 	     (cons (format "CARGO_MOMMYS_ACTUAL=%s" command)
@@ -19,7 +20,8 @@ ARGS is the list of arguments passed to the function."
 
 (defun async-shell-command-cargo-mommy (orig-fun command &optional &rest args)
   "Wrap the intact shell COMMAND with Cargo Mommy, forwarding ARGS to ORIG-FUN."
-  (if-let* ((mommy (executable-find "cargo-mommy")))
+  (if-let* (((not (file-remote-p default-directory)))
+            (mommy (executable-find "cargo-mommy")))
       (let ((process-environment
              (cons (format "CARGO_MOMMYS_ACTUAL=%s" shell-file-name)
                    process-environment)))

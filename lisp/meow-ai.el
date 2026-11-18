@@ -23,11 +23,61 @@
 (defvar meow/openrouter-data nil
   "Cached data from the openrouter models endpoint.")
 
-(defun meow/openrouter-setup (api-key)
-  "Set up openrouter for gptel with the API-KEY."
+(defvar meow/openrouter-key-file (expand-file-name "openrouterkey" user-emacs-directory)
+  "File holding the OpenRouter API key.")
+
+(defvar meow/openrouter-retry-delay 60
+  "Seconds before retrying a failed OpenRouter model fetch.")
+
+(defvar meow/openrouter-default-models '(deepseek/deepseek-v4-flash-0731)
+  "Models offered before the OpenRouter model list has been fetched.")
+
+(defun meow/openrouter-key ()
+  "Return the trimmed OpenRouter API key, or nil when there is none."
+  (when (file-readable-p meow/openrouter-key-file)
+	(let ((key (string-trim
+				(with-temp-buffer
+				  (insert-file-contents meow/openrouter-key-file)
+				  (buffer-string)))))
+	  (unless (string-empty-p key) key))))
+
+(defun meow/openrouter-make-backend (models)
+  "Register the OpenRouter gptel backend offering MODELS, and select it."
+  (setq gptel-backend
+		(gptel-make-openai "OpenRouter"
+		  :host "openrouter.ai"
+		  :endpoint "/api/v1/chat/completions"
+		  :stream t
+		  :key #'meow/openrouter-key
+		  :models models)))
+
+(defun meow/openrouter-setup ()
+  "Set up openrouter for gptel.
+The backend starts out with `meow/openrouter-default-models' so it works
+right away. The full model list is fetched in the background, and a failed
+fetch (e.g. offline) is retried after `meow/openrouter-retry-delay' seconds."
+  (if-let* ((api-key (meow/openrouter-key)))
+	  (progn
+		(meow/openrouter-make-backend meow/openrouter-default-models)
+		(meow/openrouter-fetch-models api-key))
+	(message "OpenRouter: no key in %s, backend not set up" meow/openrouter-key-file)))
+
+(defun meow/openrouter-fetch-models (api-key)
+  "Fetch the OpenRouter model list with API-KEY and refresh the backend."
   (plz 'get "https://openrouter.ai/api/v1/models"
 	:headers `(("Authorization" . ,(format "Bearer %s" api-key)))
 	:as #'json-read
+	:else (lambda (err)
+			(message "OpenRouter: model fetch failed (%s), retrying in %ds"
+					 (if (plz-error-p err)
+						 (or (plz-error-message err)
+							 (plz-error-curl-error err)
+							 (when-let* ((resp (plz-error-response err)))
+							   (plz-response-status resp)))
+					   err)
+					 meow/openrouter-retry-delay)
+			(run-with-timer meow/openrouter-retry-delay nil
+							#'meow/openrouter-fetch-models api-key))
 	:then (lambda (data)
 			(let* ((models (mapcar
 							(lambda (entry)
@@ -51,13 +101,12 @@
 								  )))
 							(alist-get 'data data))))
 			  (setq meow/openrouter-data data)
-			  (setq gptel-backend
-					(gptel-make-openai "OpenRouter"
-					  :host "openrouter.ai"
-					  :endpoint "/api/v1/chat/completions"
-					  :stream t
-					  :key api-key
-					  :models models))))))
+			  ;; only reselect the backend if the user hasn't switched away
+			  (if (or (null gptel-backend)
+					  (equal "OpenRouter" (gptel-backend-name gptel-backend)))
+				  (meow/openrouter-make-backend models)
+				(let ((gptel-backend gptel-backend))
+				  (meow/openrouter-make-backend models)))))))
 
 (defun meow/gptel-quick-ask (prompt)
   "Ask PROMPT from the current model in a new gptel buffer."
@@ -99,10 +148,7 @@ Called as an advice after selecting a model from the menu."
   :config
   (require 'gptel-autoloads)
   (require 'gptel-context)
-  (meow/openrouter-setup
-   (with-temp-buffer
-	 (insert-file-contents (expand-file-name "openrouterkey" user-emacs-directory))
-	 (buffer-string)))
+  (meow/openrouter-setup)
   (setq gptel-default-mode 'org-mode
 		gptel-model 'deepseek/deepseek-v4-flash-0731
 		gptel--request-params '(:reasoning_effort "low"))
@@ -235,39 +281,30 @@ Called as an advice after selecting a model from the menu."
 				   meow/gptel-tool-search
 				   meow/gptel-tool-fetch-url))
 
-(use-package agent-shell
-  :general-config
-  (:keymaps 'override
-			"C-c a o" #'agent-shell)
-  (meow/leader
-    "oA" #'agent-shell)
-  (:keymaps 'agent-shell-mode-map :states '(normal visual insert)
-			"TAB" #'agent-shell-set-session-mode
-			"C-v" #'yank-media))
-
-(defun meow/opencode ()
+(defun meow/albedo ()
+  "Start a new albedo session for `default-directory' in a ghostel buffer."
   (interactive)
   (let* ((directory (expand-file-name default-directory))
-		 (buf (generate-new-buffer (format  "*opencode %s*" (abbreviate-file-name directory)))))
-	(ghostel-exec buf "opencode" (list "attach" "http://localhost:4096" "--dir" directory))
+		 (buf (generate-new-buffer (format "*albedo %s*" (abbreviate-file-name directory)))))
+	(ghostel-exec buf "albedo" (list "new" directory))
 	(switch-to-buffer buf)))
 
 (meow/leader
-  "oo" '("opencode" . (lambda () (interactive)
+  "oo" '("albedo" . (lambda () (interactive)
 						(select-window (meow/intelligent-split t))
-						(meow/opencode)))
-  "oO" '("opencode same window" . meow/opencode)
-  "poo" '("opencode". (lambda () (interactive)
+						(meow/albedo)))
+  "oO" '("albedo same window" . meow/albedo)
+  "poo" '("albedo". (lambda () (interactive)
 						(select-window (meow/intelligent-split t))
 						(let ((default-directory (project-root (project-current))))
-						  (meow/opencode))))
-  "poO" '("opencode same window" (lambda () (interactive)
+						  (meow/albedo))))
+  "poO" '("albedo same window" . (lambda () (interactive)
 								   (let ((default-directory (project-root (project-current))))
-									 (meow/opencode))))
-  "bo" '("switch to opencode" . (lambda () (interactive)
+									 (meow/albedo))))
+  "bo" '("switch to albedo" . (lambda () (interactive)
 								  (consult-buffer
 								   (list
-									`(:name "Opencode buffer"
+									`(:name "Albedo buffer"
 											:category buffer
 											:face consult-buffer
 											:history buffer-name-history
@@ -277,7 +314,7 @@ Called as an advice after selecting a model from the menu."
 													  (consult--buffer-query :sort 'visibility
 																			 :as #'consult--buffer-pair
 																			 :predicate (lambda (buf)
-																						  (string-prefix-p "*opencode" (buffer-name buf)))))))))))
+																						  (string-prefix-p "*albedo" (buffer-name buf)))))))))))
 
 (provide 'meow-ai)
 ;;; meow-ai.el ends here

@@ -46,10 +46,32 @@ If PROJECT is non nil, launch it in the project root."
    (propertize " " 'face
 			   'default)))
 
-(defun meow/eshell-sync-history ()
-  "Save and load eshell history."
-  (eshell-write-history nil t)
-  (eshell-read-history nil t))
+;; every eshell buffer shares one history ring, so commands show up in
+;; all of them, the file is only read once
+(defvar eshell-history-ring)
+(defvar eshell-history-file-name)
+(declare-function eshell-write-history "em-hist" (&optional filename append))
+
+(defvar meow/eshell-shared-history-ring nil
+  "One history ring shared by every eshell buffer.")
+
+(define-advice eshell-read-history (:before-until (&optional filename _silent) meow-shared)
+  "Use the shared ring instead of reading the history file again."
+  (when (and (null filename) meow/eshell-shared-history-ring)
+    (setq eshell-history-ring meow/eshell-shared-history-ring)))
+
+(defun meow/eshell-write-history-now ()
+  "Append this buffer's new history items to the history file."
+  (eshell-write-history nil t))
+
+(defun meow/eshell-history-setup ()
+  "Share the history ring and write new input to the file right away.
+Writing on input rather than on exit means the appended entry is this
+buffer's, not a newer one another buffer pushed onto the shared ring."
+  (if meow/eshell-shared-history-ring
+      (setq eshell-history-ring meow/eshell-shared-history-ring)
+    (setq meow/eshell-shared-history-ring eshell-history-ring))
+  (add-hook 'eshell-input-filter-functions #'meow/eshell-write-history-now 90 t))
 
 (defun meow/eshell-directory-settings ()
   "Adjust completion when Eshell changes directory."
@@ -90,9 +112,9 @@ If PROJECT is non nil, launch it in the project root."
   (add-to-list 'eshell-modules-list 'eshell-tramp)
   :hook
   (eshell-mode . meow/turn-off-line-numbers)
+  (eshell-mode . meow/eshell-history-setup)
   (eshell-mode . meow/eshell-directory-settings)
   (eshell-directory-change . meow/eshell-directory-settings)
-  (eshell-post-command . meow/eshell-sync-history)
   :general-config
   (meow/leader
 	"oe" '("eshell" . (lambda () (interactive)

@@ -78,7 +78,6 @@
     "si" '("imenu" . consult-imenu)
     "sI" '("imenu multi" . consult-imenu-multi)
     "bs" '("switch" . consult-buffer)
-    "bs" '("switch" . consult-buffer)
     "bo" '("open buffer in new window" . (lambda () (interactive)
 										   (select-window (meow/intelligent-split t))
 										   (consult-buffer)))))

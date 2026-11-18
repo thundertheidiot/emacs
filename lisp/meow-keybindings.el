@@ -130,8 +130,6 @@
  "C-j" nil
  "<escape>" #'keyboard-quit
  "<escape>" #'keyboard-escape-quit
- "ESC" #'keyboard-quit
- "ESC" #'keyboard-escape-quit
  "<C-wheel-up>" 'text-scale-increase
  "<C-wheel-down>" 'text-scale-decrease)
 
