@@ -46,6 +46,9 @@ final: prev: {
 
     src = inputs.eglot-booster;
 
+    propagatedNativeBuildInputs = [
+      pkgs.emacs-lsp-booster
+    ];
     propagatedUserEnvPkgs = [
       pkgs.emacs-lsp-booster
     ];
