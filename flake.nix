@@ -113,7 +113,7 @@
             ...
           }:
           let
-            inherit (lib) mkDefault mkOption;
+            inherit (lib) mkDefault mkIf mkOption;
             inherit (lib.types) str;
           in
           {
@@ -127,7 +127,7 @@
             };
 
             config = {
-              environment.systemPackages = [ pkgs.xwayland-satellite ];
+              environment.systemPackages = mkIf config.programs.ewm.enable [ pkgs.xwayland-satellite ];
 
               programs.ewm.emacsPackage =
                 mkDefault
